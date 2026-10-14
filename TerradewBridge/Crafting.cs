@@ -15,12 +15,12 @@ public static class Crafting
 {
     private static readonly Dictionary<int, int[]> Aliases = new()
     {
-        { TileID.Hellforge, new[] { TileID.Furnaces } },
-        { TileID.AdamantiteForge, new[] { TileID.Furnaces, TileID.Hellforge } },
-        { TileID.MythrilAnvil, new[] { TileID.Anvils } },
-        { TileID.AlchemyTable, new[] { TileID.Bottles } },
-        { TileID.TinkerersWorkbench, new[] { TileID.WorkBenches } },
-        { TileID.HeavyWorkBench, new[] { TileID.WorkBenches } },
+        { TileID.Hellforge, new int[] { TileID.Furnaces } },
+        { TileID.AdamantiteForge, new int[] { TileID.Furnaces, TileID.Hellforge } },
+        { TileID.MythrilAnvil, new int[] { TileID.Anvils } },
+        { TileID.AlchemyTable, new int[] { TileID.Bottles } },
+        { TileID.TinkerersWorkbench, new int[] { TileID.WorkBenches } },
+        { TileID.HeavyWorkBench, new int[] { TileID.WorkBenches } },
     };
 
     private static void Prepare(Player player)
