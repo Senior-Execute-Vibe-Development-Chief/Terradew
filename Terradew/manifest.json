@@ -1,0 +1,10 @@
+{
+  "Name": "Terradew",
+  "Author": "Terradew",
+  "Version": "0.1.0",
+  "Description": "Reads the Terraria bridge and shows which NPCs Terraria is tracking.",
+  "UniqueID": "Terradew.Terradew",
+  "EntryDll": "Terradew.dll",
+  "MinimumApiVersion": "4.1.0",
+  "UpdateKeys": []
+}

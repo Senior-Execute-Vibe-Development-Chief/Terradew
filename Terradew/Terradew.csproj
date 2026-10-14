@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Terradew</RootNamespace>
+    <AssemblyName>Terradew</AssemblyName>
+    <EnableModDeploy>true</EnableModDeploy>
+    <EnableModZip>false</EnableModZip>
+    <GamePath>/Users/tristan.john.currieicloud/Library/Application Support/Steam/steamapps/common/Stardew Valley/Contents/MacOS</GamePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Terradew.Core\BridgeFile.cs" Link="BridgeFile.cs" />
+    <Compile Include="..\Terradew.Core\CollisionMap.cs" Link="CollisionMap.cs" />
+    <Compile Include="..\Terradew.Core\RouteMap.cs" Link="RouteMap.cs" />
+    <Compile Include="..\Terradew.Core\WorldProjection.cs" Link="WorldProjection.cs" />
+    <Compile Include="..\Terradew.Core\SpriteNames.cs" Link="SpriteNames.cs" />
+    <Compile Include="..\Terradew.Core\SpriteRecolor.cs" Link="SpriteRecolor.cs" />
+    <Compile Include="..\Terradew.Core\SpriteLayout.cs" Link="SpriteLayout.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
