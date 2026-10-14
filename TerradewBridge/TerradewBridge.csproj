@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Build: set TMOD_PATH to your tModLoader install if it is not in the default Steam folder.
+    macOS default: ~/Library/Application Support/Steam/steamapps/common/tModLoader
+  -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -7,18 +11,15 @@
     <AssemblyName>TerradewBridge</AssemblyName>
     <BuildMod>false</BuildMod>
     <LangVersion>12.0</LangVersion>
+    <TModPath Condition="'$(TModPath)' == '' and '$(TMOD_PATH)' != ''">$(TMOD_PATH)</TModPath>
+    <TModPath Condition="'$(TModPath)' == '' and $([MSBuild]::IsOSPlatform('OSX'))">$(HOME)/Library/Application Support/Steam/steamapps/common/tModLoader</TModPath>
+    <TModPath Condition="'$(TModPath)' == '' and $([MSBuild]::IsOSPlatform('Linux'))">$(HOME)/.local/share/Steam/steamapps/common/tModLoader</TModPath>
+    <TModPath Condition="'$(TModPath)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">C:\Program Files (x86)\Steam\steamapps\common\tModLoader</TModPath>
   </PropertyGroup>
 
-  <Import Project="/Users/tristan.john.currieicloud/Library/Application Support/Steam/steamapps/common/tModLoader/tMLMod.targets" />
+  <Import Project="$(TModPath)/tMLMod.targets" Condition="Exists('$(TModPath)/tMLMod.targets')" />
 
   <ItemGroup>
-    <Compile Include="..\Terradew.Core\BridgeFile.cs" Link="BridgeFile.cs" />
-    <Compile Include="..\Terradew.Core\CollisionMap.cs" Link="CollisionMap.cs" />
-    <Compile Include="..\Terradew.Core\RouteMap.cs" Link="RouteMap.cs" />
-    <Compile Include="..\Terradew.Core\WorldProjection.cs" Link="WorldProjection.cs" />
-    <Compile Include="..\Terradew.Core\Png.cs" Link="Png.cs" />
-    <Compile Include="..\Terradew.Core\SpriteNames.cs" Link="SpriteNames.cs" />
-    <Compile Include="..\Terradew.Core\SpriteFiles.cs" Link="SpriteFiles.cs" />
-    <Compile Include="..\Terradew.Core\PlaneMotion.cs" Link="PlaneMotion.cs" />
+    <Compile Include="..\Terradew.Core\**\*.cs" Exclude="..\Terradew.Core\bin\**;..\Terradew.Core\obj\**" LinkBase="Core" />
   </ItemGroup>
 </Project>

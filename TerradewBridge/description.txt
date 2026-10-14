@@ -1,1 +1,1 @@
-Writes a snapshot of live NPCs so Stardew Valley can read them.
+Runs the Terraria half of Terradew: the empty world named Stardew Valley simulates creatures, combat, items and town NPCs for the Stardew Valley farm.

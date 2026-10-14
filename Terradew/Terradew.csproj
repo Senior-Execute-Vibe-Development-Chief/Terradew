@@ -1,13 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Build with `dotnet build`. Pathoschild.Stardew.ModBuildConfig finds a standard Steam or GOG install by itself;
+    set GamePath (or the STARDEW_PATH environment variable) only if Stardew Valley lives somewhere else.
+  -->
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Terradew</RootNamespace>
     <AssemblyName>Terradew</AssemblyName>
     <EnableModDeploy>true</EnableModDeploy>
     <EnableModZip>false</EnableModZip>
-    <GamePath>/Users/tristan.john.currieicloud/Library/Application Support/Steam/steamapps/common/Stardew Valley/Contents/MacOS</GamePath>
+    <EnableHarmony>true</EnableHarmony>
+    <GamePath Condition="'$(GamePath)' == '' and '$(STARDEW_PATH)' != ''">$(STARDEW_PATH)</GamePath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,16 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Terradew.Core\BridgeFile.cs" Link="BridgeFile.cs" />
-    <Compile Include="..\Terradew.Core\CollisionMap.cs" Link="CollisionMap.cs" />
-    <Compile Include="..\Terradew.Core\RouteMap.cs" Link="RouteMap.cs" />
-    <Compile Include="..\Terradew.Core\WorldProjection.cs" Link="WorldProjection.cs" />
-    <Compile Include="..\Terradew.Core\SpriteNames.cs" Link="SpriteNames.cs" />
-    <Compile Include="..\Terradew.Core\SpriteRecolor.cs" Link="SpriteRecolor.cs" />
-    <Compile Include="..\Terradew.Core\SpriteLayout.cs" Link="SpriteLayout.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="..\Terradew.Core\**\*.cs" Exclude="..\Terradew.Core\bin\**;..\Terradew.Core\obj\**" LinkBase="Core" />
   </ItemGroup>
 </Project>

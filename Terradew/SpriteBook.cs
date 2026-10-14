@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -8,28 +5,36 @@ using Terradew.Core;
 
 namespace Terradew;
 
+/// <summary>Loads the sprite sheets Terraria exported. Missing files are checked again at most once a second.</summary>
 internal sealed class SpriteBook
 {
     private readonly Dictionary<string, Texture2D> loaded = new();
+    private readonly Dictionary<string, long> missing = new();
 
     public Texture2D? Load(string fileName)
     {
         if (loaded.TryGetValue(fileName, out Texture2D? cached))
             return cached;
-        string path = Path.Combine(SpriteNames.Folder, fileName);
-        if (!File.Exists(path))
+        long now = Game1.ticks;
+        if (missing.TryGetValue(fileName, out long retryAt) && now < retryAt)
             return null;
+        string path = Path.Combine(SpriteNames.Folder, fileName);
         try
         {
-            using FileStream stream = File.OpenRead(path);
-            Texture2D texture = Texture2D.FromStream(Game1.graphics.GraphicsDevice, stream);
-            loaded[fileName] = texture;
-            return texture;
+            if (File.Exists(path))
+            {
+                using FileStream stream = File.OpenRead(path);
+                Texture2D texture = Texture2D.FromStream(Game1.graphics.GraphicsDevice, stream);
+                loaded[fileName] = texture;
+                missing.Remove(fileName);
+                return texture;
+            }
         }
         catch (Exception)
         {
-            return null;
         }
+        missing[fileName] = now + 60;
+        return null;
     }
 
     public Texture2D? BackView(string fileName)
@@ -57,5 +62,13 @@ internal sealed class SpriteBook
         copy.SetData(colors);
         loaded[key] = copy;
         return copy;
+    }
+
+    public void Clear()
+    {
+        foreach (Texture2D texture in loaded.Values)
+            texture.Dispose();
+        loaded.Clear();
+        missing.Clear();
     }
 }

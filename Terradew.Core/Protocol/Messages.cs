@@ -100,6 +100,8 @@ public sealed class Hello : Message
     public int TotalDays;
     /// <summary>Terraria only: the farm this Terraria world already belongs to ("" when new).</summary>
     public string WorldFarmId = "";
+    /// <summary>Stardew only: the last coin change Terraria confirmed, so a restarted Terraria knows where to resume.</summary>
+    public int CoinSeq;
 
     public override MsgType Type => MsgType.Hello;
 
@@ -110,6 +112,7 @@ public sealed class Hello : Message
         w.Write(FarmId);
         w.Write(TotalDays);
         w.Write(WorldFarmId);
+        w.Write(CoinSeq);
     }
 
     public static Hello ReadFrom(BinaryReader r) => new()
@@ -119,6 +122,7 @@ public sealed class Hello : Message
         FarmId = r.ReadString(),
         TotalDays = r.ReadInt32(),
         WorldFarmId = r.ReadString(),
+        CoinSeq = r.ReadInt32(),
     };
 }
 
@@ -202,6 +206,8 @@ public sealed class MapLayout : Message
     /// <summary>Changes whenever the map is rebuilt, such as a new mine floor in a reused slot.</summary>
     public int Version;
     public int WaterTiles;
+    /// <summary>The Stardew mine level, or 0 outside the mines. A new floor clears the slot's old creatures.</summary>
+    public int Floor;
     public bool[] Blocked = Array.Empty<bool>();
 
     public override MsgType Type => MsgType.MapLayout;
@@ -217,6 +223,7 @@ public sealed class MapLayout : Message
         w.Write(IsMineSlot);
         w.Write(Version);
         w.Write(WaterTiles);
+        w.Write(Floor);
         w.WriteBits(Blocked);
     }
 
@@ -231,6 +238,7 @@ public sealed class MapLayout : Message
         IsMineSlot = r.ReadBoolean(),
         Version = r.ReadInt32(),
         WaterTiles = r.ReadInt32(),
+        Floor = r.ReadInt32(),
         Blocked = r.ReadBits(),
     };
 
@@ -771,6 +779,11 @@ public sealed class InventoryState : Message
     public List<ItemStack> Items = new();
     public List<ItemStack> Equipment = new();
     public long Coins;
+    /// <summary>The armor sprite slots the character shows (vanity wins over worn armor), for drawing over the farmer.</summary>
+    public int HeadSlot;
+    public int BodySlot;
+    public int LegSlot;
+    public bool Male = true;
 
     public override MsgType Type => MsgType.InventoryState;
 
@@ -779,6 +792,10 @@ public sealed class InventoryState : Message
         w.WriteList(Items, (x, i) => i.Write(x));
         w.WriteList(Equipment, (x, i) => i.Write(x));
         w.Write(Coins);
+        w.Write(HeadSlot);
+        w.Write(BodySlot);
+        w.Write(LegSlot);
+        w.Write(Male);
     }
 
     public static InventoryState ReadFrom(BinaryReader r) => new()
@@ -786,6 +803,10 @@ public sealed class InventoryState : Message
         Items = r.ReadList(ItemStack.ReadFrom, 200),
         Equipment = r.ReadList(ItemStack.ReadFrom, 100),
         Coins = r.ReadInt64(),
+        HeadSlot = r.ReadInt32(),
+        BodySlot = r.ReadInt32(),
+        LegSlot = r.ReadInt32(),
+        Male = r.ReadBoolean(),
     };
 }
 

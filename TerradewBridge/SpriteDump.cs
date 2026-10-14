@@ -1,103 +1,125 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terradew.Core;
 using Terraria;
 using Terraria.GameContent;
-using Terradew.Core;
 
 namespace TerradewBridge;
 
+/// <summary>
+/// Exports whole Terraria sprite sheets as PNG files for Stardew to draw from. Nothing is copied into
+/// the project: the sheets come from the installed game at runtime. Each name is tried once per session.
+/// </summary>
 internal static class SpriteDump
 {
-    public static void Npc(NPC npc)
-    {
-        Rectangle frame = npc.frame;
-        if (frame.Width <= 0 || frame.Height <= 0)
-            return;
-        if (SpriteFiles.Exists(SpriteNames.Npc(npc.type, frame.X, frame.Y, frame.Width, frame.Height)))
-            return;
-        try
-        {
-            Main.instance.LoadNPC(npc.type);
-            Texture2D texture = TextureAssets.Npc[npc.type].Value;
-            Rectangle sample = Fit(texture, frame);
-            if (sample.Width <= 0 || sample.Height <= 0)
-                return;
-            Export(texture, sample, SpriteNames.Npc(npc.type, frame.X, frame.Y, frame.Width, frame.Height));
-        }
-        catch (Exception)
-        {
-            // A missing sheet must not stop the NPC snapshot.
-        }
-    }
+    private static readonly HashSet<string> Done = new();
+
+    public static void Npc(int type)
+        => Sheet(SpriteNames.Npc(type), $"Images/NPC_{type}", () => { Main.instance.LoadNPC(type); return TextureAssets.Npc[type]; });
+
+    public static void Projectile(int type)
+        => Sheet(SpriteNames.Projectile(type), $"Images/Projectile_{type}", () => { Main.instance.LoadProjectile(type); return TextureAssets.Projectile[type]; });
 
     public static void Item(int type)
     {
-        if (type <= 0 || SpriteFiles.Exists(SpriteNames.Item(type)))
+        if (type <= 0)
             return;
-        try
-        {
-            Main.instance.LoadItem(type);
-            Texture2D texture = TextureAssets.Item[type].Value;
-            Export(texture, texture.Bounds, SpriteNames.Item(type));
-        }
-        catch (Exception)
-        {
-        }
+        Sheet(SpriteNames.Item(type), $"Images/Item_{type}", () => { Main.instance.LoadItem(type); return TextureAssets.Item[type]; });
+    }
+
+    public static void Buff(int type)
+    {
+        if (type <= 0)
+            return;
+        Sheet(SpriteNames.Buff(type), $"Images/Buff_{type}", () => TextureAssets.Buff[type]);
     }
 
     public static void Head(int slot)
-        => Armor("head", slot, 0, Main.instance.LoadArmorHead, TextureAssets.ArmorHead);
+    {
+        if (slot > 0)
+            Frame(SpriteNames.Armor("head", slot), $"Images/Armor_Head_{slot}", () => { Main.instance.LoadArmorHead(slot); return TextureAssets.ArmorHead[slot]; });
+    }
 
     public static void Body(int slot, bool male)
-        => Armor("body", slot, male ? 0 : 1, Main.instance.LoadArmorBody, male ? TextureAssets.ArmorBody : TextureAssets.FemaleBody);
+    {
+        if (slot <= 0)
+            return;
+        string path = male ? $"Images/Armor/Armor_{slot}" : $"Images/Armor/Armor_Female_{slot}";
+        Frame(SpriteNames.Armor("body", slot, male ? 0 : 1), path, () => { Main.instance.LoadArmorBody(slot); return male ? TextureAssets.ArmorBody[slot] : TextureAssets.FemaleBody[slot]; });
+    }
 
     public static void Legs(int slot)
-        => Armor("legs", slot, 0, Main.instance.LoadArmorLegs, TextureAssets.ArmorLeg);
-
-    private static void Armor(string part, int slot, int variant, Action<int> load, Asset<Texture2D>[] sheet)
     {
-        if (slot <= 0 || slot >= sheet.Length || SpriteFiles.Exists(SpriteNames.Armor(part, slot, variant)))
+        if (slot > 0)
+            Frame(SpriteNames.Armor("legs", slot), $"Images/Armor_Legs_{slot}", () => { Main.instance.LoadArmorLegs(slot); return TextureAssets.ArmorLeg[slot]; });
+    }
+
+    private static void Sheet(string file, string assetPath, Func<Asset<Texture2D>> fallback)
+    {
+        if (!Done.Add(file) || SpriteFiles.Exists(file))
             return;
+        Texture2D? texture = Load(assetPath, fallback);
+        if (texture == null)
+            return;
+        Export(texture, new Rectangle(0, 0, texture.Width, texture.Height), file);
+    }
+
+    /// <summary>Armor sheets hold many frames; the first 40 by 56 frame is the standing pose.</summary>
+    private static void Frame(string file, string assetPath, Func<Asset<Texture2D>> fallback)
+    {
+        if (!Done.Add(file) || SpriteFiles.Exists(file))
+            return;
+        Texture2D? texture = Load(assetPath, fallback);
+        if (texture == null)
+            return;
+        Export(texture, new Rectangle(0, 0, Math.Min(40, texture.Width), Math.Min(56, texture.Height)), file);
+    }
+
+    private static Texture2D? Load(string assetPath, Func<Asset<Texture2D>> fallback)
+    {
         try
         {
-            load(slot);
-            Texture2D texture = sheet[slot].Value;
-            int width = Math.Min(40, texture.Width);
-            int height = Math.Min(56, texture.Height);
-            if (width <= 0 || height <= 0)
-                return;
-            Export(texture, new Rectangle(0, 0, width, height), SpriteNames.Armor(part, slot, variant));
+            Texture2D texture = Main.Assets.Request<Texture2D>(assetPath, AssetRequestMode.ImmediateLoad).Value;
+            if (texture != null && texture.Width > 1 && texture.Height > 1)
+                return texture;
         }
         catch (Exception)
         {
+        }
+        try
+        {
+            Asset<Texture2D> asset = fallback();
+            Texture2D texture = asset.Value;
+            return texture != null && texture.Width > 1 && texture.Height > 1 ? texture : null;
+        }
+        catch (Exception)
+        {
+            return null;
         }
     }
 
     private static void Export(Texture2D texture, Rectangle frame, string fileName)
     {
-        if (SpriteFiles.Exists(fileName))
-            return;
-        var colors = new Color[frame.Width * frame.Height];
-        texture.GetData(0, frame, colors, 0, colors.Length);
-        var rgba = new byte[colors.Length * 4];
-        for (int i = 0; i < colors.Length; i++)
+        try
         {
-            rgba[i * 4] = colors[i].R;
-            rgba[i * 4 + 1] = colors[i].G;
-            rgba[i * 4 + 2] = colors[i].B;
-            rgba[i * 4 + 3] = colors[i].A;
+            var colors = new Color[frame.Width * frame.Height];
+            texture.GetData(0, frame, colors, 0, colors.Length);
+            var rgba = new byte[colors.Length * 4];
+            for (int i = 0; i < colors.Length; i++)
+            {
+                rgba[i * 4] = colors[i].R;
+                rgba[i * 4 + 1] = colors[i].G;
+                rgba[i * 4 + 2] = colors[i].B;
+                rgba[i * 4 + 3] = colors[i].A;
+            }
+            SpriteFiles.Publish(fileName, frame.Width, frame.Height, rgba);
         }
-        SpriteFiles.Publish(fileName, frame.Width, frame.Height, rgba);
-    }
-
-    private static Rectangle Fit(Texture2D texture, Rectangle frame)
-    {
-        int x = Math.Clamp(frame.X, 0, Math.Max(0, texture.Width - 1));
-        int y = Math.Clamp(frame.Y, 0, Math.Max(0, texture.Height - 1));
-        int width = Math.Min(frame.Width, texture.Width - x);
-        int height = Math.Min(frame.Height, texture.Height - y);
-        return new Rectangle(x, y, width, height);
+        catch (Exception error)
+        {
+            BridgeSystem.Instance.Mod.Logger.Debug($"Terradew could not export {fileName}: {error.Message}");
+        }
     }
 }

@@ -1,10 +1,11 @@
 {
   "Name": "Terradew",
   "Author": "Terradew",
-  "Version": "0.1.0",
-  "Description": "Reads the Terraria bridge and shows which NPCs Terraria is tracking.",
+  "Version": "0.2.0",
+  "Description": "Plays a Terraria world underneath your farm: Terraria biomes, creatures, bosses, weapons, coins and town NPCs, in Stardew Valley's world. Needs the Terradew Bridge tModLoader mod running in a world named Stardew Valley.",
   "UniqueID": "Terradew.Terradew",
   "EntryDll": "Terradew.dll",
-  "MinimumApiVersion": "4.1.0",
+  "MinimumApiVersion": "4.0.0",
+  "MinimumGameVersion": "1.6.0",
   "UpdateKeys": []
 }

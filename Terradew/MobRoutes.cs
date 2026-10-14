@@ -2,135 +2,89 @@ using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Pathfinding;
 using Terradew.Core;
+using Terradew.Core.Protocol;
+using Terradew.Core.Routing;
 
 namespace Terradew;
 
-/// <summary>
-/// Asks Stardew for a walk to the farmer and publishes the next open tile for each ground mob.
-/// </summary>
-internal static class MobRoutes
+/// <summary>Asks Stardew's villager path search for a walk to the farmer and sends each ground chaser its next open tile.</summary>
+internal sealed class MobRoutes
 {
-    public const int MapLimit = 127;
+    public const int MapLimit = 200;
     public const int SearchLimit = 10000;
 
-    private sealed class Cached
+    private readonly RoutePlanner planner = new(searchesPerTick: 2, retryTicks: 30);
+    private string place = "";
+    private string lastSent = "";
+    private int tick;
+
+    public void Reset()
     {
-        public int GoalX;
-        public int GoalY;
-        public Point[] Points = Array.Empty<Point>();
-        public int Index;
+        planner.Reset();
+        place = "";
+        lastSent = "";
     }
 
-    private static readonly Dictionary<int, Cached> Cache = new();
-    private static string place = "";
-
-    public static void Publish(Farmer player, BridgeSnapshot snapshot, string placeName, int placeHash)
+    public void Update(Bridge bridge, Farmer player, string placeKey)
     {
+        tick++;
         GameLocation? location = player.currentLocation;
-        if (location?.Map == null || location.Map.Layers.Count == 0 || snapshot.RegionX == 0 && snapshot.RegionY == 0)
+        WorldState? world = bridge.World;
+        if (location?.Map == null || world == null || !bridge.WorldIsFor(placeKey))
             return;
-        if (placeName != place)
+        if (placeKey != place)
         {
-            place = placeName;
-            Cache.Clear();
+            place = placeKey;
+            planner.Reset();
         }
         int width = location.Map.Layers[0].LayerWidth;
         int height = location.Map.Layers[0].LayerHeight;
-        if (width <= 0 || height <= 0 || width > MapLimit || height > MapLimit)
+        var message = new Routes { PlaceKey = placeKey };
+        if (width <= MapLimit && height <= MapLimit)
         {
-            Cache.Clear();
-            RouteMap.Publish(placeHash, Array.Empty<RouteMap.Step>());
-            return;
-        }
-
-        Rectangle box = player.GetBoundingBox();
-        var farmer = new Point(box.Center.X / 64, box.Center.Y / 64);
-        var steps = new List<RouteMap.Step>();
-        var seen = new HashSet<int>();
-        bool searched = false;
-        foreach (BridgeEntity entity in snapshot.Entities)
-        {
-            if (!IsGroundChaser(entity))
-                continue;
-            (float sx, float sy) = WorldProjection.ToMap(snapshot.RegionX, snapshot.RegionY, entity.X, entity.Y);
-            var mob = new Point((int)Math.Floor(sx / 64f), (int)Math.Floor(sy / 64f));
-            if (mob.X < 0 || mob.Y < 0 || mob.X >= width || mob.Y >= height)
-                continue;
-            seen.Add(entity.NpcId);
-            Cache.TryGetValue(entity.NpcId, out Cached? cache);
-            bool stale = cache == null || cache.GoalX != farmer.X || cache.GoalY != farmer.Y || !OnPath(cache, mob);
-            if (stale)
+            Rectangle box = player.GetBoundingBox();
+            var goal = new Tile(box.Center.X / 64, (box.Bottom - 1) / 64);
+            var chasers = new List<Chaser>();
+            foreach (EntityState entity in world.Entities)
             {
-                if (searched)
+                if (!entity.Has(EntityFlags.Chasing) || entity.Has(EntityFlags.Flyer) || entity.Has(EntityFlags.Worm))
                     continue;
-                searched = true;
-                cache = Search(location, mob, farmer);
-                Cache[entity.NpcId] = cache;
+                (float x, float y) = WorldProjection.ToMap(world.RegionX, world.RegionY, entity.X, entity.Y);
+                var at = new Tile((int)Math.Floor(x / 64f), (int)Math.Floor((y - 1f) / 64f));
+                if (at.X < 0 || at.Y < 0 || at.X >= width || at.Y >= height)
+                    continue;
+                chasers.Add(new Chaser(entity.Id, at));
             }
-            Point? next = Next(cache!, mob);
-            if (next != null)
-                steps.Add(new RouteMap.Step(entity.NpcId, next.Value.X, next.Value.Y));
+            foreach (RouteStep step in planner.Plan(tick, goal, chasers, (from, to) => Find(location, from, to)))
+                message.Steps.Add(new RouteEntry(step.NpcId, step.TileX, step.TileY));
         }
-        foreach (int id in Cache.Keys.ToArray())
-        {
-            if (!seen.Contains(id))
-                Cache.Remove(id);
-        }
-        RouteMap.Publish(placeHash, steps);
+        string signature = placeKey + ":" + string.Join(";", message.Steps.Select(s => $"{s.NpcId},{s.TileX},{s.TileY}"));
+        if (signature == lastSent && tick % 60 != 0)
+            return;
+        lastSent = signature;
+        bridge.Send(message);
     }
 
-    private static bool IsGroundChaser(BridgeEntity entity)
+    private static IReadOnlyList<Tile>? Find(GameLocation location, Tile from, Tile to)
     {
-        if (entity.ContactDamage <= 0)
-            return false;
-        BridgeFlags flags = entity.Flags;
-        return !flags.HasFlag(BridgeFlags.Town)
-            && !flags.HasFlag(BridgeFlags.Glider)
-            && !flags.HasFlag(BridgeFlags.Worm);
-    }
-
-    private static Cached Search(GameLocation location, Point mob, Point farmer)
-    {
-        var cache = new Cached { GoalX = farmer.X, GoalY = farmer.Y };
-        if (mob == farmer)
-            return cache;
         try
         {
-            Stack<Point>? path = PathFindController.findPathForNPCSchedules(mob, farmer, location, SearchLimit, null);
+            Stack<Point>? path = PathFindController.findPathForNPCSchedules(new Point(from.X, from.Y), new Point(to.X, to.Y), location, SearchLimit, null);
             if (path == null || path.Count == 0)
-                return cache;
-            var points = new List<Point>(path.Count);
+                return null;
+            var tiles = new List<Tile>(path.Count);
             while (path.Count > 0)
             {
                 Point point = path.Pop();
-                if (points.Count == 0 && point == mob)
+                if (tiles.Count == 0 && point.X == from.X && point.Y == from.Y)
                     continue;
-                points.Add(point);
+                tiles.Add(new Tile(point.X, point.Y));
             }
-            cache.Points = points.ToArray();
+            return tiles.Count == 0 ? null : tiles;
         }
         catch (Exception)
         {
-            cache.Points = Array.Empty<Point>();
-        }
-        return cache;
-    }
-
-    private static bool OnPath(Cached cache, Point mob)
-    {
-        if (cache.Index < cache.Points.Length && cache.Points[cache.Index] == mob)
-            return true;
-        if (cache.Index > 0 && cache.Points[cache.Index - 1] == mob)
-            return true;
-        return cache.Points.Length == 0 && mob.X == cache.GoalX && mob.Y == cache.GoalY;
-    }
-
-    private static Point? Next(Cached cache, Point mob)
-    {
-        if (cache.Index < cache.Points.Length && cache.Points[cache.Index] == mob)
-            cache.Index++;
-        if (cache.Index >= cache.Points.Length)
             return null;
-        return cache.Points[cache.Index];
+        }
     }
 }
