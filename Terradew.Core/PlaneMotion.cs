@@ -3,35 +3,17 @@ using System;
 namespace Terradew.Core;
 
 /// <summary>
-/// Movement in the empty Terraria volume. Flyers and worms already choose both axes.
-/// Everyone else walks straight toward a goal, at their own speed, on both axes together.
-/// Jump, fall, and gravity never become a step.
+/// Movement in the flat Terraria volume. Flyers and worms already choose both axes.
+/// Everyone else walks straight toward a goal on both axes together. Jump, fall and gravity never become a step.
 /// </summary>
 public static class PlaneMotion
 {
-    public static bool UsesRealAltitude(bool glider, bool worm)
-        => glider || worm;
-
-    public static bool IsGrounded(float verticalSpeed)
-        => Math.Abs(verticalSpeed) < 0.05f;
-
-    public static float FlyerSouth(float playerSouth, float playerAltitude, float npcAltitude)
-        => playerSouth + (npcAltitude - playerAltitude);
-
-    public static float StepToward(float current, float target, float eastSpeed)
-    {
-        float rate = Math.Abs(eastSpeed);
-        if (rate <= 0f)
-            return current;
-        float delta = target - current;
-        if (delta > rate)
-            delta = rate;
-        else if (delta < -rate)
-            delta = -rate;
-        return current + delta;
-    }
-
     public const int FeetSize = 12;
+
+    /// <summary>Ticks a walker may spend without reaching its wander point before it picks another.</summary>
+    public const int WanderPatience = 180;
+
+    public static bool UsesRealAltitude(bool flyer, bool worm) => flyer || worm;
 
     public readonly record struct FeetBox(float X, float Y, int Width, int Height);
 
@@ -54,7 +36,7 @@ public static class PlaneMotion
         float dx = toX - fromX;
         float dy = toY - fromY;
         float distance = MathF.Sqrt(dx * dx + dy * dy);
-        if (distance <= arrive || speed <= 0f)
+        if (!float.IsFinite(distance) || distance <= arrive || speed <= 0f)
             return new PlaneStep(0f, 0f);
         if (speed >= distance)
             return new PlaneStep(dx, dy);
@@ -62,9 +44,10 @@ public static class PlaneMotion
         return new PlaneStep(dx * scale, dy * scale);
     }
 
-    public static float Spread(int id)
+    /// <summary>A repeatable offset in [-200, 200] pixels for wander points.</summary>
+    public static float Spread(long id)
     {
-        int band = (id * 97) % 401;
+        long band = ((id * 97) % 401 + 401) % 401;
         return band - 200f;
     }
 }
