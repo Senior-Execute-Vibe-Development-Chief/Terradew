@@ -146,10 +146,10 @@ public sealed class Creatures : GlobalNPC
         // Terraria pixels per tick; one is four Stardew pixels. The farmer walks about 1.25 and Stardew's people 0.5.
         float speed = npc.townNPC ? 0.5f : npc.aiStyle == NPCAIStyleID.Slime ? 0.6f : npc.boss ? 1.6f : npc.damage <= 0 ? 0.5f : 0.8f;
         PlaneMotion.PlaneStep aim = PlaneMotion.Aim(feet.X, feet.Y, goal.X, goal.Y, speed, arrive);
-        Vector2 step = new(aim.X, aim.Y);
+        Vector2 move = new(aim.X, aim.Y);
         if (chasing)
-            step += Spread(npc, feet);
-        Collide(npc, step);
+            move += Spread(npc, feet);
+        Collide(npc, move);
         if (MathF.Abs(aim.X) > 0.05f)
         {
             npc.direction = aim.X < 0f ? -1 : 1;
