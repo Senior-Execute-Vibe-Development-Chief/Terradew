@@ -52,7 +52,7 @@ public sealed class WorldLayout
 
     /// <summary>
     /// Finds a spot for a region of the given size in the given band. An existing key that is
-    /// still big enough in the same band keeps its region. Otherwise the key is placed again.
+    /// still big enough in the same band, and not above the band top, keeps its region. Otherwise the key is placed again.
     /// </summary>
     public bool TryPlace(string key, int width, int height, Band band, bool ocean, out Region region)
     {
@@ -67,7 +67,7 @@ public sealed class WorldLayout
         if (index >= 0)
         {
             Region current = _regions[index];
-            if (current.Width >= width && current.Height >= height && current.Band == band)
+            if (current.Width >= width && current.Height >= height && current.Band == band && current.Y >= BandRange(band).Top)
             {
                 region = current;
                 return true;
@@ -107,7 +107,8 @@ public sealed class WorldLayout
         switch (band)
         {
             case Band.Surface:
-                top = Math.Max(Border, shape.SurfaceY * 2 / 5);
+                // Terraria counts the top 45% above the surface line as sky, where harpies and wyverns spawn.
+                top = Math.Max(Border, shape.SurfaceY / 2);
                 bottom = shape.SurfaceY - 5;
                 break;
             case Band.Underground:
@@ -185,6 +186,9 @@ public sealed class WorldLayout
         else
             for (int y = top; y + height <= bottom; y += Step)
                 rows.Add(y);
+        // Surface places stand on the surface line and only stack upward once a row is full.
+        if (band == Band.Surface)
+            rows.Reverse();
 
         // Ocean prefers the left edge and only uses the right edge when the left is full.
         var columns = new List<(int First, int Last)>();

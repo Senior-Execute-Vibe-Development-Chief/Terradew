@@ -12,12 +12,12 @@ internal static class WorldLayoutTests
         failed += T.Check("band ranges match the spec", () =>
         {
             var layout = new WorldLayout(Big);
-            T.Assert(layout.BandRange(Band.Surface) == (280, 695), "big surface");
+            T.Assert(layout.BandRange(Band.Surface) == (350, 695), "big surface");
             T.Assert(layout.BandRange(Band.Underground) == (705, 945), "big underground");
             T.Assert(layout.BandRange(Band.Cavern) == (955, 2190), "big cavern");
             T.Assert(layout.BandRange(Band.Underworld) == (2205, 2355), "big underworld");
             var small = new WorldLayout(Small);
-            T.Assert(small.BandRange(Band.Surface) == (140, 345), "small surface");
+            T.Assert(small.BandRange(Band.Surface) == (175, 345), "small surface");
         });
 
         failed += T.Check("ocean region lands within reach of the left edge", () =>
@@ -89,7 +89,7 @@ internal static class WorldLayoutTests
         {
             var layout = new WorldLayout(Big);
             T.Assert(layout.TryPlace("tall", 50, 500, Band.Surface, false, out Region tall), "spills past band");
-            T.Assert(tall.Y == 280, "band top");
+            T.Assert(tall.Y == 350, "band top");
             var deep = new WorldLayout(Big);
             T.Assert(!deep.TryPlace("deep", 50, 200, Band.Underworld, false, out _), "past world border");
         });
@@ -114,6 +114,21 @@ internal static class WorldLayoutTests
                 for (int j = i + 1; j < all.Count; j++)
                     T.Assert(Clear(all[i], all[j]), "gap between " + all[i].Key + " and " + all[j].Key);
             }
+        });
+
+        failed += T.Check("surface regions stand on the surface line", () =>
+        {
+            var layout = new WorldLayout(Big);
+            T.Assert(layout.TryPlace("farm", 100, 60, Band.Surface, false, out Region farm), "placed");
+            T.Assert(farm.Y + farm.Height > 695 - WorldLayout.Step, "at the bottom of the band: " + farm.Y);
+        });
+
+        failed += T.Check("a saved region in the sky is placed again", () =>
+        {
+            var saved = new List<Region> { new Region("farm", 500, 100, 100, 60, Band.Surface) };
+            var layout = new WorldLayout(Big, saved);
+            T.Assert(layout.TryPlace("farm", 100, 60, Band.Surface, false, out Region farm), "placed");
+            T.Assert(farm.Y >= 350, "moved down: " + farm.Y);
         });
 
         failed += T.Check("same key returns the same region", () =>

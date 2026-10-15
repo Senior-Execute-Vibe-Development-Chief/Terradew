@@ -43,9 +43,12 @@ Decisions that shape play:
 - **Health is Terraria's.** Your life and mana are bars at the bottom right, where Stardew's energy bar was.
   Defense and buffs are shown at the top left. Energy is gone: tools are free, and you can stay up all night.
   Food heals Terraria life, restores a little mana, and gives Well Fed.
-  Dying loses half your coins and wakes you at the Nurse's house, or at home if no Nurse lives on the farm.
+  Dying loses half your coins and wakes you in your own bed. A Terraria hit shows Stardew's hurt blink, red number and
+  "ow", and knocks you back from whatever hit you.
 - **Only Terraria weapons fight.** Stardew weapons melt into coins when you pick them up, and Stardew's own
-  monsters are gone. Farming tools stay Stardew's.
+  monsters are gone. Farming tools stay Stardew's, but Terraria tools work on Stardew things too: a pickaxe or hammer
+  breaks rocks like a Stardew pickaxe, an axe chops trees, and a sword cuts weeds and grass. Stronger Terraria tools
+  count as better Stardew upgrades.
 - **Creatures are drawn at Stardew's size** (one Terraria sprite pixel is two Stardew pixels). Terraria shrinks every
   creature and projectile hitbox to half, and only hits on the farmer's own body count, so hits match the picture.
 - **Creatures that are chasing you follow you** through a door or warp if they are close behind, but never into
@@ -128,7 +131,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   where they always were. The full roster of vanilla town NPCs is in play, except Santa Claus.
   Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
   Once moved in, the NPC takes over that villager's life: it walks their schedule, looks like its Terraria self
-  with its Terraria name and head portrait, and says its own lines (written in `Terradew/assets/npcs`) for each day,
+  with its Terraria name and a portrait cut from its Terraria sprite, and says its own lines (written in `Terradew/assets/npcs`) for each day,
   heart level, season, rain, festival, and the big things that happen in the Terraria world (a boss falls, a blood
   moon, a goblin army). Friendship, gifts and heart events (2 to 10 hearts) work as in Stardew; Stardew items
   and Terraria items can both be given, and each NPC has its own loved and hated ones. Some heart events give a
@@ -148,8 +151,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
   outside their front door and everyone else stays home, and each has a line about it. Attacks show their
   Terraria frames, and the Dye Trader swings a scimitar.
 - **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
-  farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
-  head portrait when you talk to them.
+  farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show a portrait cut
+  from their Terraria sprite when you talk to them.
 - **Fishing** is Stardew's minigame with a Terraria catch, from the place's biome and depth.
 - **Bosses** come from their normal Terraria summons, used from the hotbar with the Terraria item selected: the Suspicious Looking Eye at
   night, Worm Food in the Secret Woods, the Abeemination in the jungle mine floors. Talk to the Old Man at the

@@ -113,7 +113,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 11;
+    public const int CurrentProtocol = 12;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -1041,6 +1041,12 @@ public struct ItemStack
     public bool Consumable;
     /// <summary>A crafting station: it can be placed on a Stardew tile.</summary>
     public bool Station;
+    /// <summary>Tool powers as Terraria shows them (the axe already times five), so Stardew can use the tool too.</summary>
+    public short Pick;
+    public short Axe;
+    public short Hammer;
+    /// <summary>A swung or thrust blade: in Stardew it cuts weeds and grass like the scythe.</summary>
+    public bool Blade;
 
     public bool IsEmpty => ItemType <= 0 || Stack <= 0;
 
@@ -1054,6 +1060,10 @@ public struct ItemStack
         w.Write(Equippable);
         w.Write(Consumable);
         w.Write(Station);
+        w.Write(Pick);
+        w.Write(Axe);
+        w.Write(Hammer);
+        w.Write(Blade);
     }
 
     public static ItemStack ReadFrom(BinaryReader r) => new()
@@ -1066,6 +1076,10 @@ public struct ItemStack
         Equippable = r.ReadBoolean(),
         Consumable = r.ReadBoolean(),
         Station = r.ReadBoolean(),
+        Pick = r.ReadInt16(),
+        Axe = r.ReadInt16(),
+        Hammer = r.ReadInt16(),
+        Blade = r.ReadBoolean(),
     };
 }
 

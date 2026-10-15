@@ -48,9 +48,12 @@ internal static class ProtocolTests
             T.Assert(stateCopy.RegionX == 400 && stateCopy.Life == 80, "state fields");
 
             var inventory = new InventoryState { Coins = 123456, HeadSlot = 2, Male = false, WingsSlot = 7, ShieldSlot = 8, BackSlot = 9, FrontSlot = 10, ShoeSlot = 11 };
-            inventory.Items.Add(new ItemStack { ItemType = 3507, Stack = 1, Name = "Copper Shortsword", Damage = 5 });
+            inventory.Items.Add(new ItemStack { ItemType = 3507, Stack = 1, Name = "Copper Shortsword", Damage = 5, Blade = true });
+            inventory.Items.Add(new ItemStack { ItemType = 3509, Stack = 1, Name = "Copper Pickaxe", Pick = 35, Axe = 0, Hammer = 0 });
+            inventory.Items.Add(new ItemStack { ItemType = 204, Stack = 1, Name = "Molten Hamaxe", Axe = 150, Hammer = 70 });
             var inventoryCopy = (InventoryState)Roundtrip(inventory);
             T.Assert(inventoryCopy.Items[0].Name == "Copper Shortsword" && inventoryCopy.Coins == 123456, "inventory");
+            T.Assert(inventoryCopy.Items[0].Blade && inventoryCopy.Items[1].Pick == 35 && inventoryCopy.Items[2].Axe == 150 && inventoryCopy.Items[2].Hammer == 70, "tool powers");
             T.Assert(inventoryCopy.HeadSlot == 2 && !inventoryCopy.Male, "armor slots still round-trip");
             T.Assert(inventoryCopy.WingsSlot == 7 && inventoryCopy.ShieldSlot == 8 && inventoryCopy.BackSlot == 9 && inventoryCopy.FrontSlot == 10 && inventoryCopy.ShoeSlot == 11, "accessory slots");
             var dyed = new InventoryState { HeadTint = 0xFF8C8CFF, BodyTint = 0x11223344, LegTint = 1, WingsTint = 2, ShieldTint = 3, BackTint = 4, FrontTint = 5, ShoeTint = 0xFFFFFFFF };

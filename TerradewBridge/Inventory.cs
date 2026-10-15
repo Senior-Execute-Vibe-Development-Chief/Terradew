@@ -183,6 +183,10 @@ public static class Inventory
             Equippable = item.headSlot >= 0 || item.bodySlot >= 0 || item.legSlot >= 0 || item.accessory || item.vanity,
             Consumable = item.consumable,
             Station = IsStation(item),
+            Pick = (short)item.pick,
+            Axe = (short)(item.axe * 5),
+            Hammer = (short)item.hammer,
+            Blade = Melee.UsesArc(item),
         };
     }
 

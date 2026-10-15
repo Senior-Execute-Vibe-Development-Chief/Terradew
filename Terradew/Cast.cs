@@ -137,9 +137,9 @@ internal sealed class Cast
             }
             if (e.NameWithoutLocale.IsEquivalentTo($"Portraits/{villager}"))
             {
-                Texture2D? head = resident.HeadIndex >= 0 ? sprites.Load(SpriteNames.NpcHead(resident.HeadIndex)) : null;
-                if (head != null)
-                    e.LoadFrom(() => Portrait(head), AssetLoadPriority.High);
+                Texture2D? sheet = sprites.Load(SpriteNames.Npc(resident.NpcType));
+                if (sheet != null)
+                    e.LoadFrom(() => Portrait(sheet, resident), AssetLoadPriority.High);
                 return;
             }
         }
@@ -186,6 +186,7 @@ internal sealed class Cast
                 }
                 // The Terraria sprite has no breathing chest and no seasonal outfits.
                 character.Breather = false;
+                character.Size = new Point(FrameWidth, FrameHeight);
                 character.Appearance?.Clear();
             }
         }
@@ -195,13 +196,14 @@ internal sealed class Cast
         }
     }
 
-    private const int FrameWidth = 16;
+    /// <summary>Wider than Stardew's 16, so Terraria arms and held tools are not cut off.</summary>
+    private const int FrameWidth = 20;
     private const int FrameHeight = 32;
     /// <summary>Stardew's own frames. Terraria's whole sheet follows, facing right and then left, for attacks.</summary>
     public const int Frames = 64;
 
     /// <summary>
-    /// A Stardew walking sheet (four 16x32 frames per row: down, right, up, left) from a Terraria town NPC sheet:
+    /// A Stardew walking sheet (four 20x32 frames per row: down, right, up, left) from a Terraria town NPC sheet:
     /// one tall column of frames drawn at double size, facing left. The rest of the 64 frames stand still. After
     /// them come every Terraria frame facing right, then every one facing left, so attacks can be shown.
     /// </summary>
@@ -272,33 +274,54 @@ internal sealed class Cast
         return texture;
     }
 
-    /// <summary>A Stardew portrait sheet (64x64 faces, two across) with the Terraria head in every face.</summary>
-    private static Texture2D Portrait(Texture2D head)
+    /// <summary>
+    /// A Stardew portrait sheet (64x64 faces, two across): the head and shoulders of the Terraria NPC's standing
+    /// frame, one Terraria art pixel (two texture pixels) to four portrait pixels, the same in every face.
+    /// </summary>
+    private static Texture2D Portrait(Texture2D source, TownResident resident)
     {
         const int cell = 64;
         const int across = 2;
         const int down = 3;
-        var pixels = new Color[head.Width * head.Height];
-        head.GetData(pixels);
-        int scale = Math.Max(1, Math.Min(cell / Math.Max(1, head.Width), cell / Math.Max(1, head.Height)));
-        int offsetX = (cell - head.Width * scale) / 2;
-        int offsetY = (cell - head.Height * scale) / 2;
+        const int scale = 4;
+        const int crop = cell / scale;
+        int count = Math.Max(1, resident.FrameCount);
+        int artWidth = source.Width / 2;
+        int artHeight = source.Height / count / 2;
+        var pixels = new Color[source.Width * source.Height];
+        source.GetData(pixels);
+        Color Art(int x, int y) => x < 0 || y < 0 || x >= artWidth || y >= artHeight ? Color.Transparent : pixels[y * 2 * source.Width + x * 2];
+
+        // The crop starts at the top of the hair (or hat) and centres on what is drawn in the rows below it.
+        int top = 0;
+        while (top < artHeight - 1 && !Enumerable.Range(0, artWidth).Any(x => Art(x, top).A > 0))
+            top++;
+        int left = artWidth;
+        int right = -1;
+        for (int y = top; y < Math.Min(artHeight, top + crop); y++)
+        {
+            for (int x = 0; x < artWidth; x++)
+            {
+                if (Art(x, y).A == 0)
+                    continue;
+                left = Math.Min(left, x);
+                right = Math.Max(right, x);
+            }
+        }
+        int fromX = right < left ? (artWidth - crop) / 2 : (left + right + 1 - crop) / 2;
+        // A little headroom above the hair, as Stardew portraits have.
+        int fromY = top - 1;
+
         int width = cell * across;
         var sheet = new Color[width * cell * down];
         for (int face = 0; face < across * down; face++)
         {
             int cellX = face % across * cell;
             int cellY = face / across * cell;
-            for (int y = 0; y < head.Height * scale; y++)
+            for (int y = 0; y < cell; y++)
             {
-                for (int x = 0; x < head.Width * scale; x++)
-                {
-                    int dx = cellX + offsetX + x;
-                    int dy = cellY + offsetY + y;
-                    if (dx < cellX || dy < cellY || dx >= cellX + cell || dy >= cellY + cell)
-                        continue;
-                    sheet[dy * width + dx] = pixels[y / scale * head.Width + x / scale];
-                }
+                for (int x = 0; x < cell; x++)
+                    sheet[(cellY + y) * width + cellX + x] = Art(fromX + x / scale, fromY + y / scale);
             }
         }
         var texture = new Texture2D(Game1.graphics.GraphicsDevice, width, cell * down);

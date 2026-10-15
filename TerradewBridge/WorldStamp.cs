@@ -119,6 +119,39 @@ public sealed class WorldStamp
             StampPlace(place, newFloor);
     }
 
+    private const int WardLeaves = 12;
+
+    /// <summary>
+    /// The Dryad's Ward is drawn by Terraria's own code, not from its sprite, so Stardew would see nothing.
+    /// It goes over as a spinning ring of leaves around the Dryad instead.
+    /// </summary>
+    private static void AddWardLeaves(WorldState state, Projectile ward, int index)
+    {
+        int leaf = ProjectileID.Search.TryGetId("Leaf", out int found) ? found : ward.type;
+        float radius = Math.Max(ward.width, ward.height) >= 48 ? Math.Max(ward.width, ward.height) / 2f : 96f;
+        float spin = Main.GameUpdateCount * 0.05f;
+        int frames = Math.Max(1, Main.projFrames[leaf]);
+        for (int k = 0; k < WardLeaves; k++)
+        {
+            float angle = spin + k * MathHelper.TwoPi / WardLeaves;
+            state.Projectiles.Add(new ProjectileState
+            {
+                Id = Main.maxProjectiles + index * WardLeaves + k,
+                ProjType = leaf,
+                X = ward.Center.X + (float)Math.Cos(angle) * radius,
+                Y = ward.Center.Y + (float)Math.Sin(angle) * radius,
+                Rotation = angle + MathHelper.PiOver2,
+                Frame = (short)((Main.GameUpdateCount / 5 + k) % frames),
+                FrameCount = (short)frames,
+                Direction = 1,
+                Alpha = 0,
+                Scale = 1f,
+                Hostile = false,
+            });
+        }
+        SpriteDump.Projectile(leaf);
+    }
+
     public void ReceiveRoutes(Routes message)
     {
         var steps = new Dictionary<int, RouteEntry>();
@@ -438,6 +471,11 @@ public sealed class WorldStamp
                 Projectile projectile = Main.projectile[i];
                 if (!projectile.active || !place.ContainsWorld(projectile.Center))
                     continue;
+                if (projectile.type == ProjectileID.DryadsWardCircle)
+                {
+                    AddWardLeaves(state, projectile, i);
+                    continue;
+                }
                 state.Projectiles.Add(new ProjectileState
                 {
                     Id = i,

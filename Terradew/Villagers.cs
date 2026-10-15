@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -77,6 +78,20 @@ internal sealed class Villagers
         catch (Exception error)
         {
             monitor.Log($"Terradew could not stop talking to villagers. {error.Message}", LogLevel.Warn);
+        }
+        // Hidden villagers still cast a shadow, show the talk cursor and take gifts unless these are stopped too.
+        foreach (Type type in new[] { typeof(Character), typeof(NPC) })
+            TryPrefix(harmony, AccessTools.DeclaredMethod(type, "DrawShadow"), nameof(BeforeShadow), "shadows");
+        TryPrefix(harmony, AccessTools.Method(typeof(NPC), "tryToReceiveActiveObject"), nameof(BeforeGift), "gifts");
+        try
+        {
+            var atTile = AccessTools.Method(typeof(GameLocation), "isCharacterAtTile", new[] { typeof(Vector2) });
+            if (atTile != null)
+                harmony.Patch(atTile, postfix: new HarmonyMethod(typeof(Villagers), nameof(AfterCharacterAtTile)));
+        }
+        catch (Exception error)
+        {
+            monitor.Log($"Terradew could not hide villagers from the cursor. {error.Message}", LogLevel.Warn);
         }
         try
         {
@@ -239,6 +254,48 @@ internal sealed class Villagers
             instance?.monitor?.Log($"Terradew could not check a villager's speech. {error.Message}", LogLevel.Warn);
             return true;
         }
+    }
+
+    private void TryPrefix(Harmony harmony, System.Reflection.MethodInfo? method, string prefix, string what)
+    {
+        if (method == null)
+            return;
+        try
+        {
+            harmony.Patch(method, prefix: new HarmonyMethod(typeof(Villagers), prefix));
+        }
+        catch (Exception error)
+        {
+            monitor?.Log($"Terradew could not hide villagers' {what}. {error.Message}", LogLevel.Warn);
+        }
+    }
+
+    private static bool Hidden(Character? character)
+    {
+        try
+        {
+            return character is NPC npc && !Cast.Shown(npc);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool BeforeShadow(Character __instance) => !Hidden(__instance);
+
+    private static bool BeforeGift(NPC __instance, ref bool __result)
+    {
+        if (!Hidden(__instance))
+            return true;
+        __result = false;
+        return false;
+    }
+
+    private static void AfterCharacterAtTile(ref NPC? __result)
+    {
+        if (Hidden(__result))
+            __result = null;
     }
 
     private static bool BeforeCheckAction(NPC __instance, Farmer who, ref bool __result)

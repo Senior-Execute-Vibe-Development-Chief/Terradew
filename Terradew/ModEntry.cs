@@ -21,6 +21,7 @@ public sealed class ModEntry : Mod
     private PotLook potLook = null!;
     private Backpack backpack = null!;
     private Hand hand = null!;
+    private TerrariaTools tools = null!;
     private Maps maps = null!;
     private Money money = null!;
     private Vitals vitals = null!;
@@ -50,6 +51,7 @@ public sealed class ModEntry : Mod
         potLook = new PotLook(sprites, bridge, () => Leading);
         backpack = new Backpack(bridge, Monitor);
         hand = new Hand(helper, stations, backpack);
+        tools = new TerrariaTools(Monitor, hand);
         maps = new Maps();
         money = new Money(helper);
         vitals = new Vitals(Monitor);
@@ -136,6 +138,7 @@ public sealed class ModEntry : Mod
         vitals.Reset();
         routes.Reset();
         hand.Reset();
+        tools.Reset();
         wallClimb.Reset();
         mining.Reset();
         cast.Reset();
@@ -149,6 +152,7 @@ public sealed class ModEntry : Mod
         maps.Reset();
         routes.Reset();
         hand.Reset();
+        tools.Reset();
         fishing.Reset();
         wallClimb.Reset();
         pendingChats.Clear();
@@ -211,6 +215,7 @@ public sealed class ModEntry : Mod
         if (config.MirrorMoney)
             money.Update(bridge);
         vitals.Update(bridge, config);
+        tools.Update(bridge);
         routes.Update(bridge, maps, player, Maps.PlaceOf(location).Key);
         if (e.Ticks % 30 == 0)
             cast.Update(bridge.Facts);
