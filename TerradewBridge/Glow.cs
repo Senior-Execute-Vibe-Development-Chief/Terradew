@@ -14,7 +14,7 @@ namespace TerradewBridge;
 /// <remarks>
 /// Strengths are 0 to 255 and are the largest of the active sources, not a sum: two glows do not make a brighter one.
 /// The table is from memory of vanilla, not measured. Unsure: the wing and necklace strengths and colours, and the
-/// helmet and Shine strengths. Fairy Wings give no light (vanilla draws them bright, not lit). Light pets use Main.lightPet, so any modded light pet counts too.
+/// helmet and Shine strengths. Fairy Wings give no light; Stardew draws them bright instead (see Body). Light pets use Main.lightPet, so any modded light pet counts too.
 /// </remarks>
 internal static class Glow
 {
@@ -83,7 +83,7 @@ internal static class Glow
 
         for (int i = 0; i < EquipSlots; i++)
         {
-            // Fairy Wings do not light their surroundings in Terraria. They are drawn bright instead (see Body).
+            // Fairy Wings give no light. They are drawn bright instead (see Body).
             int type = player.armor[i].type;
             if (player.wet && (type == ItemID.JellyfishNecklace || type == ItemID.JellyfishDivingGear))
                 Offer(JellyfishLight, Water);

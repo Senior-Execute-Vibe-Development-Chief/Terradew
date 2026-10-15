@@ -75,9 +75,11 @@ internal static class Body
         if (glowing)
         {
             Draw(player, wingsOnly: true);
-            target.GetData(glowPixels!);
+            target!.GetData(glowPixels!);
         }
-        return Crop(pixels, glowing ? glowPixels : null);
+        if (glowing)
+            KeepShown(pixels!, glowPixels!);
+        return Crop(pixels!, glowing ? glowPixels : null);
     }
 
     /// <summary>Draws the player onto the canvas, fully lit. With <paramref name="wingsOnly"/>, nothing but the wings.</summary>
@@ -116,6 +118,19 @@ internal static class Body
                 device.SetRenderTarget(null);
             else
                 device.SetRenderTargets(previous);
+        }
+    }
+
+    /// <summary>
+    /// The wings sit behind the body, but the glowing copy is drawn over everything; only the wing pixels that show in
+    /// the whole picture are kept, so the glow never covers the player.
+    /// </summary>
+    private static void KeepShown(Color[] whole, Color[] wings)
+    {
+        for (int i = 0; i < wings.Length; i++)
+        {
+            if (wings[i] != whole[i])
+                wings[i] = Color.Transparent;
         }
     }
 

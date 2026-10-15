@@ -40,12 +40,14 @@ internal static class ProtocolTests
             var state = new WorldState { Tick = 5, PlaceKey = "Town", RegionX = 400, RegionY = 300, Life = 80, LifeMax = 100 };
             state.Entities.Add(new EntityState { Id = 4, NpcType = 1, X = 1f, Y = 2f, Width = 32, Height = 24, Flags = EntityFlags.Hostile | EntityFlags.Chasing | EntityFlags.Hopper, Name = "Grün Slime", Scale = 1f, Color = 0x50505050, Tint = 0x5000FF00, Hop = 200, Look = "look-images_townnpcs_princess_default.png" });
             state.Projectiles.Add(new ProjectileState { Id = 1, ProjType = 14, X = 5f, Y = 6f, FrameCount = 1, Hostile = true, Color = 0xFFFFFFFF });
+            state.Projectiles.Add(new ProjectileState { Id = 3, ProjType = 226, X = 9f, Y = 10f, FrameCount = 1, Attached = true, Light = 40, LightColor = 0xFF00FF00, Emissive = true });
             state.Drops.Add(new DropState(2, 71, 30, 7f, 8f));
             state.Buffs.Add(new BuffState(1, 600));
             var stateCopy = (WorldState)Roundtrip(state);
             T.Assert(stateCopy.Entities[0].Name == "Grün Slime" && stateCopy.Entities[0].Has(EntityFlags.Chasing), "entity");
             T.Assert(stateCopy.Entities[0].Has(EntityFlags.Hopper) && stateCopy.Entities[0].Hop == 200, "slime hop flag and arc");
             T.Assert(stateCopy.Projectiles[0].ProjType == 14 && stateCopy.Drops[0].Stack == 30 && stateCopy.Buffs[0].Time == 600, "lists");
+            T.Assert(!stateCopy.Projectiles[0].Emissive && stateCopy.Projectiles[1].Emissive && stateCopy.Projectiles[1].Light == 40 && stateCopy.Projectiles[1].LightColor == 0xFF00FF00, "emissive shot flag");
             T.Assert(stateCopy.Entities[0].Color == 0x50505050 && stateCopy.Entities[0].Tint == 0x5000FF00 && stateCopy.Entities[0].Look == "look-images_townnpcs_princess_default.png" && stateCopy.Projectiles[0].Color == 0xFFFFFFFF, "draw colours and look");
             T.Assert(stateCopy.RegionX == 400 && stateCopy.Life == 80, "state fields");
 
@@ -140,6 +142,17 @@ internal static class ProtocolTests
             try { Roundtrip(new PlayerLook { Width = 2, Height = 2, Rgba = new byte[3] }); }
             catch (Exception) { refused = true; }
             T.Assert(refused, "mismatched pixels");
+
+            var winged = new PlayerLook { Width = 2, Height = 3, FeetX = 1, FeetY = 2, Rgba = new byte[2 * 3 * 4], GlowRgba = new byte[2 * 3 * 4] };
+            winged.GlowRgba[7] = 99;
+            var wingedCopy = (PlayerLook)Roundtrip(winged);
+            T.Assert(wingedCopy.GlowRgba.Length == 24 && wingedCopy.GlowRgba[7] == 99 && wingedCopy.Rgba.Length == 24, "glow pixels");
+            var plainCopy = (PlayerLook)Roundtrip(look);
+            T.Assert(plainCopy.GlowRgba.Length == 0, "no glow when none is sent");
+            bool glowRefused = false;
+            try { Roundtrip(new PlayerLook { Width = 2, Height = 2, Rgba = new byte[16], GlowRgba = new byte[3] }); }
+            catch (Exception) { glowRefused = true; }
+            T.Assert(glowRefused, "mismatched glow pixels");
         });
 
         failed += T.Check("a disconnected link drops sends instead of blocking", () =>

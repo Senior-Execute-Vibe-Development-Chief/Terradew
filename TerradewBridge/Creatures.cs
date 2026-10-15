@@ -110,6 +110,8 @@ public sealed class Creatures : GlobalNPC
             npc.noTileCollide = true;
             // Their own AI keeps its speeds, but the body is drawn at half size, so it travels half as far.
             npc.position -= npc.velocity * (1f - SpriteLayout.BodyScale);
+            if (npc.boss && flyer && place?.Layout != null)
+                ContainBoss(npc, place);
             return;
         }
         npc.noTileCollide = true;
@@ -337,6 +339,12 @@ public sealed class Creatures : GlobalNPC
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
         ready = false;
+        // Only a boss summoned or spawned on its own: parts a boss makes for itself (worm segments, hands) come with it.
+        if (BridgeSystem.Active && npc.boss && !npc.townNPC && (source is EntitySource_BossSpawn || source is EntitySource_SpawnNPC) && !Celestial.Summoning && !WallOfFlesh.Owns(npc))
+        {
+            PlaceBoss(npc);
+            return;
+        }
         if (!BridgeSystem.Active || npc.townNPC || npc.boss || source is not EntitySource_SpawnNPC)
             return;
         Player player = Main.LocalPlayer;
@@ -359,5 +367,46 @@ public sealed class Creatures : GlobalNPC
         (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, npc.width, npc.height);
         npc.position = new Vector2(x, y);
         npc.velocity = Vector2.Zero;
+    }
+
+    /// <summary>
+    /// Terraria drops a summoned boss offscreen, which is often outside the farmer's stamped place, where Stardew would
+    /// never draw it. It lands on an open tile near the farmer instead, as the Celestial bosses do.
+    /// </summary>
+    private static void PlaceBoss(NPC npc)
+    {
+        if (BridgeSystem.Instance.Stamp.Current?.Layout == null)
+            return;
+        WorldStamp stamp = BridgeSystem.Instance.Stamp;
+        Vector2 farmer = Puppet.FeetOf(Main.LocalPlayer);
+        if (!stamp.TryOpenSpot(farmer, 11, 30, out Vector2 feet) && !stamp.TryOpenSpot(farmer, 3, 60, out feet))
+            return;
+        (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, npc.width, npc.height);
+        npc.position = new Vector2(x, y);
+        npc.velocity = Vector2.Zero;
+    }
+
+    /// <summary>
+    /// A flying boss hovers over the farmer, and its own AI can carry it past the Stardew map's edge. Stardew draws only
+    /// the map, so the boss is held inside the farmer's place over the map, and a push into the edge stops it there.
+    /// </summary>
+    private static void ContainBoss(NPC npc, WorldStamp.PlaceState place)
+    {
+        var map = place.Layout!;
+        const float Inset = 2f * 16f;
+        float minX = (place.OriginX * 16f) + Inset;
+        float maxX = ((place.OriginX + map.Width) * 16f) - Inset;
+        float minY = (place.OriginY * 16f) + Inset;
+        float maxY = ((place.OriginY + map.Height) * 16f) - Inset;
+        Vector2 centre = npc.Center;
+        float x = Math.Clamp(centre.X, minX, maxX);
+        float y = Math.Clamp(centre.Y, minY, maxY);
+        if (x == centre.X && y == centre.Y)
+            return;
+        if (x != centre.X)
+            npc.velocity.X = 0f;
+        if (y != centre.Y)
+            npc.velocity.Y = 0f;
+        npc.position += new Vector2(x - centre.X, y - centre.Y);
     }
 }
