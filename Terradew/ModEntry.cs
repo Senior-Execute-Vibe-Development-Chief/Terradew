@@ -18,6 +18,7 @@ public sealed class ModEntry : Mod
     private Bridge bridge = null!;
     private SpriteBook sprites = null!;
     private Stations stations = null!;
+    private Caves caves = null!;
     private PotLook potLook = null!;
     private Backpack backpack = null!;
     private Hand hand = null!;
@@ -51,6 +52,7 @@ public sealed class ModEntry : Mod
         bridge = new Bridge(config.Port);
         sprites = new SpriteBook();
         stations = new Stations(sprites, bridge);
+        caves = new Caves(sprites, bridge);
         potLook = new PotLook(sprites, bridge, () => Leading);
         backpack = new Backpack(bridge, Monitor);
         hand = new Hand(helper, stations, backpack);
@@ -60,7 +62,7 @@ public sealed class ModEntry : Mod
         vitals = new Vitals(Monitor);
         routes = new MobRoutes();
         fishing = new Fishing(helper);
-        mining = new Mining();
+        mining = new Mining(bridge);
         wallClimb = new WallClimb(bridge);
         houses = new Houses(Monitor);
         stories = new NpcStories(helper, Monitor, bridge);
@@ -79,6 +81,7 @@ public sealed class ModEntry : Mod
         villagers.Install(harmony, Monitor);
         wallClimb.Install(harmony, Monitor);
         stations.Install(harmony, Monitor);
+        caves.Install(harmony, Monitor);
         potLook.Install(harmony, Monitor);
         Portraits.Install(harmony, Monitor);
         body.Install(harmony);
@@ -109,6 +112,7 @@ public sealed class ModEntry : Mod
         bridge.CoinAck += ack => money.Ack(ack);
         bridge.Notice += notice => hud.Notice(notice.Text, new Color(notice.R, notice.G, notice.B));
         bridge.StationPlaced += placed => stations.OnStationPlaced(placed, bridge);
+        bridge.CaveChestsArrived += spawned => caves.OnSpawned(spawned);
         bridge.GiftTaken += taken => stories.OnGiftTaken(taken);
         bridge.Exploded += blast => explosions.OnExplosion(blast, Monitor);
         bridge.Recalled += recall => HomeRecall.OnRecall(recall, Monitor);
@@ -136,6 +140,7 @@ public sealed class ModEntry : Mod
         helper.Events.Content.AssetRequested += (_, e) => cast.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => stories.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => stations.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => caves.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => backpack.OnAssetRequested(e);
         helper.Events.World.ObjectListChanged += (_, e) => { if (Leading) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };

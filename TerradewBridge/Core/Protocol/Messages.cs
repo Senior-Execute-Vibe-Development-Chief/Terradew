@@ -36,6 +36,7 @@ public enum MsgType : byte
     Friendships = 25,
     PlaceTorch = 26,
     RemoveBuff = 27,
+    OpenCaveChest = 60,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -57,6 +58,7 @@ public enum MsgType : byte
     Explosion = 56,
     PlayerGlow = 57,
     DustFrame = 58,
+    CaveChests = 59,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -116,6 +118,8 @@ public abstract class Message
             MsgType.VillagerMoves => VillagerMoves.ReadFrom(r),
             MsgType.PlayerLook => PlayerLook.ReadFrom(r),
             MsgType.DustFrame => DustFrame.ReadFrom(r),
+            MsgType.CaveChests => CaveChests.ReadFrom(r),
+            MsgType.OpenCaveChest => OpenCaveChest.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
     }
@@ -774,6 +778,54 @@ public sealed class DustFrame : Message
             x.ReadSingle(), x.ReadSingle(), x.ReadUInt16(), x.ReadInt16(), x.ReadInt16(), x.ReadInt16(), x.ReadInt16(),
             x.ReadByte(), x.ReadByte(), x.ReadByte(), x.ReadByte(), x.ReadSingle(), x.ReadSingle()), MaxDusts),
     };
+}
+
+/// <summary>
+/// A chest on a Stardew mine floor: its tile on that floor's map, its CaveChestKind, and the Terraria item type whose sprite
+/// draws it.
+/// </summary>
+public readonly record struct CaveChest(int X, int Y, byte Kind, int ItemType);
+
+/// <summary>
+/// Terraria put chests on a mine floor the farmer just reached. Stardew places them on open tiles of the floor, as
+/// chests of the given kind (see CaveChestKind). Only sent for the floor the farmer is on, and Stardew drops it if they have left.
+/// </summary>
+public sealed class CaveChests : Message
+{
+    /// <summary>The Stardew place the floor is in, as Maps names it.</summary>
+    public string PlaceKey = "";
+    /// <summary>The Stardew mine level the chests belong to. Stardew places them only while the farmer is on that floor.</summary>
+    public int Floor;
+    public List<CaveChest> Chests = new();
+
+    public override MsgType Type => MsgType.CaveChests;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.Write(Floor);
+        w.WriteList(Chests, (x, c) => { x.Write(c.X); x.Write(c.Y); x.Write(c.Kind); x.Write(c.ItemType); });
+    }
+
+    public static CaveChests ReadFrom(BinaryReader r) => new()
+    {
+        PlaceKey = r.ReadString(),
+        Floor = r.ReadInt32(),
+        Chests = r.ReadList(x => new CaveChest(x.ReadInt32(), x.ReadInt32(), x.ReadByte(), x.ReadInt32()), 16),
+    };
+}
+
+/// <summary>The farmer opened a chest on a mine floor. Terraria rolls its loot and gives it to the farmer.</summary>
+public sealed class OpenCaveChest : Message
+{
+    /// <summary>The chest kind as CaveChestKind numbers it.</summary>
+    public byte Kind;
+
+    public override MsgType Type => MsgType.OpenCaveChest;
+
+    public override void Write(BinaryWriter w) => w.Write(Kind);
+
+    public static OpenCaveChest ReadFrom(BinaryReader r) => new() { Kind = r.ReadByte() };
 }
 
 /// <summary>

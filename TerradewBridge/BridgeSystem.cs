@@ -96,6 +96,7 @@ public sealed class BridgeSystem : ModSystem
         Stamp.Clear();
         Town.Clear();
         Invasions.Reset();
+        CaveLife.Reset();
         Celestial.Reset();
         WallOfFlesh.Reset();
     }
@@ -199,6 +200,7 @@ public sealed class BridgeSystem : ModSystem
         {
             Invasions.Watch(Stamp);
             Celestial.Watch(Stamp);
+            CaveLife.Tick(link, Stamp, player);
         }
         Inventory.Publish(link, player, worldTicks);
         if (Linked)
@@ -271,6 +273,9 @@ public sealed class BridgeSystem : ModSystem
             case Craft craft:
                 Crafting.Make(player, craft);
                 link!.Send(Crafting.List(player, craft.Near));
+                break;
+            case OpenCaveChest cave:
+                CaveLife.Open(player, cave);
                 break;
             case PlaceStation place:
                 link!.Send(new StationPlaced { Seq = place.Seq, ItemType = place.ItemType, Ok = Crafting.Take(player, place) });
