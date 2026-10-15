@@ -166,7 +166,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
   Party Girl and Truffle have no attack at all. Nobody dies: a beaten NPC faints, goes home hurt, and is back the
   next morning. During a boss, an invasion, a pumpkin or frost moon, an eclipse or a blood moon, heroes wait
   outside their front door and everyone else stays home, and each has a line about it. Attacks show their
-  Terraria frames, and the Dye Trader swings a scimitar.
+  Terraria frames, and the Dye Trader swings a scimitar. Off their schedule (running, chasing, heading back) they
+  find their way like the creatures do, around rocks, trees, furniture and blocks, never through them.
 - **You are your Terraria character.** While tModLoader runs, Terraria draws your player (hair, clothes, armor,
   vanity, wings, every dye and shader, and the item in use) and Stardew shows that picture in place of the farmer,
   walking and swinging with Terraria's own animations. It is seen side-on, facing left or right. Stardew-only

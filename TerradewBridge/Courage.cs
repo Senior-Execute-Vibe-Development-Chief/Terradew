@@ -73,24 +73,23 @@ public sealed class Courage : GlobalNPC
     }
 
     /// <summary>
-    /// Decides what a followed town NPC does about nearby enemies. True when it is chasing one, so this moved it;
-    /// otherwise it stays pinned to its villager and Stardew does the running.
+    /// Decides what a followed town NPC does about nearby enemies. It never moves the NPC: it stays pinned to its
+    /// villager, and Stardew walks the villager (chasing, running away) around whatever is in the way.
     /// </summary>
-    public static bool Steer(NPC npc)
+    public static void Steer(NPC npc)
     {
-        if (!BridgeSystem.Active || !npc.townNPC || !npc.TryGetGlobalNPC(out Courage self))
-            return false;
-        return self.Think(npc);
+        if (BridgeSystem.Active && npc.townNPC && npc.TryGetGlobalNPC(out Courage self))
+            self.Think(npc);
     }
 
-    private bool Think(NPC npc)
+    private void Think(NPC npc)
     {
         if (Knocked.Contains(npc.type))
         {
             mode = VillagerMode.KnockedOut;
             threat = answering = -1;
             npc.dontTakeDamage = true;
-            return false;
+            return;
         }
         BridgeSystem bridge = BridgeSystem.Instance;
         if (!bridge.Linked || !Followers.TrySpot(npc, out VillagerSpot spot, out WorldStamp.PlaceState place, out Vector2 home)
@@ -98,7 +97,7 @@ public sealed class Courage : GlobalNPC
         {
             mode = VillagerMode.Following;
             threat = answering = -1;
-            return false;
+            return;
         }
         if (cooldown > 0)
             cooldown--;
@@ -131,16 +130,15 @@ public sealed class Courage : GlobalNPC
                 {
                     answering = -1;
                     mode = VillagerMode.Following;
-                    return false;
+                    return;
                 }
                 mode = VillagerMode.Fighting;
-                Chase(npc, feet, Main.npc[target]);
-                return true;
+                return;
             }
             case Role.Guard:
                 threat = seen;
                 mode = seen >= 0 ? VillagerMode.Defending : VillagerMode.Following;
-                return false;
+                return;
             default:
                 if (seen >= 0)
                 {
@@ -158,23 +156,8 @@ public sealed class Courage : GlobalNPC
                     threat = -1;
                     mode = VillagerMode.Following;
                 }
-                return false;
+                return;
         }
-    }
-
-    /// <summary>A hero walks up to the enemy: close for a melee swing, a few tiles off for a shot or a spell.</summary>
-    private static void Chase(NPC npc, Vector2 feet, NPC target)
-    {
-        npc.noGravity = true;
-        npc.noTileCollide = true;
-        Vector2 goal = Feet(target);
-        float arrive = NPCID.Sets.AttackType[npc.type] == 3 ? 20f : 64f;
-        PlaneMotion.PlaneStep aim = PlaneMotion.Aim(feet.X, feet.Y, goal.X, goal.Y, 1.6f, arrive);
-        PlaneMotion.FeetBox box = PlaneMotion.Feet(npc.position.X, npc.position.Y, npc.width, npc.height);
-        Vector2 step = Collision.TileCollision(new Vector2(box.X, box.Y), new Vector2(aim.X, aim.Y), box.Width, box.Height);
-        Creatures.Show(npc, step);
-        npc.direction = goal.X < feet.X ? -1 : 1;
-        npc.spriteDirection = npc.direction;
     }
 
     /// <summary>The nearest hero close enough to reach the enemy comes running.</summary>

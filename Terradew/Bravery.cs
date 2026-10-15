@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Pathfinding;
 using Terradew.Core.Protocol;
 using Terradew.Core.Town;
 
@@ -18,7 +17,6 @@ internal sealed class Bravery
     private sealed class Brave
     {
         public VillagerMode Mode;
-        public bool Gliding;
         public Point Start;
         public int StartFacing = 2;
         public bool Returning;
@@ -30,16 +28,24 @@ internal sealed class Bravery
     private readonly Bridge bridge;
     private readonly NpcStories stories;
     private readonly IMonitor monitor;
+    private readonly Walker walker;
     private readonly Dictionary<string, Brave> states = new(StringComparer.Ordinal);
     private string danger = "";
     private bool loggedError;
     private long resetAtMs;
 
-    public Bravery(Bridge bridge, NpcStories stories, IMonitor monitor)
+    /// <summary>A hero stops this many tiles from the enemy: every hero fights with a gun, a bow, a throw or a spell.</summary>
+    private const int HeroReach = 3;
+
+    /// <summary>How fast a hero runs at an enemy, in pixels a tick (a villager walks at 2).</summary>
+    private const float ChargeSpeed = 4f;
+
+    public Bravery(Bridge bridge, NpcStories stories, IMonitor monitor, Maps maps)
     {
         this.bridge = bridge;
         this.stories = stories;
         this.monitor = monitor;
+        walker = new Walker(maps);
     }
 
     /// <summary>The villager a Terraria town NPC type plays, if anyone.</summary>
@@ -53,6 +59,7 @@ internal sealed class Bravery
     public void Reset()
     {
         states.Clear();
+        walker.Reset();
         danger = "";
         // Terraria may still be sending last night's knockouts until it hears the day has started.
         resetAtMs = Environment.TickCount64;
@@ -74,6 +81,7 @@ internal sealed class Bravery
             return;
         try
         {
+            walker.Update();
             VillagerMoves? moves = bridge.Moves;
             var byType = new Dictionary<int, VillagerMove>();
             if (moves != null)
@@ -114,7 +122,7 @@ internal sealed class Bravery
                 }
                 if (has)
                     During(v, state, move, resident, lines, heroFighting, ticks);
-                if (state.Returning && v.controller == null)
+                if (state.Returning && !walker.Busy(v))
                 {
                     // Back where trouble started: Stardew's schedule picks the day up again (unless danger is still on).
                     state.Returning = false;
@@ -142,6 +150,8 @@ internal sealed class Bravery
                 Save(v, state);
                 // Only this class moves them now: Stardew's schedule would keep re-issuing its own paths and fight the run.
                 v.followSchedule = false;
+                v.controller = null;
+                v.Halt();
                 state.Helped = false;
                 state.NextFlee = 0;
                 v.addedSpeed = 2f;
@@ -152,13 +162,13 @@ internal sealed class Bravery
             case VillagerMode.Fighting:
                 Save(v, state);
                 v.followSchedule = false;
-                v.controller = null;
+                walker.Stop(v);
                 v.Halt();
                 Shout(v, lines?.Courage.Battle);
                 break;
             case VillagerMode.KnockedOut:
                 state.Returning = false;
-                v.controller = null;
+                walker.Stop(v);
                 v.addedSpeed = 0f;
                 v.Halt();
                 v.followSchedule = false;
@@ -201,7 +211,7 @@ internal sealed class Bravery
         {
             case VillagerMode.Fleeing:
                 state.Helped |= heroFighting;
-                if (here && (ticks >= state.NextFlee || v.controller == null))
+                if (here && (ticks >= state.NextFlee || !walker.Busy(v)))
                 {
                     state.NextFlee = ticks + 60;
                     Flee(v, threat);
@@ -214,33 +224,32 @@ internal sealed class Bravery
                 }
                 break;
             case VillagerMode.Defending:
-                v.controller = null;
                 if (here)
                     TurnToward(v, threat - v.Position);
                 ShowFrame(v, move, resident);
                 break;
             case VillagerMode.Fighting:
-                v.controller = null;
                 if (!here)
                     break;
-                var target = new Vector2(move.TileX * 64f - 32f, move.TileY * 64f - 48f);
-                bool moved = Glide(v, target);
                 if (move.Frame >= 0)
                 {
-                    // An attack pose: the sheet already shows which way they face.
+                    // An attack pose: stand still, the sheet already shows which way they face.
+                    walker.Stop(v);
                     if (v.FacingDirection != move.Facing)
                         v.faceDirection(move.Facing);
                     ShowFrame(v, move, resident);
                 }
                 else
                 {
-                    TurnToward(v, target - v.Position);
-                    if (moved)
-                        v.animateInFacingDirection(Game1.currentGameTime);
-                    else if (state.Gliding)
-                        v.Halt();
+                    // Run at the enemy around whatever is in the way, and stop in reach. Terraria follows the villager.
+                    var enemy = new Point((int)MathF.Floor(move.ThreatX), (int)MathF.Floor(move.ThreatY - 0.5f));
+                    var center = v.GetBoundingBox().Center;
+                    var me = new Point(center.X / 64, center.Y / 64);
+                    if (Math.Max(Math.Abs(me.X - enemy.X), Math.Abs(me.Y - enemy.Y)) > HeroReach)
+                        walker.Go(v, enemy, HeroReach, ChargeSpeed);
+                    else if (!walker.Busy(v))
+                        TurnToward(v, threat - v.Position);
                 }
-                state.Gliding = moved;
                 if (ticks >= state.NextShout)
                 {
                     state.NextShout = ticks + 300;
@@ -249,13 +258,12 @@ internal sealed class Bravery
                 }
                 break;
             case VillagerMode.KnockedOut:
-                v.controller = null;
                 break;
         }
     }
 
     /// <summary>Runs to the first reachable tile well away from the enemy, trying straight away first.</summary>
-    private static void Flee(NPC v, Vector2 threat)
+    private void Flee(NPC v, Vector2 threat)
     {
         Point center = v.GetBoundingBox().Center;
         var me = new Vector2(center.X, center.Y);
@@ -272,51 +280,16 @@ internal sealed class Bravery
                 float cos = MathF.Cos(turn), sin = MathF.Sin(turn);
                 var dir = new Vector2(away.X * cos - away.Y * sin, away.X * sin + away.Y * cos);
                 Vector2 spot = me / 64f + dir * reach;
-                var tile = new Point((int)spot.X, (int)spot.Y);
-                if (tile.X < 0 || tile.Y < 0)
+                if (spot.X < 0 || spot.Y < 0 || walker.OpenNear(v, new Point((int)spot.X, (int)spot.Y), 2) is not Point tile)
                     continue;
-                var path = new PathFindController(v, v.currentLocation, tile, Facing(dir));
-                if (path.pathToEndPoint == null || path.pathToEndPoint.Count == 0)
-                    continue;
-                v.controller = path;
-                return;
+                if (walker.Go(v, tile, 0, 2f + v.addedSpeed, Facing(dir)))
+                    return;
             }
         }
     }
 
     private static int Facing(Vector2 dir)
         => Math.Abs(dir.X) > Math.Abs(dir.Y) ? (dir.X > 0 ? 1 : 3) : (dir.Y > 0 ? 2 : 0);
-
-    private const float TeleportDistance = 256f;
-
-    /// <summary>
-    /// Terraria reports a hero's spot only a few times a second, so ease toward it each tick rather than snapping.
-    /// Stardew's collision decides the way: a blocked step is tried one axis at a time, and dropped if both are blocked.
-    /// Returns true when they moved.
-    /// </summary>
-    private static bool Glide(NPC v, Vector2 target)
-    {
-        Vector2 delta = target - v.Position;
-        float distance = delta.Length();
-        if (distance < 0.5f)
-            return false;
-        // Far off (a long jump): cover it in one go. Otherwise ease in, at least at a walking pace.
-        float length = distance > TeleportDistance ? distance : MathF.Min(distance, MathF.Max(distance * 0.2f, 2.5f));
-        Vector2 step = delta / distance * length;
-        foreach (Vector2 part in new[] { step, new Vector2(step.X, 0f), new Vector2(0f, step.Y) })
-        {
-            if (part.LengthSquared() < 0.25f)
-                continue;
-            Rectangle box = v.GetBoundingBox();
-            box.X += (int)MathF.Round(part.X);
-            box.Y += (int)MathF.Round(part.Y);
-            if (v.currentLocation.isCollidingPosition(box, Game1.viewport, false, 0, false, v))
-                continue;
-            v.Position += part;
-            return true;
-        }
-        return false;
-    }
 
     /// <summary>Turns toward a spot, but only once it is clearly on another side: near a diagonal it would flip every tick.</summary>
     private static void TurnToward(NPC v, Vector2 toward)
@@ -351,11 +324,10 @@ internal sealed class Bravery
     }
 
     /// <summary>Walks back to where trouble started, then picks the schedule up again.</summary>
-    private static void GoBack(NPC v, Brave state)
+    private void GoBack(NPC v, Brave state)
     {
-        v.controller = v.TilePoint == state.Start ? null : new PathFindController(v, v.currentLocation, state.Start, state.StartFacing);
-        if (v.controller?.pathToEndPoint == null)
-            v.controller = null;
+        if (v.TilePoint != state.Start)
+            walker.Go(v, state.Start, 0, 2f, state.StartFacing);
         state.Returning = true;
     }
 
@@ -385,6 +357,7 @@ internal sealed class Bravery
             if (!started || (states.TryGetValue(villager, out Brave? state) && state.Mode == VillagerMode.KnockedOut))
                 continue;
             v.followSchedule = false;
+            walker.Stop(v);
             if (TownCourage.RoleOf(npc) == Role.Hero && Door(v) is (string outside, Point door))
                 Send(v, outside, door, 2);
             else
@@ -403,23 +376,17 @@ internal sealed class Bravery
             NPC? v = Game1.getCharacterFromName(villager);
             if (v?.currentLocation == null || (states.TryGetValue(villager, out Brave? state) && state.Mode == VillagerMode.KnockedOut))
                 continue;
+            walker.Stop(v);
             v.followSchedule = true;
             v.TryLoadSchedule();
         }
     }
 
     /// <summary>Walks there when it is on the same map, otherwise moves straight there off screen.</summary>
-    private static void Send(NPC v, string location, Point tile, int facing)
+    private void Send(NPC v, string location, Point tile, int facing)
     {
-        if (v.currentLocation.Name == location)
-        {
-            var path = new PathFindController(v, v.currentLocation, tile, facing);
-            if (path.pathToEndPoint != null && path.pathToEndPoint.Count > 0)
-            {
-                v.controller = path;
-                return;
-            }
-        }
+        if (v.currentLocation.Name == location && walker.Go(v, tile, 0, 2f, facing))
+            return;
         v.controller = null;
         Game1.warpCharacter(v, location, tile);
         v.faceDirection(facing);

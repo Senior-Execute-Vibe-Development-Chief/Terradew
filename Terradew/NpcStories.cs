@@ -145,7 +145,8 @@ internal sealed class NpcStories
         {
             // Villagers nobody plays leave cutscenes and festivals too.
             Game1.CurrentEvent?.actors.RemoveAll(actor => !Cast.Shown(actor));
-            if (ticks % 30 == 0)
+            // Often enough that a villager's Terraria self, which fights from where the villager stands, keeps up.
+            if (ticks % 10 == 0)
                 SendSpots();
             if (ticks % 600 == 0)
             {

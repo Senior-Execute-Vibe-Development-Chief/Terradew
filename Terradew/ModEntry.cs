@@ -65,7 +65,7 @@ public sealed class ModEntry : Mod
         stories = new NpcStories(helper, Monitor, bridge);
         cast = new Cast(helper, sprites, Monitor, stories.ContentOf);
         villagers = new Villagers(stories, backpack, hand);
-        bravery = new Bravery(bridge, stories, Monitor);
+        bravery = new Bravery(bridge, stories, Monitor, maps);
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper, backpack);

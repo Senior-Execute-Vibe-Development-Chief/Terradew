@@ -48,13 +48,7 @@ public sealed class Creatures : GlobalNPC
         if (WallOfFlesh.Owns(npc))
             return;
         Fit(npc);
-        if (Courage.Steer(npc))
-        {
-            away = false;
-            chasing = false;
-            plane = Vector2.Zero;
-            return;
-        }
+        Courage.Steer(npc);
         if (Followers.Hold(npc))
         {
             away = false;
