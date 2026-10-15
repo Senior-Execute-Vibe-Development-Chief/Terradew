@@ -91,7 +91,11 @@ public static class Gathering
             int style = Pots.StyleFor(biome, Main.rand.Next());
             try
             {
-                WorldGen.SpawnThingsFromPot(i, j, i, j - 1, style);
+                if (!SpawnPotLoot(i, j, style))
+                {
+                    Inventory.AddCoins(player, Main.rand.Next(20, 80));
+                    Inventory.ForceResend();
+                }
             }
             catch (Exception error)
             {
@@ -100,6 +104,29 @@ public static class Gathering
                 Inventory.ForceResend();
             }
         }
+    }
+
+    private static System.Reflection.MethodInfo? spawnFromPot;
+    private static bool spawnFromPotMissing;
+
+    /// <summary>
+    /// Terraria's own pot loot. The method is private in tModLoader, so it is found by name once. False when it
+    /// cannot be found or called the expected way.
+    /// </summary>
+    private static bool SpawnPotLoot(int i, int j, int style)
+    {
+        if (spawnFromPotMissing)
+            return false;
+        spawnFromPot ??= typeof(WorldGen).GetMethod("SpawnThingsFromPot",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+        if (spawnFromPot == null || spawnFromPot.GetParameters().Length != 5)
+        {
+            spawnFromPotMissing = true;
+            BridgeSystem.Instance.Mod.Logger.Warn("Terradew could not find Terraria's pot loot; pots give coins instead.");
+            return false;
+        }
+        spawnFromPot.Invoke(null, new object[] { i, j, i, j - 1, style });
+        return true;
     }
 
     /// <summary>The biome a Stardew place plays as, with hardmode's Hallow spread applied. Caves when the place is unknown.</summary>
