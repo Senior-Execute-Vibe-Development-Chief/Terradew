@@ -131,7 +131,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   where they always were. The full roster of vanilla town NPCs is in play, except Santa Claus.
   Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
   Once moved in, the NPC takes over that villager's life: it walks their schedule, looks like its Terraria self
-  with its Terraria name and its Terraria 1.4.5 detailed portrait at full resolution (or, on older Terraria content, a portrait cut from its sprite), and says its own lines (written in `Terradew/assets/npcs`) for each day,
+  with its Terraria name, its current Terraria look (party hat, shimmer, a town pet's breed), and its Terraria 1.4.5 detailed portrait at full resolution (or, on older Terraria content, a portrait cut from its sprite), and says its own lines (written in `Terradew/assets/npcs`) for each day,
   heart level, season, rain, festival, and the big things that happen in the Terraria world (a boss falls, a blood
   moon, a goblin army). Friendship, gifts and heart events (2 to 10 hearts) work as in Stardew; Stardew items
   and Terraria items can both be given, and each NPC has its own loved and hated ones. Some heart events give a

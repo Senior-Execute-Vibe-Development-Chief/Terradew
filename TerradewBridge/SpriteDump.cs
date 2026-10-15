@@ -23,6 +23,8 @@ internal static class SpriteDump
     private static readonly HashSet<int> npcDone = new();
     private static readonly HashSet<int> npcHeadDone = new();
     private static readonly HashSet<int> npcPortraitDone = new();
+    private static readonly HashSet<int> lookDone = new();
+    private static readonly Dictionary<Asset<Texture2D>, string> lookNames = new();
     private static readonly HashSet<int> projectileDone = new();
     private static readonly HashSet<int> itemDone = new();
     private static readonly HashSet<int> buffDone = new();
@@ -65,6 +67,32 @@ internal static class SpriteDump
         if (headIndex < 0 || !npcHeadDone.Add(headIndex))
             return;
         ExportNpcHead(headIndex);
+    }
+
+    /// <summary>
+    /// Exports the sheet a town NPC is drawn with right now and returns its file name, or "" for an NPC without a
+    /// town profile. Terraria swaps a town NPC's texture by its profile (party hat, shimmer, a pet's breed), and the
+    /// plain NPC_ sheet is not always the art the game shows: the Princess's is not hers.
+    /// </summary>
+    public static string Look(NPC npc)
+    {
+        if (!TownNPCProfiles.Instance.GetProfile(npc, out ITownNPCProfile profile))
+            return "";
+        Asset<Texture2D>? asset = profile.GetTextureNPCShouldUse(npc);
+        if (asset == null || string.IsNullOrEmpty(asset.Name))
+            return "";
+        if (!lookNames.TryGetValue(asset, out string? file))
+        {
+            file = SpriteNames.Look(asset.Name);
+            lookNames[asset] = file;
+        }
+        int key = file.GetHashCode();
+        if (lookDone.Add(key))
+        {
+            string? error = Sheet(file, asset.Name, () => { asset.Wait?.Invoke(); return asset; });
+            Failed(lookDone, key, file, error);
+        }
+        return file;
     }
 
     /// <summary>

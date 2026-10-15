@@ -489,6 +489,7 @@ public sealed class WorldStamp
                     Alpha = (byte)Math.Clamp(projectile.alpha, 0, 255),
                     Scale = projectile.scale,
                     Hostile = projectile.hostile,
+                    Color = projectile.GetAlpha(Microsoft.Xna.Framework.Color.White).PackedValue,
                 });
                 SpriteDump.Projectile(projectile.type);
             }
@@ -562,6 +563,10 @@ public sealed class WorldStamp
             Scale = npc.scale <= 0f ? 1f : npc.scale,
             Alpha = (byte)Math.Clamp(npc.alpha, 0, 255),
             Name = name,
+            // As Terraria draws it in full light: GetAlpha for the body, then GetColor for the tinted pass of coloured NPCs like slimes.
+            Color = npc.GetAlpha(Microsoft.Xna.Framework.Color.White).PackedValue,
+            Tint = npc.color == default ? 0u : npc.GetColor(Microsoft.Xna.Framework.Color.White).PackedValue,
+            Look = npc.townNPC || NPCID.Sets.ActsLikeTownNPC[npc.type] ? SpriteDump.Look(npc) : "",
         };
     }
 }

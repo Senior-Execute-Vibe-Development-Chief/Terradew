@@ -113,7 +113,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 12;
+    public const int CurrentProtocol = 13;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -832,6 +832,12 @@ public struct EntityState
     public float Scale;
     public byte Alpha;
     public string Name;
+    /// <summary>Packed colour Terraria draws the sprite with (NPC.GetAlpha in full light). 0 means plain, faded by <see cref="Alpha"/>.</summary>
+    public uint Color;
+    /// <summary>Packed colour of the second, tinted pass Terraria draws over NPCs with a colour, such as slimes. 0 when there is none.</summary>
+    public uint Tint;
+    /// <summary>The exported sheet a town NPC currently wears (its profile texture), or empty for the plain NPC sheet.</summary>
+    public string Look;
 
     public bool Has(EntityFlags flag) => (Flags & flag) == flag;
 
@@ -855,6 +861,9 @@ public struct EntityState
         w.Write(Wire.Finite(Scale));
         w.Write(Alpha);
         w.Write(Name ?? "");
+        w.Write(Color);
+        w.Write(Tint);
+        w.Write(Look ?? "");
     }
 
     public static EntityState ReadFrom(BinaryReader r) => new()
@@ -877,6 +886,9 @@ public struct EntityState
         Scale = r.ReadSingle(),
         Alpha = r.ReadByte(),
         Name = r.ReadString(),
+        Color = r.ReadUInt32(),
+        Tint = r.ReadUInt32(),
+        Look = r.ReadString(),
     };
 }
 
@@ -894,6 +906,8 @@ public struct ProjectileState
     public byte Alpha;
     public float Scale;
     public bool Hostile;
+    /// <summary>Packed colour Terraria draws it with (Projectile.GetAlpha in full light). 0 means plain, faded by <see cref="Alpha"/>.</summary>
+    public uint Color;
 
     public void Write(BinaryWriter w)
     {
@@ -908,6 +922,7 @@ public struct ProjectileState
         w.Write(Alpha);
         w.Write(Wire.Finite(Scale));
         w.Write(Hostile);
+        w.Write(Color);
     }
 
     public static ProjectileState ReadFrom(BinaryReader r) => new()
@@ -923,6 +938,7 @@ public struct ProjectileState
         Alpha = r.ReadByte(),
         Scale = r.ReadSingle(),
         Hostile = r.ReadBoolean(),
+        Color = r.ReadUInt32(),
     };
 }
 
@@ -1332,7 +1348,7 @@ public sealed class PlayerDied : Message
 /// A town NPC in the Terraria world. FrameCount and ExtraFrames describe its body sheet (SpriteNames.Npc):
 /// frame 0 stands, frames 2 up to FrameCount - ExtraFrames walk.
 /// </summary>
-public readonly record struct TownResident(int NpcType, string Name, string HomePlaceKey, int HeadIndex, int FrameCount = 0, int ExtraFrames = 0);
+public readonly record struct TownResident(int NpcType, string Name, string HomePlaceKey, int HeadIndex, int FrameCount = 0, int ExtraFrames = 0, string Look = "");
 
 /// <summary>Progress Stardew needs to know about: hardmode, bosses beaten, who lives where.</summary>
 public sealed class WorldFacts : Message
@@ -1357,7 +1373,7 @@ public sealed class WorldFacts : Message
         w.Write(DownedSkeletron);
         w.Write(DownedQueenBee);
         w.Write(DownedWall);
-        w.WriteList(Residents, (x, e) => { x.Write(e.NpcType); x.Write(e.Name); x.Write(e.HomePlaceKey); x.Write(e.HeadIndex); x.Write(e.FrameCount); x.Write(e.ExtraFrames); });
+        w.WriteList(Residents, (x, e) => { x.Write(e.NpcType); x.Write(e.Name); x.Write(e.HomePlaceKey); x.Write(e.HeadIndex); x.Write(e.FrameCount); x.Write(e.ExtraFrames); x.Write(e.Look ?? ""); });
         w.WriteList(Happenings, (x, h) => x.Write(h));
     }
 
@@ -1369,7 +1385,7 @@ public sealed class WorldFacts : Message
         DownedSkeletron = r.ReadBoolean(),
         DownedQueenBee = r.ReadBoolean(),
         DownedWall = r.ReadBoolean(),
-        Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString(), x.ReadInt32(), x.ReadInt32(), x.ReadInt32()), 200),
+        Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString(), x.ReadInt32(), x.ReadInt32(), x.ReadInt32(), x.ReadString()), 200),
         Happenings = r.ReadList(x => x.ReadString(), 64),
     };
 }

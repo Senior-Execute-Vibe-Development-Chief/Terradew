@@ -156,13 +156,15 @@ internal sealed class Draw
 
     private void DrawEntity(SpriteBatch b, EntityState entity, float x, float y, bool sorted, WallFight? wall)
     {
-        Texture2D? sheet = sprites.Load(SpriteNames.Npc(entity.NpcType));
+        Texture2D? sheet = sprites.Load(SpriteNames.NpcSheet(entity.NpcType, entity.Look)) ?? sprites.Load(SpriteNames.Npc(entity.NpcType));
         // Vanilla draws the Moon Lord core as one large body texture with no NPC sprite. Draw nothing rather than a square.
         if (sheet == null && entity.NpcType == MoonLordCoreType)
             return;
-        float alpha = (255 - entity.Alpha) / 255f;
-        if (entity.Has(EntityFlags.Buried))
-            alpha *= 0.45f;
+        // Terraria's own colour for the body (see-through slimes and ghosts, glowing things), then the tint pass for coloured NPCs.
+        Color body = entity.Color != 0 ? new Color { PackedValue = entity.Color } : Color.White * ((255 - entity.Alpha) / 255f);
+        Color tint = new() { PackedValue = entity.Tint };
+        float fade = entity.Has(EntityFlags.Buried) ? 0.45f : 1f;
+        float alpha = Math.Max(body.A, tint.A) / 255f * fade;
         if (alpha <= 0.02f)
             return;
 
@@ -202,7 +204,10 @@ internal sealed class Draw
             Vector2 origin = centred
                 ? new Vector2(frame.Width / 2f, frame.Height / 2f)
                 : new Vector2(frame.Width / 2f, frame.Height);
-            b.Draw(sheet, local, frame, Color.White * alpha, rotation, origin, scale, effects, depth);
+            if (body.A > 0)
+                b.Draw(sheet, local, frame, body * fade, rotation, origin, scale, effects, depth);
+            if (tint.A > 0)
+                b.Draw(sheet, local, frame, tint * fade, rotation, origin, scale, effects, depth + 0.00001f);
         }
         else
         {
@@ -259,11 +264,11 @@ internal sealed class Draw
         int height = Math.Max(1, sheet.Height / frames);
         int frame = Math.Clamp((int)projectile.Frame, 0, frames - 1);
         var source = new Rectangle(0, frame * height, sheet.Width, height);
-        float alpha = (255 - projectile.Alpha) / 255f;
+        Color color = projectile.Color != 0 ? new Color { PackedValue = projectile.Color } : Color.White * ((255 - projectile.Alpha) / 255f);
         var effects = projectile.Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         var position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y));
         float scale = SpriteLayout.DrawScale * (projectile.Scale <= 0f ? 1f : projectile.Scale);
-        b.Draw(sheet, position, source, Color.White * alpha, projectile.Rotation, new Vector2(source.Width / 2f, source.Height / 2f), scale, effects, Depth(y, sorted, 32f));
+        b.Draw(sheet, position, source, color, projectile.Rotation, new Vector2(source.Width / 2f, source.Height / 2f), scale, effects, Depth(y, sorted, 32f));
     }
 
     private void DrawDrop(SpriteBatch b, DropState drop, float x, float y, bool sorted)

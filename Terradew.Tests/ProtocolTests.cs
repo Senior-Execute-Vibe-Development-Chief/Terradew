@@ -38,13 +38,14 @@ internal static class ProtocolTests
             T.Assert(layoutCopy.Version == 4 && layoutCopy.WaterTiles == 12 && layoutCopy.Spawns, "layout fields");
 
             var state = new WorldState { Tick = 5, PlaceKey = "Town", RegionX = 400, RegionY = 300, Life = 80, LifeMax = 100 };
-            state.Entities.Add(new EntityState { Id = 4, NpcType = 1, X = 1f, Y = 2f, Width = 32, Height = 24, Flags = EntityFlags.Hostile | EntityFlags.Chasing, Name = "Grün Slime", Scale = 1f });
-            state.Projectiles.Add(new ProjectileState { Id = 1, ProjType = 14, X = 5f, Y = 6f, FrameCount = 1, Hostile = true });
+            state.Entities.Add(new EntityState { Id = 4, NpcType = 1, X = 1f, Y = 2f, Width = 32, Height = 24, Flags = EntityFlags.Hostile | EntityFlags.Chasing, Name = "Grün Slime", Scale = 1f, Color = 0x50505050, Tint = 0x5000FF00, Look = "look-images_townnpcs_princess_default.png" });
+            state.Projectiles.Add(new ProjectileState { Id = 1, ProjType = 14, X = 5f, Y = 6f, FrameCount = 1, Hostile = true, Color = 0xFFFFFFFF });
             state.Drops.Add(new DropState(2, 71, 30, 7f, 8f));
             state.Buffs.Add(new BuffState(1, 600));
             var stateCopy = (WorldState)Roundtrip(state);
             T.Assert(stateCopy.Entities[0].Name == "Grün Slime" && stateCopy.Entities[0].Has(EntityFlags.Chasing), "entity");
             T.Assert(stateCopy.Projectiles[0].ProjType == 14 && stateCopy.Drops[0].Stack == 30 && stateCopy.Buffs[0].Time == 600, "lists");
+            T.Assert(stateCopy.Entities[0].Color == 0x50505050 && stateCopy.Entities[0].Tint == 0x5000FF00 && stateCopy.Entities[0].Look == "look-images_townnpcs_princess_default.png" && stateCopy.Projectiles[0].Color == 0xFFFFFFFF, "draw colours and look");
             T.Assert(stateCopy.RegionX == 400 && stateCopy.Life == 80, "state fields");
 
             var inventory = new InventoryState { Coins = 123456, HeadSlot = 2, Male = false, WingsSlot = 7, ShieldSlot = 8, BackSlot = 9, FrontSlot = 10, ShoeSlot = 11 };
@@ -80,9 +81,12 @@ internal static class ProtocolTests
             T.Assert(((ShopStock)Roundtrip(shop)).Entries[0].Price == 50, "shop");
 
             var facts = new WorldFacts { DownedEye = true };
-            facts.Residents.Add(new TownResident(22, "Andrew", "TerrariaHouse1", 7));
+            facts.Residents.Add(new TownResident(22, "Andrew", "TerrariaHouse1", 7, 25, 9, "look-images_townnpcs_guide_default.png"));
             T.Assert(((WorldFacts)Roundtrip(facts)).Residents[0].HomePlaceKey == "TerrariaHouse1", "facts");
             T.Assert(((WorldFacts)Roundtrip(facts)).Residents[0].HeadIndex == 7, "facts head index");
+            T.Assert(((WorldFacts)Roundtrip(facts)).Residents[0].Look == "look-images_townnpcs_guide_default.png", "facts look");
+            T.Assert(SpriteNames.Look("Images/TownNPCs/Princess_Default") == "look-images_townnpcs_princess_default.png", "look file name");
+            T.Assert(SpriteNames.NpcSheet(663, "../evil.png") == SpriteNames.Npc(663) && SpriteNames.NpcSheet(663, "") == SpriteNames.Npc(663), "look falls back to the plain sheet");
 
             var homes = new Homes();
             homes.Entries.Add(new HomeEntry("Nurse", "Hospital", 3, 4));

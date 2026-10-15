@@ -80,13 +80,17 @@ internal sealed class Cast
         }
         // The sprite sheet may land on disk after the facts, so whether it is there is part of what changed.
         string now = string.Join(";", next.OrderBy(p => p.Key).Select(p =>
-            $"{p.Key}={p.Value.NpcType},{p.Value.Name},{p.Value.HeadIndex},{p.Value.FrameCount},{sprites.Load(SpriteNames.Npc(p.Value.NpcType)) != null},{sprites.Load(SpriteNames.NpcHead(p.Value.HeadIndex)) != null}"));
+            $"{p.Key}={p.Value.NpcType},{p.Value.Name},{p.Value.HeadIndex},{p.Value.FrameCount},{p.Value.Look},{Sheet(p.Value) != null},{sprites.Load(SpriteNames.NpcPortrait(p.Value.NpcType)) != null},{sprites.Load(SpriteNames.NpcHead(p.Value.HeadIndex)) != null}"));
         if (now == signature)
             return;
         signature = now;
         playing = next;
         Refresh();
     }
+
+    /// <summary>The sheet a resident is drawn from: its current Terraria look, or the plain NPC sheet until that is on disk.</summary>
+    private Texture2D? Sheet(TownResident resident)
+        => sprites.Load(SpriteNames.NpcSheet(resident.NpcType, resident.Look)) ?? sprites.Load(SpriteNames.Npc(resident.NpcType));
 
     private void Refresh()
     {
@@ -130,7 +134,7 @@ internal sealed class Cast
             TownResident resident = pair.Value;
             if (e.NameWithoutLocale.IsEquivalentTo($"Characters/{villager}"))
             {
-                Texture2D? sheet = sprites.Load(SpriteNames.Npc(resident.NpcType));
+                Texture2D? sheet = Sheet(resident);
                 if (sheet != null)
                     e.LoadFrom(() => Walker(sheet, resident), AssetLoadPriority.High);
                 return;
@@ -144,7 +148,7 @@ internal sealed class Cast
                     e.LoadFrom(() => Portraits.Build(detailed), AssetLoadPriority.High);
                     return;
                 }
-                Texture2D? sheet = sprites.Load(SpriteNames.Npc(resident.NpcType));
+                Texture2D? sheet = Sheet(resident);
                 if (sheet != null)
                     e.LoadFrom(() => Portrait(sheet, resident), AssetLoadPriority.High);
                 return;
