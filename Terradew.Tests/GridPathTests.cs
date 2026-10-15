@@ -85,10 +85,74 @@ public static class GridPathTests
             T.Assert(path != null && path.Count == 0, "empty list");
         });
 
+        failed += T.Check("back-to-back calls on different map sizes match fresh results", () =>
+        {
+            // A 60x60 map with a wall at x=30 and a gap at y=50, then a small 8x8 map, then big again.
+            // Stale scratch state from an earlier call would show up as a different path or a wrong null.
+            Func<int, int, bool> bigWall = (x, y) => x == 30 && y != 50;
+            Func<int, int, bool> smallWall = (x, y) => x == 4 && y <= 5;
+
+            var bigFrom = new Tile(0, 0);
+            var bigGoal = new Tile(59, 0);
+            IReadOnlyList<Tile> big1 = Require(GridPath.Find(60, 60, bigWall, bigFrom, bigGoal));
+            AssertSamePath("big map, first call", big1, Require(FindOnFreshThread(60, 60, bigWall, bigFrom, bigGoal)));
+            T.Assert(Expand(bigFrom, big1).Exists(t => t.X == 30 && t.Y == 50), "big route passes the gap at y=50");
+
+            var smallFrom = new Tile(0, 0);
+            var smallGoal = new Tile(7, 0);
+            IReadOnlyList<Tile>? small = GridPath.Find(8, 8, smallWall, smallFrom, smallGoal);
+            AssertSamePath("small map after big", small, FindOnFreshThread(8, 8, smallWall, smallFrom, smallGoal));
+            T.Assert(small != null && small.Count > 0 && small[small.Count - 1] == smallGoal, "small route ends at its goal");
+
+            var midFrom = new Tile(5, 5);
+            var midGoal = new Tile(55, 20);
+            IReadOnlyList<Tile>? mid = GridPath.Find(60, 60, bigWall, midFrom, midGoal);
+            AssertSamePath("big map, different query", mid, FindOnFreshThread(60, 60, bigWall, midFrom, midGoal));
+
+            IReadOnlyList<Tile>? big2 = GridPath.Find(60, 60, bigWall, bigFrom, bigGoal);
+            AssertSamePath("big map again", big2, FindOnFreshThread(60, 60, bigWall, bigFrom, bigGoal));
+            AssertSamePath("big map repeats its first result", big2, big1);
+        });
+
         return failed;
     }
 
     private static IReadOnlyList<Tile> Require(IReadOnlyList<Tile>? path) => path ?? throw new Exception("expected a path, got null");
+
+    /// <summary>Runs the search on a new thread, which starts with empty thread-static scratch, so the result is what a fresh call gives.</summary>
+    private static IReadOnlyList<Tile>? FindOnFreshThread(int width, int height, Func<int, int, bool> blocked, Tile from, Tile to)
+    {
+        IReadOnlyList<Tile>? result = null;
+        Exception? error = null;
+        var worker = new System.Threading.Thread(() =>
+        {
+            try
+            {
+                result = GridPath.Find(width, height, blocked, from, to);
+            }
+            catch (Exception e)
+            {
+                error = e;
+            }
+        });
+        worker.Start();
+        worker.Join();
+        if (error != null)
+            throw new Exception("fresh-thread search failed", error);
+        return result;
+    }
+
+    private static void AssertSamePath(string label, IReadOnlyList<Tile>? actual, IReadOnlyList<Tile>? expected)
+    {
+        if (actual == null || expected == null)
+        {
+            T.Assert(actual == null && expected == null, label + ": one result is null and the other is not");
+            return;
+        }
+        T.Assert(actual.Count == expected.Count, label + ": path length " + actual.Count + " vs " + expected.Count);
+        for (int i = 0; i < actual.Count; i++)
+            T.Assert(actual[i] == expected[i], label + ": tile " + i + " is " + actual[i] + " vs " + expected[i]);
+    }
 
     /// <summary>Expands a simplified path into every tile it walks through, checking each segment is a straight 8-direction line.</summary>
     private static List<Tile> Expand(Tile from, IReadOnlyList<Tile> path)

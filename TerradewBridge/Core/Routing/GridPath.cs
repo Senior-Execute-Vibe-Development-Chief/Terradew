@@ -9,6 +9,16 @@ public static class GridPath
     private const int StraightCost = 10;
     private const int DiagonalCost = 14;
 
+    // Scratch state reused across calls on the same thread. A cell's gScore and parent are only valid when
+    // stamps[i] == generation; a cell is closed when closedStamps[i] == generation. Bumping the generation
+    // therefore resets every cell without clearing the arrays.
+    [ThreadStatic] private static int[]? gScores;
+    [ThreadStatic] private static int[]? parents;
+    [ThreadStatic] private static int[]? stamps;
+    [ThreadStatic] private static int[]? closedStamps;
+    [ThreadStatic] private static int generation;
+    [ThreadStatic] private static PriorityQueue<int, int>? open;
+
     /// <summary>
     /// Finds a path from <paramref name="from"/> to <paramref name="to"/>. Returns the tiles after <paramref name="from"/>,
     /// ending at <paramref name="to"/>, with straight runs collapsed to their turning points. Returns an empty list when
@@ -25,26 +35,41 @@ public static class GridPath
             return null;
 
         int count = width * height;
-        var gScore = new int[count];
-        var cameFrom = new int[count];
-        var closed = new bool[count];
-        for (int i = 0; i < count; i++)
+        if (gScores == null || gScores.Length < count)
         {
-            gScore[i] = int.MaxValue;
-            cameFrom[i] = -1;
+            gScores = new int[count];
+            parents = new int[count];
+            stamps = new int[count];
+            closedStamps = new int[count];
         }
+
+        if (generation == int.MaxValue)
+        {
+            Array.Clear(stamps);
+            Array.Clear(closedStamps);
+            generation = 0;
+        }
+        int gen = ++generation;
+
+        int[] g = gScores!;
+        int[] cameFrom = parents!;
+        int[] stamp = stamps!;
+        int[] closedStamp = closedStamps!;
+        PriorityQueue<int, int> queue = open ??= new PriorityQueue<int, int>();
+        queue.Clear();
 
         int start = Index(from);
         int goal = Index(to);
-        gScore[start] = 0;
+        stamp[start] = gen;
+        g[start] = 0;
+        cameFrom[start] = -1;
 
-        var open = new PriorityQueue<int, int>();
-        open.Enqueue(start, Octile(from.X, from.Y, to));
+        queue.Enqueue(start, Octile(from.X, from.Y, to));
 
         int expanded = 0;
-        while (open.TryDequeue(out int current, out _))
+        while (queue.TryDequeue(out int current, out _))
         {
-            if (closed[current])
+            if (closedStamp[current] == gen)
                 continue;
             if (current == goal)
             {
@@ -55,7 +80,7 @@ public static class GridPath
                 return null;
 
             expanded++;
-            closed[current] = true;
+            closedStamp[current] = gen;
             int cx = current % width;
             int cy = current / width;
 
@@ -72,20 +97,22 @@ public static class GridPath
                         continue;
 
                     int next = ny * width + nx;
-                    if (closed[next] || !IsOpen(nx, ny))
+                    if (closedStamp[next] == gen || !IsOpen(nx, ny))
                         continue;
 
                     bool diagonal = dx != 0 && dy != 0;
                     if (diagonal && (!IsOpen(cx + dx, cy) || !IsOpen(cx, cy + dy)))
                         continue;
 
-                    int tentative = gScore[current] + (diagonal ? DiagonalCost : StraightCost);
-                    if (tentative >= gScore[next])
+                    int tentative = g[current] + (diagonal ? DiagonalCost : StraightCost);
+                    int known = stamp[next] == gen ? g[next] : int.MaxValue;
+                    if (tentative >= known)
                         continue;
 
-                    gScore[next] = tentative;
+                    stamp[next] = gen;
+                    g[next] = tentative;
                     cameFrom[next] = current;
-                    open.Enqueue(next, tentative + Octile(nx, ny, to));
+                    queue.Enqueue(next, tentative + Octile(nx, ny, to));
                 }
             }
         }
@@ -109,7 +136,7 @@ public static class GridPath
         return StraightCost * Math.Max(dx, dy) + (DiagonalCost - StraightCost) * Math.Min(dx, dy);
     }
 
-    /// <summary>Walks cameFrom back from the goal, returning every tile after the start.</summary>
+    /// <summary>Walks cameFrom back from the goal, returning every tile after the start. Only cells on the chain are read, and each was written this generation.</summary>
     private static List<Tile> Rebuild(int[] cameFrom, int start, int goal, int width)
     {
         var tiles = new List<Tile>();
