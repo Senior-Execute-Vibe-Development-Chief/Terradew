@@ -163,6 +163,9 @@ public sealed class Puppet : ModPlayer
             NPC npc = Main.npc[i];
             if (!npc.active || npc.friendly || npc.dontTakeDamage || npc.townNPC || npc.immune[Player.whoAmI] > 0)
                 continue;
+            // Buried worm segments are drawn underground, so the swing passes over them.
+            if (Creatures.IsBuried(npc))
+                continue;
             if (struckThisSwing.Contains(i) || !area.Intersects(npc.position.X, npc.position.Y, npc.width, npc.height))
                 continue;
             struckThisSwing.Add(i);
@@ -202,8 +205,9 @@ public sealed class Puppet : ModPlayer
         return new Rectangle(feetX - SpriteLayout.FarmerWidth / 2, feetY - SpriteLayout.FarmerHeight, SpriteLayout.FarmerWidth, SpriteLayout.FarmerHeight);
     }
 
+    /// <summary>A buried worm segment is underground, so it cannot touch the farmer.</summary>
     public override bool CanBeHitByNPC(NPC npc, ref int cooldownSlot)
-        => !BridgeSystem.Active || npc.Hitbox.Intersects(FarmerBody());
+        => !BridgeSystem.Active || (!Creatures.IsBuried(npc) && npc.Hitbox.Intersects(FarmerBody()));
 
     public override bool CanBeHitByProjectile(Projectile proj)
         => !BridgeSystem.Active || proj.Colliding(proj.Hitbox, FarmerBody());

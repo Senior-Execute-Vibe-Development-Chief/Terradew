@@ -34,6 +34,13 @@ public sealed class Creatures : GlobalNPC
 
     public static bool IsChasing(NPC npc) => npc.TryGetGlobalNPC(out Creatures self) && self.chasing;
 
+    /// <summary>
+    /// A worm segment inside a solid block is underground: Stardew draws it faded, and it neither takes
+    /// the farmer's melee swings nor touches the farmer.
+    /// </summary>
+    public static bool IsBuried(NPC npc)
+        => npc.aiStyle == NPCAIStyleID.Worm && Collision.SolidCollision(npc.position, npc.width, npc.height);
+
     public override void PostAI(NPC npc)
     {
         if (!BridgeSystem.Active || !npc.active || npc.life <= 0)
@@ -171,6 +178,14 @@ public sealed class Creatures : GlobalNPC
         (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, npc.width, npc.height);
         npc.position = new Vector2(x, y);
     }
+
+    /// <summary>The farmer's own swings pass over buried worm segments, as they are drawn faded underground.</summary>
+    public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
+        => BridgeSystem.Active && player.whoAmI == Main.myPlayer && IsBuried(npc) ? false : null;
+
+    /// <summary>The farmer's own shots pass over buried worm segments, as they are drawn faded underground.</summary>
+    public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
+        => BridgeSystem.Active && projectile.owner == Main.myPlayer && IsBuried(npc) ? false : null;
 
     /// <summary>Creatures left in another Stardew place wait there instead of despawning.</summary>
     public override bool CheckActive(NPC npc) => !(BridgeSystem.Active && away);

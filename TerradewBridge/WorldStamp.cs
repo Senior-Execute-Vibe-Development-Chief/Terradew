@@ -476,7 +476,7 @@ public sealed class WorldStamp
         if (worm)
         {
             flags |= EntityFlags.Worm;
-            if (Collision.SolidCollision(npc.position, npc.width, npc.height))
+            if (Creatures.IsBuried(npc))
                 flags |= EntityFlags.Buried;
         }
         if (Creatures.IsFlyer(npc))
