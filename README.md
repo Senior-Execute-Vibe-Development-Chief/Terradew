@@ -40,7 +40,9 @@ Decisions that shape play:
 
 - **Money is Terraria coins.** Stardew's money counter shows your coins, where one gold is one silver coin.
   Shipping crops pays coins; Pierre's seeds cost coins.
-- **Health is Terraria's.** Your life, mana, defense and buffs are shown at the top left. Stardew food heals you.
+- **Health is Terraria's.** Your life and mana are bars at the bottom right, where Stardew's energy bar was.
+  Defense and buffs are shown at the top left. Energy is gone: tools are free, and the day still ends at 2am.
+  Food heals Terraria life, restores a little mana, and gives Well Fed.
   Dying loses half your coins and wakes you at the Nurse's house, or at home if no Nurse lives on the farm.
 - **Only Terraria weapons fight.** Stardew weapons melt into coins when you pick them up, and Stardew's own
   monsters are gone. Farming tools stay Stardew's.

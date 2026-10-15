@@ -39,12 +39,22 @@ internal sealed class Vitals
             player.health = player.maxHealth;
         lastHealth = player.health;
 
+        // Energy is gone: the cap stays at the base, so Stardrops and friends do not grow the vanilla bar,
+        // and it is refilled every tick so tools never tire you and exhaustion never sets in.
+        if (bridge.Linked)
+        {
+            player.maxStamina.Value = 270;
+            player.Stamina = player.MaxStamina;
+            player.exhausted.Value = false;
+        }
+
         if (player.isEating && !wasEating && player.itemToEat is StardewValley.Object food)
         {
             int life = Math.Max(0, food.healthRecoveredOnConsumption());
             int mana = Math.Max(0, food.staminaRecoveredOnConsumption() / 4);
-            if (life > 0 || mana > 0)
-                bridge.Send(new Heal { Life = life, Mana = mana });
+            int wellFed = food.Edibility > 0 ? Math.Clamp(food.Edibility * 6, 0, 3600) : 0;
+            if (life > 0 || mana > 0 || wellFed > 0)
+                bridge.Send(new Heal { Life = life, Mana = mana, WellFedSeconds = wellFed });
         }
         wasEating = player.isEating;
 

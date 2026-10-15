@@ -54,15 +54,16 @@ internal sealed class Hud
             return;
         }
 
+        // Life and mana sit where Stardew's health and energy bars are, so the vanilla bars never show.
+        Rectangle safe = Utility.getSafeArea();
+        int barTop = safe.Bottom - 240;
+        int manaX = safe.Right - 48 - 8;
+        int lifeX = manaX - 56;
+        DrawBar(b, lifeX, barTop, world.Life, world.LifeMax, new Color(220, 40, 60), $"Life {world.Life}/{world.LifeMax}");
+        DrawBar(b, manaX, barTop, world.Mana, world.ManaMax, new Color(60, 110, 240), world.ManaMax > 0 ? $"Mana {world.Mana}/{world.ManaMax}" : null);
+
         int x = 16;
         int y = 16;
-        DrawBar(b, x, y, 260, 22, world.Life, world.LifeMax, new Color(220, 40, 60), $"Life {world.Life}/{world.LifeMax}");
-        y += 28;
-        if (world.ManaMax > 0)
-        {
-            DrawBar(b, x, y, 200, 16, world.Mana, world.ManaMax, new Color(60, 110, 240), $"Mana {world.Mana}/{world.ManaMax}");
-            y += 22;
-        }
         b.DrawString(Game1.smallFont, $"Defense {world.Defense}", new Vector2(x, y), Color.White);
         y += 32;
         y = DrawBuffs(b, world, x, y);
@@ -70,12 +71,18 @@ internal sealed class Hud
         DrawHotbar(b);
     }
 
-    private static void DrawBar(SpriteBatch b, int x, int y, int width, int height, int value, int max, Color fill, string label)
+    /// <summary>A Stardew-style vertical bar: an opaque frame over the vanilla bar, filled from the bottom. Hover names the value.</summary>
+    private static void DrawBar(SpriteBatch b, int x, int top, int value, int max, Color fill, string? label)
     {
+        Rectangle frame = new(x, top, 48, 240);
         float part = max <= 0 ? 0f : Math.Clamp(value / (float)max, 0f, 1f);
-        b.Draw(Game1.staminaRect, new Rectangle(x - 2, y - 2, width + 4, height + 4), Color.Black * 0.6f);
-        b.Draw(Game1.staminaRect, new Rectangle(x, y, (int)(width * part), height), fill);
-        b.DrawString(Game1.smallFont, label, new Vector2(x + 6, y + height / 2f - 14f), Color.White, 0f, Vector2.Zero, 0.85f, SpriteEffects.None, 1f);
+        b.Draw(Game1.staminaRect, frame, new Color(30, 24, 28));
+        Rectangle inner = new(x + 6, top + 6, 36, 228);
+        int height = (int)(inner.Height * part);
+        if (height > 0)
+            b.Draw(Game1.staminaRect, new Rectangle(inner.X, inner.Bottom - height, inner.Width, height), fill);
+        if (label != null && frame.Contains(Game1.getMouseX(), Game1.getMouseY()))
+            IClickableMenu.drawHoverText(b, label, Game1.smallFont);
     }
 
     private int DrawBuffs(SpriteBatch b, WorldState world, int x, int y)
