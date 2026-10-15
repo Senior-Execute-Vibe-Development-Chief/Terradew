@@ -7,6 +7,7 @@ using Terradew.Core;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace TerradewBridge;
 
@@ -225,7 +226,9 @@ internal static class SpriteDump
         Texture2D? texture = null;
         try
         {
-            texture = Main.Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad).Value;
+            // Asking for a missing asset makes tModLoader show an error, even when the failure is caught.
+            if (VanillaHas(path))
+                texture = Main.Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad).Value;
         }
         catch (Exception)
         {
@@ -379,9 +382,12 @@ internal static class SpriteDump
     {
         try
         {
-            Texture2D texture = Main.Assets.Request<Texture2D>(assetPath, AssetRequestMode.ImmediateLoad).Value;
-            if (texture != null && texture.Width > 1 && texture.Height > 1)
-                return texture;
+            if (VanillaHas(assetPath))
+            {
+                Texture2D texture = Main.Assets.Request<Texture2D>(assetPath, AssetRequestMode.ImmediateLoad).Value;
+                if (texture != null && texture.Width > 1 && texture.Height > 1)
+                    return texture;
+            }
         }
         catch (Exception)
         {
@@ -395,6 +401,22 @@ internal static class SpriteDump
         catch (Exception)
         {
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Whether Terraria's own content holds this asset. Requesting one that is missing (a modded path, or art from a
+    /// newer Terraria than tModLoader runs) pops up a tModLoader error even when the exception is caught.
+    /// </summary>
+    private static bool VanillaHas(string assetPath)
+    {
+        try
+        {
+            return ModContent.HasAsset("Terraria/" + assetPath);
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 
