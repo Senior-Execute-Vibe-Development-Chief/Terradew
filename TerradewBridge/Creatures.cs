@@ -25,6 +25,10 @@ public sealed class Creatures : GlobalNPC
     private int patience;
     private int stagger;
     private bool chasing;
+    private bool away;
+    private Vector2 plane;
+    private int fitWidth = -1;
+    private int fitHeight = -1;
 
     public static bool IsFlyer(NPC npc) => npc.TryGetGlobalNPC(out Creatures self) && self.ready && self.flyer;
 
@@ -34,6 +38,7 @@ public sealed class Creatures : GlobalNPC
     {
         if (!BridgeSystem.Active || !npc.active || npc.life <= 0)
             return;
+        Fit(npc);
         bool worm = npc.aiStyle == NPCAIStyleID.Worm;
         if (!ready || seenType != npc.type)
         {
@@ -48,10 +53,12 @@ public sealed class Creatures : GlobalNPC
         BridgeSystem bridge = BridgeSystem.Instance;
         WorldStamp.PlaceState? place = bridge.Linked ? bridge.Stamp.Current : null;
         bool here = place != null && place.ContainsWorld(npc.Center);
-        if (!here && !npc.boss)
+        away = !here && !npc.boss;
+        if (away)
         {
             // Creatures stay where the farmer left them.
             chasing = false;
+            plane = Vector2.Zero;
             npc.velocity = Vector2.Zero;
             return;
         }
@@ -67,12 +74,15 @@ public sealed class Creatures : GlobalNPC
         npc.noTileCollide = true;
 
         if (npc.justHit)
+        {
             stagger = 12;
+            plane = npc.velocity;
+        }
         if (stagger > 0)
         {
             stagger--;
-            npc.velocity *= 0.85f;
-            Collide(npc, npc.velocity);
+            plane *= 0.85f;
+            Collide(npc, plane);
             return;
         }
 
@@ -94,6 +104,7 @@ public sealed class Creatures : GlobalNPC
             bool there = Vector2.Distance(feet, goal) <= arrive;
             if (there || patience <= 0)
             {
+                plane = Vector2.Zero;
                 npc.velocity = Vector2.Zero;
                 if (pace > 0 && patience > 0)
                 {
@@ -115,11 +126,48 @@ public sealed class Creatures : GlobalNPC
         }
     }
 
-    private static void Collide(NPC npc, Vector2 step)
+    private void Collide(NPC npc, Vector2 step)
     {
         PlaneMotion.FeetBox box = PlaneMotion.Feet(npc.position.X, npc.position.Y, npc.width, npc.height);
-        npc.velocity = Collision.TileCollision(new Vector2(box.X, box.Y), step, box.Width, box.Height);
+        plane = Collision.TileCollision(new Vector2(box.X, box.Y), step, box.Width, box.Height);
+        Show(npc, plane);
     }
+
+    /// <summary>
+    /// Terraria animates walkers only while they move sideways on the ground, so a creature walking north
+    /// would freeze on one frame. The speed goes into velocity.X, as if walking along the ground, and the
+    /// rest of the step moves the body directly.
+    /// </summary>
+    private static void Show(NPC npc, Vector2 step)
+    {
+        float speed = step.Length();
+        if (speed < 0.01f)
+        {
+            npc.velocity = Vector2.Zero;
+            return;
+        }
+        int facing = MathF.Abs(step.X) > 0.05f ? MathF.Sign(step.X) : npc.direction == 0 ? 1 : npc.direction;
+        float shown = facing * speed;
+        npc.position += new Vector2(step.X - shown, step.Y);
+        npc.velocity = new Vector2(shown, 0f);
+    }
+
+    /// <summary>Shrinks the hitbox to the drawn size, keeping the feet in place. Runs again if Terraria resizes the body.</summary>
+    private void Fit(NPC npc)
+    {
+        if (npc.width == fitWidth && npc.height == fitHeight)
+            return;
+        Vector2 feet = new(npc.position.X + npc.width / 2f, npc.position.Y + npc.height);
+        npc.width = SpriteLayout.Shrink(npc.width);
+        npc.height = SpriteLayout.Shrink(npc.height);
+        fitWidth = npc.width;
+        fitHeight = npc.height;
+        (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, npc.width, npc.height);
+        npc.position = new Vector2(x, y);
+    }
+
+    /// <summary>Creatures left in another Stardew place wait there instead of despawning.</summary>
+    public override bool CheckActive(NPC npc) => !(BridgeSystem.Active && away);
 
     private void PickWander(NPC npc, Vector2 feet, WorldStamp.PlaceState? place)
     {

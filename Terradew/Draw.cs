@@ -117,7 +117,7 @@ internal sealed class Draw
         if (alpha <= 0.02f)
             return;
         float scale = SpriteLayout.DrawScale * (entity.Scale <= 0f ? 1f : entity.Scale);
-        float bodyHeight = Math.Max(4, (int)entity.Height) * SpriteLayout.DrawScale;
+        float bodyHeight = Math.Max(2, (int)entity.Height) * WorldProjection.Scale;
         bool airborne = entity.Has(EntityFlags.Flyer) || entity.Has(EntityFlags.Worm) || Math.Abs(entity.Rotation) > 0.01f;
 
         if (!entity.Has(EntityFlags.Flyer))

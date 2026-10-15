@@ -50,6 +50,14 @@ public sealed class WorldStamp
     private readonly HashSet<string> unplaced = new();
     private WorldLayout? layout;
     private string lastPlace = "";
+    private Vector2 lastFeet;
+    private readonly List<int> followers = new();
+
+    /// <summary>Chasers this close to the farmer when the farmer leaves a place come along.</summary>
+    private const int FollowTiles = 8;
+
+    /// <summary>Ticks after arriving before followers come through, a little after the farmer's own grace.</summary>
+    private const int FollowDelay = 50;
 
     public PlaceState? Current { get; private set; }
 
@@ -64,6 +72,7 @@ public sealed class WorldStamp
         layout = null;
         Current = null;
         lastPlace = "";
+        followers.Clear();
     }
 
     public void Load(string saved, WorldShape shape)
@@ -198,6 +207,74 @@ public sealed class WorldStamp
         }
     }
 
+    private void GatherFollowers(PlaceState left)
+    {
+        for (int i = 0; i < Main.maxNPCs; i++)
+        {
+            NPC npc = Main.npc[i];
+            if (npc.active && !npc.boss && !npc.townNPC && Creatures.IsChasing(npc) && left.ContainsWorld(npc.Center)
+                && Vector2.Distance(npc.Bottom, lastFeet) <= FollowTiles * 16f)
+                followers.Add(i);
+        }
+    }
+
+    /// <summary>Chasers come through the door behind the farmer, but never into houses and other places without spawns.</summary>
+    private void BringFollowers(PlaceState place, Player player)
+    {
+        if (place.Layout == null || !place.Layout.Spawns)
+        {
+            followers.Clear();
+            return;
+        }
+        Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
+        foreach (int i in followers)
+        {
+            NPC npc = Main.npc[i];
+            if (!npc.active || place.ContainsWorld(npc.Center) || !TryOpenNear(place, farmer, 2, 5, out Vector2 feet))
+                continue;
+            (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, npc.width, npc.height);
+            npc.position = new Vector2(x, y);
+            npc.velocity = Vector2.Zero;
+            npc.netUpdate = true;
+        }
+        followers.Clear();
+    }
+
+    /// <summary>An open tile between <paramref name="minTiles"/> and <paramref name="maxTiles"/> from a point, nearest first.</summary>
+    private static bool TryOpenNear(PlaceState place, Vector2 from, int minTiles, int maxTiles, out Vector2 feet)
+    {
+        feet = default;
+        int cx = (int)(from.X / 16f);
+        int cy = (int)(from.Y / 16f);
+        for (int ring = minTiles; ring <= maxTiles; ring++)
+        {
+            int start = Main.rand.Next(8 * ring);
+            for (int n = 0; n < 8 * ring; n++)
+            {
+                (int dx, int dy) = RingPoint(ring, (start + n) % (8 * ring));
+                if (!place.IsOpen(cx + dx, cy + dy))
+                    continue;
+                feet = new Vector2((cx + dx) * 16f + 8f, (cy + dy + 1) * 16f - 2f);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>The n-th tile on the square ring at distance r, going around.</summary>
+    private static (int, int) RingPoint(int r, int n)
+    {
+        int side = n / (2 * r);
+        int along = n % (2 * r) - r;
+        return side switch
+        {
+            0 => (along, -r),
+            1 => (r, along),
+            2 => (-along, r),
+            _ => (-r, -along),
+        };
+    }
+
     /// <summary>A random open tile in the current map at least <paramref name="minTiles"/> from the farmer, as feet in world pixels.</summary>
     public bool TryOpenSpot(Vector2 farmerFeet, int minTiles, int maxTiles, out Vector2 feet)
     {
@@ -233,8 +310,12 @@ public sealed class WorldStamp
             place = found;
         if (pulse.PlaceKey != lastPlace)
         {
+            followers.Clear();
             if (places.TryGetValue(lastPlace, out PlaceState? left))
+            {
                 left.StampedThisVisit = false;
+                GatherFollowers(left);
+            }
             lastPlace = pulse.PlaceKey;
             TicksInPlace = 0;
         }
@@ -243,6 +324,9 @@ public sealed class WorldStamp
             TicksInPlace++;
         }
         Current = place;
+        if (place != null && TicksInPlace == FollowDelay)
+            BringFollowers(place, player);
+        lastFeet = new Vector2(player.position.X + player.width / 2f, player.position.Y + player.height);
 
         var state = new WorldState
         {

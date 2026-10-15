@@ -41,11 +41,12 @@ internal static class SpriteTests
 
         failed += T.Check("hitboxes stand on the feet at the map scale", () =>
         {
-            var slime = new EntityState { Width = 32, Height = 24 };
+            var slime = new EntityState { Width = (short)SpriteLayout.Shrink(32), Height = (short)SpriteLayout.Shrink(24) };
             SpriteBox box = SpriteLayout.Hitbox(100f, 200f, slime);
-            T.Assert(box.Width == 128f && box.Height == 96f, "four stardew pixels per terraria pixel");
-            T.Assert(box.X == 36f && box.Y == 104f, "feet at the bottom center");
-            T.Assert(box.Contains(100f, 150f) && !box.Contains(100f, 201f), "contains");
+            T.Assert(box.Width == 64f && box.Height == 48f, "shrunk hitbox, four stardew pixels per terraria pixel");
+            T.Assert(box.Width == 32 * SpriteLayout.DrawScale && box.Height == 24 * SpriteLayout.DrawScale, "matches the drawn sprite");
+            T.Assert(box.X == 68f && box.Y == 152f, "feet at the bottom center");
+            T.Assert(box.Contains(100f, 170f) && !box.Contains(100f, 201f), "contains");
         });
 
         failed += T.Check("map and world coordinates invert", () =>

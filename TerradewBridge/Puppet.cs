@@ -146,7 +146,7 @@ public sealed class Puppet : ModPlayer
         lastAnimation = Player.itemAnimation;
 
         Vector2 aim = place.ToWorld(pulse.AimX, pulse.AimY);
-        float reach = (item.width + item.height) / 2f * Player.GetAdjustedItemScale(item) * 1.25f;
+        float reach = (item.width + item.height) / 2f * Player.GetAdjustedItemScale(item) * 1.25f * SpriteLayout.BodyScale;
         MeleeArc.Area area = MeleeArc.Swing(Player.Center.X, Player.Center.Y, aim.X, aim.Y, reach);
         int damage = Player.GetWeaponDamage(item);
         float knockback = Player.GetWeaponKnockback(item, item.knockBack);
@@ -188,6 +188,20 @@ public sealed class Puppet : ModPlayer
         return false;
     }
 
+    /// <summary>Terraria's player body is bigger than the farmer; only hits on the farmer's own body count.</summary>
+    private Rectangle FarmerBody()
+    {
+        int feetX = (int)(Player.position.X + Player.width / 2f);
+        int feetY = (int)(Player.position.Y + Player.height);
+        return new Rectangle(feetX - SpriteLayout.FarmerWidth / 2, feetY - SpriteLayout.FarmerHeight, SpriteLayout.FarmerWidth, SpriteLayout.FarmerHeight);
+    }
+
+    public override bool CanBeHitByNPC(NPC npc, ref int cooldownSlot)
+        => !BridgeSystem.Active || npc.Hitbox.Intersects(FarmerBody());
+
+    public override bool CanBeHitByProjectile(Projectile proj)
+        => !BridgeSystem.Active || proj.Colliding(proj.Hitbox, FarmerBody());
+
     public static void HurtFromStardew(Player player, int amount)
     {
         if (amount <= 0 || player.immune)
@@ -226,6 +240,8 @@ public sealed class Flight : GlobalProjectile
     public override bool InstancePerEntity => true;
 
     private Vector2 before;
+    private int fitWidth = -1;
+    private int fitHeight = -1;
 
     public override bool PreAI(Projectile projectile)
     {
@@ -237,6 +253,16 @@ public sealed class Flight : GlobalProjectile
     {
         if (!BridgeSystem.Active)
             return;
+        if (projectile.width != fitWidth || projectile.height != fitHeight)
+        {
+            // Hitboxes shrink to the drawn size, like creatures.
+            Vector2 center = projectile.Center;
+            projectile.width = SpriteLayout.Shrink(projectile.width);
+            projectile.height = SpriteLayout.Shrink(projectile.height);
+            fitWidth = projectile.width;
+            fitHeight = projectile.height;
+            projectile.Center = center;
+        }
         // aiStyle 1 is arrows and bullets, 2 is thrown knives and shuriken.
         bool falls = projectile.aiStyle == 1 || projectile.aiStyle == 2;
         if (!falls)

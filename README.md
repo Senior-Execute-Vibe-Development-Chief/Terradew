@@ -44,8 +44,11 @@ Decisions that shape play:
   Dying loses half your coins and wakes you at the Nurse's house, or at home if no Nurse lives on the farm.
 - **Only Terraria weapons fight.** Stardew weapons melt into coins when you pick them up, and Stardew's own
   monsters are gone. Farming tools stay Stardew's.
-- **Creatures are drawn at true scale** (one Terraria pixel is four Stardew pixels), because Terraria decides
-  every hit with its own hitboxes and the picture has to match them.
+- **Creatures are drawn at Stardew's size** (one Terraria sprite pixel is two Stardew pixels). Terraria shrinks every
+  creature and projectile hitbox to half, and only hits on the farmer's own body count, so hits match the picture.
+- **Creatures that are chasing you follow you** through a door or warp if they are close behind, but never into
+  houses and other places without spawns. Creatures you leave behind wait where they were while Terraria runs;
+  hostile creatures are not kept when Terraria closes.
 
 ## Setup
 
