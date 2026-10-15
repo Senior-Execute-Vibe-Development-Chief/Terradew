@@ -133,7 +133,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 20;
+    public const int CurrentProtocol = 21;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";

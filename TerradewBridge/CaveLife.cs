@@ -34,7 +34,7 @@ public static class CaveLife
             return;
         ticksToSpawn = CaveRules.SpawnEvery;
         if (Main.rand.NextDouble() < CaveRules.SpawnChance)
-            Spawn(stamp, place);
+            Spawn(stamp, place, player);
     }
 
     /// <summary>Forgets what was sent, when the world is cleared or the bridge restarts.</summary>
@@ -44,14 +44,13 @@ public static class CaveLife
         ticksToSpawn = CaveRules.SpawnEvery;
     }
 
-    private static void Spawn(WorldStamp stamp, WorldStamp.PlaceState place)
+    private static void Spawn(WorldStamp stamp, WorldStamp.PlaceState place, Player player)
     {
         Biome biome = BiomeNow(place);
         string[] names = CaveRules.SpawnsFor(biome, (Band)place.Layout!.Band);
         if (names.Length == 0 || CountHostile(place) >= CaveRules.SpawnCap)
             return;
-        // The farmer's last-known feet, from the bridge's puppet. The spawn lands on an open tile away from them.
-        Player player = Main.LocalPlayer;
+        // An open tile of the floor, 11 to 45 tiles from the farmer, so nothing appears on top of them.
         if (!stamp.TryOpenSpot(Puppet.FeetOf(player), 11, 45, out Vector2 feet))
             return;
         string name = names[Main.rand.Next(names.Length)];
