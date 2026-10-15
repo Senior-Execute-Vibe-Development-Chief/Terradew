@@ -171,7 +171,10 @@ internal static class BackpackGuards
         return false;
     }
 
-    /// <summary>The player's backpack shows all 50 slots by default. Chests, shops and other menus keep their 12x3 view.</summary>
+    /// <summary>
+    /// Vanilla menus over the player's backpack keep their 12x3 view of its first 36 slots. Terradew's inventory tab
+    /// and menus draw all 50 themselves.
+    /// </summary>
     private static void InventoryMenuConstructorPrefix(IList<Item>? actualInventory, ref int capacity)
     {
         if (capacity != -1)

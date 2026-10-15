@@ -110,13 +110,16 @@ saving, which is usually what you want while testing.
 | `1`–`0`, mouse wheel | Choose a hotbar slot; whatever is in it (a Stardew tool or a Terraria weapon) is what you use |
 | Use tool button | Use the selected item: a Stardew tool as usual, or a Terraria item aimed at the cursor |
 | `I` | Backpack, Terraria equipment and crafting |
-| Right-click a Terraria townsperson | Talk, shop, or get healed by the Nurse |
+| Right-click a Terraria townsperson | Talk, shop, or get healed by the Nurse, in Stardew's dialogue box |
 
 Keys can be changed in `Mods/Terradew/config.json`.
 
 - **One shared backpack:** 50 slots, 10 to a row, Terraria-style; Stardew and Terraria items sit side by side and the
-  first row is the toolbar. Stardew's own menus (chests, shops, the shipping bin) show the first 36 slots; Terraria
-  items can only be moved in the `I` menu.
+  first row is the toolbar. Stardew's inventory tab (`E`) shows all 50 with the coin and ammo slots. Terraria armor
+  goes in the hat, shirt and pants slots, vanity in the ring and boot slots, and accessories in the bottom right.
+  The portrait is your Terraria character. Click an item to pick it up and click a slot to put it down;
+  right-click to equip, take off or use. Stardew's other menus (chests, shops, the shipping bin) show the first 36
+  slots, and Terraria items move only in the inventory tab or the `I` menu.
 - **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, select the
   hotbar slot it is in and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station
@@ -135,7 +138,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   heart level, season, rain, festival, and the big things that happen in the Terraria world (a boss falls, a blood
   moon, a goblin army). Friendship, gifts and heart events (2 to 10 hearts) work as in Stardew; Stardew items
   and Terraria items can both be given, and each NPC has its own loved and hated ones. Some heart events give a
-  Terraria item. Talk to an NPC a second time on the same day to open its Terraria chat (shop, healing). Each
+  Terraria item. Talk to an NPC a second time on the same day for its shop or healing, offered in Stardew's dialogue box. Each
   heart takes 2% off its shop prices, up to 20%. The Stylist, Painter, Clothier, Golfer, Pirate, Nurse and Truffle
   can be dated and married, with a 14-heart event after the wedding. Villagers with no Terraria NPC (Abigail,
   Caroline, George, Jas, Jodi, Maru, Penny, Sam, Shane, Vincent) are gone, as is any villager whose NPC has not

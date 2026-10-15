@@ -33,6 +33,9 @@ internal sealed class TerrariaBody
     /// <summary>Whether the Terraria character stands in for the farmer this frame. Armor and held items are then part of it.</summary>
     public static bool Showing => instance?.showing ?? false;
 
+    /// <summary>The latest picture of the Terraria character, or null when none has arrived.</summary>
+    public static Texture2D? Picture => instance is { showing: true, shown: not null } body ? body.texture : null;
+
     public void Install(Harmony harmony)
     {
         try

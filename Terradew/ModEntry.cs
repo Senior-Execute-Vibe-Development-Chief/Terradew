@@ -80,6 +80,7 @@ public sealed class ModEntry : Mod
         body.Install(harmony);
         new Clock().Install(harmony, Monitor);
         BackpackGuards.Install(harmony, Monitor, backpack, sprites);
+        InventoryTab.Install(harmony, Monitor, bridge, backpack, sprites);
 
         bridge.Connected += OnConnected;
         bridge.Chat += chat =>
