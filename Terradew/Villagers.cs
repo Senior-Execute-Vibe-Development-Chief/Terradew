@@ -190,11 +190,11 @@ internal sealed class Villagers
                         continue;
                     foreach (ShopOwnerData owner in shop.Owners)
                     {
-                        // The owner keeps its name, which is how the shop finds the villager. Only the lines go.
+                        // The owner keeps its name, which is how the shop finds the villager. Only the lines go; the portrait is swapped for the resident's when the menu opens.
                         if (TownHomes.NpcOf(owner.Name) == null)
                             continue;
-                        owner.Dialogues = null;
-                        owner.Portrait = null;
+                        // An empty list silences the owner; leaving it unset shows a generic greeting.
+                        owner.Dialogues = new();
                     }
                 }
             }
