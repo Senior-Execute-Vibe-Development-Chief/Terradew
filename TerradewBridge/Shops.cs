@@ -41,6 +41,9 @@ public static class Shops
         }
         bool hasShop = TryShop(npc, out _);
         bool nurse = npc.type == NPCID.Nurse;
+        int head = npc.townNPC ? Terraria.GameContent.TownNPCProfiles.GetHeadIndexSafe(npc) : -1;
+        // The portrait must be on disk by the time Stardew opens the chat.
+        SpriteDump.NpcHead(head);
         link.Send(new NpcChat
         {
             NpcId = npc.whoAmI,
@@ -50,7 +53,7 @@ public static class Shops
             HasShop = hasShop,
             IsNurse = nurse,
             HealCost = nurse ? HealCost(player) : 0,
-            HeadIndex = npc.townNPC ? Terraria.GameContent.TownNPCProfiles.GetHeadIndexSafe(npc) : -1,
+            HeadIndex = head,
         });
         if (hasShop)
             link.Send(Stock(npc));

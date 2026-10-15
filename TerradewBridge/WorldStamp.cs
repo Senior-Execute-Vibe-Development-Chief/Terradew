@@ -71,6 +71,7 @@ public sealed class WorldStamp
         places.Clear();
         routes.Clear();
         unplaced.Clear();
+        typeNames.Clear();
         layout = null;
         Current = null;
         lastPlace = "";

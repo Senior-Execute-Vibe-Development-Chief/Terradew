@@ -143,7 +143,7 @@ public sealed class WallOfFlesh : GlobalNPC
     {
         NPC? mouth = FindMouth();
         WorldStamp.PlaceState? place = null;
-        bool fight = BridgeSystem.Active && mouth != null && TryFight(stamp, out place) && place != null;
+        bool fight = BridgeSystem.Active && BridgeSystem.Instance.Linked && mouth != null && TryFight(stamp, out place) && place != null;
 
         if (!fight)
         {
