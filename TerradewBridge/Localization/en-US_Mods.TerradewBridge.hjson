@@ -1,1 +1,6 @@
-
+Items: {
+	StardewSlot: {
+		DisplayName: Stardew Item
+		Tooltip: Your Stardew farmer holds an item in this slot.
+	}
+}

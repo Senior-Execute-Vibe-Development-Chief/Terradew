@@ -217,7 +217,8 @@ public sealed class BridgeSystem : ModSystem
                     break;
                 }
                 Inventory.ResumeCoins(hello.CoinSeq);
-                Inventory.ForceResend();
+                Inventory.ResetAckSeq();
+                Inventory.ClearBlockers(player);
                 SpriteDump.Pots();
                 if (worldFarmId.Length == 0)
                     worldFarmId = hello.FarmId;
@@ -246,6 +247,9 @@ public sealed class BridgeSystem : ModSystem
                 break;
             case InventoryAction action:
                 Inventory.Act(player, action);
+                break;
+            case SlotMask mask:
+                Inventory.ApplyMask(player, mask);
                 break;
             case Gathered gathered:
                 Gathering.Receive(player, gathered);
@@ -287,6 +291,8 @@ public sealed class BridgeSystem : ModSystem
                     player.statMana = Math.Min(player.statManaMax2, player.statMana + heal.Mana);
                     player.ManaEffect(heal.Mana);
                 }
+                if (heal.WellFedSeconds > 0)
+                    player.AddBuff(BuffID.WellFed, heal.WellFedSeconds * 60);
                 break;
             case SaveWorld save:
                 if (WrongFarm)

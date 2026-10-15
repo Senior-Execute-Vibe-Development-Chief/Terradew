@@ -145,7 +145,7 @@ public static class Shops
         if (sell.Slot < 0 || sell.Slot >= 50)
             return;
         Item item = player.inventory[sell.Slot];
-        if (item.IsAir || item.IsACoin || item.favorited)
+        if (item.IsAir || item.IsACoin || item.favorited || StardewSlot.Is(item))
             return;
         long value = (long)(item.value / 5) * item.stack;
         string name = item.Name;

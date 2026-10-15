@@ -5,6 +5,7 @@ using Terradew.Core.Protocol;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace TerradewBridge;
 
@@ -18,6 +19,9 @@ public static class Inventory
     private static int lastSent = -10_000;
     private static int lastCoinSeq;
 
+    /// <summary>The last <see cref="InventoryAction.Seq"/> applied, echoed back in every <see cref="InventoryState"/>.</summary>
+    private static int lastAckSeq;
+
     /// <summary>Ticks to hold the use button for an item used from the menu.</summary>
     public static int PendingUse;
 
@@ -29,6 +33,62 @@ public static class Inventory
 
     /// <summary>Stardew said hello: carry on from the last coin change it saw confirmed.</summary>
     public static void ResumeCoins(int seq) => lastCoinSeq = Math.Max(lastCoinSeq, seq);
+
+    /// <summary>Stardew said hello on a new link, so its action counter starts again.</summary>
+    public static void ResetAckSeq()
+    {
+        lastAckSeq = 0;
+        ForceResend();
+    }
+
+    /// <summary>
+    /// Stardew owns the slots its mask names, so its blockers from an earlier link are dropped. Stardew sends the
+    /// mask right after hello, and <see cref="ApplyMask"/> puts back the ones it still holds.
+    /// </summary>
+    public static void ClearBlockers(Player player)
+    {
+        bool changed = false;
+        for (int i = 0; i < SlotMask.Slots && i < player.inventory.Length; i++)
+        {
+            if (StardewSlot.Is(player.inventory[i]))
+            {
+                player.inventory[i].TurnToAir();
+                changed = true;
+            }
+        }
+        if (changed)
+            ForceResend();
+    }
+
+    /// <summary>
+    /// Puts a blocker in each main slot Stardew holds and takes away blockers from slots it no longer holds. A slot
+    /// holding a real Terraria item is left alone: Stardew moves its own item away when it sees the conflict.
+    /// </summary>
+    public static void ApplyMask(Player player, SlotMask mask)
+    {
+        bool changed = false;
+        for (int i = 0; i < SlotMask.Slots && i < player.inventory.Length; i++)
+        {
+            if (mask.Has(i) && player.inventory[i].IsAir)
+            {
+                player.inventory[i] = new Item(ModContent.ItemType<StardewSlot>());
+                changed = true;
+            }
+            else if (!mask.Has(i) && StardewSlot.Is(player.inventory[i]))
+            {
+                player.inventory[i].TurnToAir();
+                changed = true;
+            }
+        }
+        // A blocker on the mouse must not be dropped or placed, so it goes.
+        if (StardewSlot.Is(Main.mouseItem))
+        {
+            Main.mouseItem.TurnToAir();
+            changed = true;
+        }
+        if (changed)
+            ForceResend();
+    }
 
     public static long Coins(Player player)
     {
@@ -46,6 +106,7 @@ public static class Inventory
         var state = new InventoryState
         {
             Coins = Coins(player),
+            AckSeq = lastAckSeq,
             HeadSlot = player.head,
             BodySlot = player.body,
             LegSlot = player.legs,
@@ -108,7 +169,8 @@ public static class Inventory
 
     public static ItemStack Describe(Item? item)
     {
-        if (item == null || item.IsAir)
+        // A blocker is no Terraria item, so Stardew sees the slot as empty.
+        if (item == null || item.IsAir || StardewSlot.Is(item))
             return new ItemStack { Name = "" };
         SpriteDump.Item(item.type);
         return new ItemStack
@@ -156,7 +218,7 @@ public static class Inventory
 
     private static long Hash(Player player)
     {
-        long hash = 17;
+        long hash = unchecked(17 + lastAckSeq * 7919L);
         foreach (Item item in player.inventory)
             hash = unchecked(hash * 31 + item.type * 7919L + item.stack * 31L + item.prefix);
         foreach (Item item in player.armor)
@@ -258,13 +320,16 @@ public static class Inventory
 
     public static void Act(Player player, InventoryAction action)
     {
+        lastAckSeq = Math.Max(lastAckSeq, action.Seq);
         switch (action.Kind)
         {
             case InventoryKind.Swap:
             {
                 ref Item a = ref Slot(player, action.A, out bool okA);
                 ref Item b = ref Slot(player, action.B, out bool okB);
-                if (okA && okB && action.A != action.B)
+                // Blockers move only between main slots; anywhere else they would leak into coin, ammo or equipment slots.
+                bool mainOnly = IsMain(action.A) && IsMain(action.B);
+                if (okA && okB && action.A != action.B && (mainOnly || (!StardewSlot.Is(a) && !StardewSlot.Is(b))))
                 {
                     if (!a.IsAir && !b.IsAir && a.type == b.type && b.stack < b.maxStack)
                     {
@@ -287,7 +352,7 @@ public static class Inventory
             case InventoryKind.Unequip:
             {
                 ref Item worn = ref Slot(player, action.A, out bool ok);
-                if (!ok || worn.IsAir || action.A < InventoryAction.EquipmentBase)
+                if (!ok || worn.IsAir || StardewSlot.Is(worn) || action.A < InventoryAction.EquipmentBase)
                     break;
                 for (int i = 0; i < 50; i++)
                 {
@@ -302,7 +367,7 @@ public static class Inventory
             case InventoryKind.Trash:
             {
                 ref Item doomed = ref Slot(player, action.A, out bool ok);
-                if (ok && !doomed.favorited)
+                if (ok && !doomed.favorited && !StardewSlot.Is(doomed))
                     doomed.TurnToAir();
                 break;
             }
@@ -313,12 +378,14 @@ public static class Inventory
         ForceResend();
     }
 
+    private static bool IsMain(int slot) => slot >= 0 && slot < SlotMask.Slots;
+
     public static void Equip(Player player, int slot)
     {
         if (slot < 0 || slot >= 50)
             return;
         Item item = player.inventory[slot];
-        if (item.IsAir)
+        if (item.IsAir || StardewSlot.Is(item))
             return;
         int target = -1;
         bool vanity = item.vanity && !item.accessory;
@@ -354,13 +421,18 @@ public static class Inventory
     /// <summary>Potions, life crystals and other consumables used from the menu go through the hotbar.</summary>
     private static void UseFromInventory(Player player, int slot)
     {
-        if (slot < 0 || slot >= 50 || player.inventory[slot].IsAir)
+        if (slot < 0 || slot >= 50 || player.inventory[slot].IsAir || StardewSlot.Is(player.inventory[slot]))
             return;
         Item item = player.inventory[slot];
         if (item.healLife > 0 || item.healMana > 0 || item.buffType > 0 || item.type == ItemID.LifeCrystal || item.type == ItemID.ManaCrystal || item.type == ItemID.LifeFruit)
         {
             if (slot >= 10)
-                (player.inventory[slot], player.inventory[player.selectedItem]) = (player.inventory[player.selectedItem], player.inventory[slot]);
+            {
+                if (!StardewSlot.Is(player.inventory[player.selectedItem]))
+                    (player.inventory[slot], player.inventory[player.selectedItem]) = (player.inventory[player.selectedItem], player.inventory[slot]);
+                else
+                    return;
+            }
             else
                 player.selectedItem = slot;
             PendingUse = 3;
