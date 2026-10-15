@@ -36,6 +36,10 @@ public sealed class Puppet : ModPlayer
     /// <summary>Kept here: Terraria resets the leg frame to standing every tick, as it sees no velocity.</summary>
     private int walkFrame = FirstWalkFrame;
 
+    /// <summary>Ticks Stardew has held the use button without a swing starting, and when that was last reported.</summary>
+    private int stuckTicks;
+    private uint lastStuckReport;
+
     private static bool Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place)
     {
         pulse = null!;
@@ -107,12 +111,67 @@ public sealed class Puppet : ModPlayer
             return;
         Place();
         Walk();
+        WatchForStuckUse();
         Player.breath = Player.breathMax;
         if (Player.dead)
         {
             Player.dead = false;
             Player.statLife = Math.Max(1, Player.statLife);
         }
+    }
+
+    /// <summary>
+    /// Stardew holds the use button but no swing starts: says why, in Stardew and in the log, at most every ten seconds.
+    /// </summary>
+    private void WatchForStuckUse()
+    {
+        if (!Driving(out FarmerPulse pulse, out _) || !pulse.Has(PulseFlags.UseHeld) || Player.itemAnimation > 0)
+        {
+            stuckTicks = 0;
+            return;
+        }
+        if (++stuckTicks != 30 || Main.GameUpdateCount - lastStuckReport < 600)
+            return;
+        lastStuckReport = Main.GameUpdateCount;
+        string why = StuckReason(pulse);
+        BridgeSystem.Instance.Mod.Logger.Info($"Terradew: Stardew holds the use button but the Terraria player does not swing: {why}");
+        BridgeSystem.Instance.Notice($"Terraria did not swing: {why}", 255, 200, 80);
+    }
+
+    private string StuckReason(FarmerPulse pulse)
+    {
+        var reasons = new List<string>();
+        if (!pulse.Has(PulseFlags.Focused))
+            reasons.Add("the Stardew window is not focused");
+        if (!pulse.Has(PulseFlags.HandActive))
+            reasons.Add("Stardew does not see a Terraria item in the hand");
+        if (!pulse.Has(PulseFlags.Free))
+            reasons.Add("the farmer is busy");
+        if (pulse.Slot != Player.selectedItem)
+            reasons.Add($"Terraria selected slot {Player.selectedItem + 1}, Stardew slot {pulse.Slot + 1}");
+        Item held = Player.HeldItem;
+        if (held == null || held.IsAir)
+            reasons.Add("the Terraria hand is empty");
+        else
+        {
+            if (held.useStyle == 0)
+                reasons.Add($"{held.Name} has no use");
+            else if (!CombinedHooks.CanUseItem(Player, held))
+                reasons.Add($"{held.Name} cannot be used here");
+        }
+        if (!Main.mouseItem.IsAir)
+            reasons.Add($"Terraria's cursor holds {Main.mouseItem.Name}");
+        if (Main.gamePaused)
+            reasons.Add("Terraria is paused");
+        if (Player.CCed || Player.noItems)
+            reasons.Add("the Terraria player cannot use items (a debuff)");
+        if (Main.playerInventory || Player.talkNPC >= 0 || Main.ingameOptionsWindow || Main.inFancyUI)
+            reasons.Add("a Terraria menu is open");
+        if (!Player.ItemTimeIsZero || Player.reuseDelay > 0)
+            reasons.Add($"waiting on item time {Player.itemTime}, reuse delay {Player.reuseDelay}");
+        if (reasons.Count == 0)
+            reasons.Add($"no blocker found (holding {held?.Name}, use style {held?.useStyle}, release {Player.releaseUseItem}, control {Player.controlUseItem})");
+        return string.Join("; ", reasons);
     }
 
     private void Place()

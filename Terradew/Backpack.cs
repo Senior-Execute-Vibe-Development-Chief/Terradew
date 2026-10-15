@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -22,6 +23,9 @@ internal sealed class Backpack
     public const string PlaceholderId = "Terradew.TerrariaSlot";
 
     private const string QualifiedId = "(O)" + PlaceholderId;
+
+    /// <summary>The placeholder's own sprite: empty, since the HUD draws the Terraria item over it. Sprite 0 of Stardew's objects is weeds.</summary>
+    private const string BlankTexture = "Mods/Terradew/Blank";
     private const string TypeKey = "Terradew/Type";
     private const string StackKey = "Terradew/Stack";
     private const string NameKey = "Terradew/Name";
@@ -133,6 +137,11 @@ internal sealed class Backpack
 
     public void OnAssetRequested(AssetRequestedEventArgs e)
     {
+        if (e.NameWithoutLocale.IsEquivalentTo(BlankTexture))
+        {
+            e.LoadFrom(() => new Texture2D(Game1.graphics.GraphicsDevice, 16, 16), AssetLoadPriority.Exclusive);
+            return;
+        }
         if (!e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
             return;
         e.Edit(asset =>
@@ -147,7 +156,7 @@ internal sealed class Backpack
                 Category = 0,
                 Price = 0,
                 Edibility = -300,
-                Texture = null,
+                Texture = BlankTexture,
                 SpriteIndex = 0,
                 ExcludeFromShippingCollection = true,
                 ExcludeFromFishingCollection = true,

@@ -16,6 +16,10 @@ internal sealed class TerrariaTools
     private readonly IMonitor monitor;
     private readonly Hand hand;
     private int lastAnimation;
+    /// <summary>Ticks the use button has been held with no Terraria swing seen, and when that was last logged.</summary>
+    private int unansweredTicks;
+    private int lastUnansweredLog = -100000;
+    private int ticks;
     private Pickaxe? pickaxe;
     private Axe? axe;
     private MeleeWeapon? scythe;
@@ -37,12 +41,18 @@ internal sealed class TerrariaTools
         // A use starts when the animation jumps up: from rest, or a new swing right after the last one.
         bool started = animation > lastAnimation;
         lastAnimation = animation;
+        WatchForNoSwing(bridge, world, inventory, animation);
         if (!started || world == null || inventory == null || !hand.Active || !Context.IsPlayerFree || player.currentLocation == null)
             return;
         if (hand.Slot >= inventory.Items.Count)
             return;
         ItemStack held = inventory.Items[hand.Slot];
         if (held.IsEmpty || held.ItemType != world.Held.ItemType)
+        {
+            monitor.Log($"Terradew: Terraria swung item {world.Held.ItemType} but Stardew's slot {hand.Slot + 1} holds {(held.IsEmpty ? "nothing" : held.Name)}; nothing happens in Stardew.", LogLevel.Info);
+            return;
+        }
+        if (held.Pick == 0 && held.Hammer == 0 && held.Axe == 0 && !held.Blade)
             return;
         try
         {
@@ -52,6 +62,38 @@ internal sealed class TerrariaTools
         {
             monitor.Log($"Terradew could not use {held.Name} on Stardew. {error.Message}", LogLevel.Trace);
         }
+    }
+
+    /// <summary>
+    /// The use button is held but no swing comes back from Terraria: logs what Stardew knows, at most every ten seconds.
+    /// Terraria reports its own side of it when it can (see TerradewBridge.Puppet).
+    /// </summary>
+    private void WatchForNoSwing(Bridge bridge, WorldState? world, InventoryState? inventory, int animation)
+    {
+        ticks++;
+        if (!hand.UseHeld || animation > 0)
+        {
+            unansweredTicks = 0;
+            return;
+        }
+        if (++unansweredTicks != 60 || ticks - lastUnansweredLog < 600)
+            return;
+        lastUnansweredLog = ticks;
+        string place = Game1.player.currentLocation == null ? "nowhere" : Maps.PlaceOf(Game1.player.currentLocation).Key;
+        string why;
+        if (!bridge.IsConnected)
+            why = "Terraria is not connected";
+        else if (!bridge.Linked || world == null)
+            why = "Terraria is connected but sends no world (is the world named Stardew Valley open, with both mods rebuilt?)";
+        else if (world.PlaceKey != place)
+            why = $"Terraria is in place {world.PlaceKey}, the farmer in {place}";
+        else if (inventory == null || hand.Slot >= inventory.Items.Count || inventory.Items[hand.Slot].IsEmpty)
+            why = $"Terraria's inventory has nothing in slot {hand.Slot + 1}";
+        else
+            why = $"Terraria holds item {world.Held.ItemType} and does not swing {inventory.Items[hand.Slot].Name}";
+        monitor.Log($"Terradew: the use button is held but Terraria does not swing: {why}.", LogLevel.Info);
+        if (!bridge.Linked)
+            Game1.addHUDMessage(new HUDMessage(why, HUDMessage.error_type));
     }
 
     private void Strike(Farmer player, ItemStack held)
