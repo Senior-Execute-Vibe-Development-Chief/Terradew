@@ -50,6 +50,7 @@ internal sealed class TerrariaMenu : IClickableMenu
     private readonly Bridge bridge;
     private readonly SpriteBook sprites;
     private readonly Stations stations;
+    private readonly Backpack backpack;
     private bool crafting;
     private int selected = -1;
     private int scroll;
@@ -58,12 +59,13 @@ internal sealed class TerrariaMenu : IClickableMenu
     private Rectangle craftingTab;
     private Rectangle trash;
 
-    public TerrariaMenu(Bridge bridge, SpriteBook sprites, Stations stations)
+    public TerrariaMenu(Bridge bridge, SpriteBook sprites, Stations stations, Backpack backpack)
         : base((Game1.uiViewport.Width - Width) / 2, (Game1.uiViewport.Height - Height) / 2, Width, Height, showUpperRightCloseButton: true)
     {
         this.bridge = bridge;
         this.stations = stations;
         this.sprites = sprites;
+        this.backpack = backpack;
         Layout();
     }
 
@@ -99,6 +101,7 @@ internal sealed class TerrariaMenu : IClickableMenu
             yield return (InventoryAction.EquipmentBase + i, new Rectangle(gear + MenuArt.Slot, top + (i - 10) * (MenuArt.Slot - 4), MenuArt.Slot - 8, MenuArt.Slot - 8));
     }
 
+    /// <summary>The Terraria item in a slot. Main slots show Terraria's view, where a Stardew item is empty.</summary>
     private ItemStack Item(int slot)
     {
         InventoryState? inventory = bridge.Inventory;
@@ -109,8 +112,13 @@ internal sealed class TerrariaMenu : IClickableMenu
             int index = slot - InventoryAction.EquipmentBase;
             return index < inventory.Equipment.Count ? inventory.Equipment[index] : default;
         }
+        if (slot < Backpack.Size)
+            return backpack.TerrariaItem(slot);
         return slot >= 0 && slot < inventory.Items.Count ? inventory.Items[slot] : default;
     }
+
+    /// <summary>True when a slot holds anything, a Stardew item or a Terraria one.</summary>
+    private bool Filled(int slot) => backpack.StardewItem(slot) != null || !Item(slot).IsEmpty;
 
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
@@ -132,9 +140,21 @@ internal sealed class TerrariaMenu : IClickableMenu
             ClickRecipe(x, y);
             return;
         }
+        // Without Terraria there is no list of its slots, so nothing here can be moved.
+        if (bridge.Inventory == null)
+            return;
         if (trash.Contains(x, y) && selected >= 0)
         {
-            bridge.Send(new InventoryAction { Kind = InventoryKind.Trash, A = selected });
+            Item? stardew = backpack.StardewItem(selected);
+            if (stardew == null)
+                backpack.Send(new InventoryAction { Kind = InventoryKind.Trash, A = selected });
+            else if (stardew.canBeTrashed())
+                backpack.RemoveStardew(selected);
+            else
+            {
+                Game1.playSound("cancel");
+                return;
+            }
             selected = -1;
             Game1.playSound("trashcan");
             return;
@@ -145,21 +165,45 @@ internal sealed class TerrariaMenu : IClickableMenu
                 continue;
             if (selected < 0)
             {
-                if (!Item(slot).IsEmpty)
+                if (Filled(slot))
                 {
                     selected = slot;
                     Game1.playSound("pickUpItem");
                 }
             }
+            else if (slot != selected)
+            {
+                Move(selected, slot);
+                selected = -1;
+            }
             else
             {
-                bridge.Send(new InventoryAction { Kind = InventoryKind.Swap, A = selected, B = slot });
                 selected = -1;
-                Game1.playSound("stoneStep");
             }
             return;
         }
         selected = -1;
+    }
+
+    /// <summary>
+    /// Moves an item from one slot to another. Two main slots swap in the shared backpack. Otherwise the swap goes to
+    /// Terraria, which cannot take a Stardew item, so one on the main-slot side is refused.
+    /// </summary>
+    private void Move(int from, int to)
+    {
+        if (from < Backpack.Size && to < Backpack.Size)
+        {
+            backpack.Swap(from, to);
+            Game1.playSound("stoneStep");
+            return;
+        }
+        if (backpack.StardewItem(from) != null || backpack.StardewItem(to) != null)
+        {
+            Game1.playSound("cancel");
+            return;
+        }
+        backpack.Send(new InventoryAction { Kind = InventoryKind.Swap, A = from, B = to });
+        Game1.playSound("stoneStep");
     }
 
     public override void receiveRightClick(int x, int y, bool playSound = true)
@@ -170,16 +214,19 @@ internal sealed class TerrariaMenu : IClickableMenu
         {
             if (!area.Contains(x, y))
                 continue;
+            // A Stardew item has no Terraria use; it is moved or trashed by left click only.
+            if (backpack.StardewItem(slot) != null)
+                return;
             ItemStack item = Item(slot);
             if (item.IsEmpty)
                 return;
             if (slot >= InventoryAction.EquipmentBase)
-                bridge.Send(new InventoryAction { Kind = InventoryKind.Unequip, A = slot });
+                backpack.Send(new InventoryAction { Kind = InventoryKind.Unequip, A = slot });
             else if (item.Equippable)
-                bridge.Send(new InventoryAction { Kind = InventoryKind.Equip, A = slot });
+                backpack.Send(new InventoryAction { Kind = InventoryKind.Equip, A = slot });
             else if (item.Consumable)
             {
-                bridge.Send(new InventoryAction { Kind = InventoryKind.Use, A = slot });
+                backpack.Send(new InventoryAction { Kind = InventoryKind.Use, A = slot });
                 exitThisMenu();
             }
             Game1.playSound("dwop");
@@ -222,7 +269,8 @@ internal sealed class TerrariaMenu : IClickableMenu
         {
             if (area.Contains(x, y))
             {
-                hover = MenuArt.Describe(Item(slot));
+                Item? stardew = backpack.StardewItem(slot);
+                hover = stardew != null ? stardew.DisplayName + "\n" + stardew.getDescription() : MenuArt.Describe(Item(slot));
                 return;
             }
         }
@@ -248,7 +296,11 @@ internal sealed class TerrariaMenu : IClickableMenu
             foreach ((int slot, Rectangle area) in Slots())
             {
                 MenuArt.SlotBox(b, area, slot == selected);
-                Hud.DrawItem(b, sprites, Item(slot), area.Center.X, area.Center.Y, area.Width - 12);
+                Item? stardew = backpack.StardewItem(slot);
+                if (stardew != null)
+                    stardew.drawInMenu(b, new Vector2(area.X, area.Y), area.Width / 64f);
+                else
+                    Hud.DrawItem(b, sprites, Item(slot), area.Center.X, area.Center.Y, area.Width - 12);
             }
             MenuArt.SlotBox(b, trash, false);
             b.DrawString(Game1.tinyFont, "TRASH", new Vector2(trash.X + 6, trash.Y + 20), Color.White);

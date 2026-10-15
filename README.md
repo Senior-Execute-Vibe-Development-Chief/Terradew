@@ -60,7 +60,7 @@ Decisions that shape play:
 - **Invasions happen in one place each** and are announced: the Goblin Army attacks Town, the Frost Legion the
   Mountain, the Pirates the Beach, the Martians the Farm. Invaders come in from that map's edges.
 - **Hardmode turns the Quarry Mine and the Railroad into the Hallow**, with its own creatures and fish.
-- **The Terraria hotbar is driven from Stardew while the Stardew window is in front.** Click into the Terraria
+- **The hotbar is driven from Stardew while the Stardew window is in front.** Click into the Terraria
   window to use its own menus (Escape, Settings, Save & Exit).
 
 ## Setup
@@ -104,16 +104,18 @@ saving, which is usually what you want while testing.
 
 | Key | Does |
 |---|---|
-| `R` | Switch your hand between the Stardew toolbar and the Terraria hotbar |
-| `1`–`0`, mouse wheel | Choose a Terraria hotbar slot (Terraria hand) |
-| Use tool button | Use the Terraria item, aimed at the cursor (Terraria hand) |
-| `I` | Terraria inventory, equipment and crafting |
+| `1`–`0`, mouse wheel | Choose a hotbar slot; whatever is in it (a Stardew tool or a Terraria weapon) is what you use |
+| Use tool button | Use the selected item: a Stardew tool as usual, or a Terraria item aimed at the cursor |
+| `I` | Backpack, Terraria equipment and crafting |
 | Right-click a Terraria townsperson | Talk, shop, or get healed by the Nurse |
 
 Keys can be changed in `Mods/Terradew/config.json`.
 
-- **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, hold it in the
-  Terraria hand and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
+- **One shared backpack:** 50 slots, 10 to a row, Terraria-style; Stardew and Terraria items sit side by side and the
+  first row is the toolbar. Stardew's own menus (chests, shops, the shipping bin) show the first 36 slots; Terraria
+  items can only be moved in the `I` menu.
+- **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, select the
+  hotbar slot it is in and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station
   with the Stardew pickaxe or axe to take it back. Stardew's own furniture and decoration stay as they are.
 - **Mine barrels and crates are Terraria pots.** They take the look of that floor's biome (hellstone pots in the underworld, dungeon pots in the Skull Cavern) and, as well as Stardew's own loot, spill Terraria pot loot: coins, potions, torches and hearts.
@@ -130,7 +132,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
   head portrait when you talk to them.
 - **Fishing** is Stardew's minigame with a Terraria catch, from the place's biome and depth.
-- **Bosses** come from their normal Terraria summons, used with the Terraria hand: the Suspicious Looking Eye at
+- **Bosses** come from their normal Terraria summons, used from the hotbar with the Terraria item selected: the Suspicious Looking Eye at
   night, Worm Food in the Secret Woods, the Abeemination in the jungle mine floors. Talk to the Old Man at the
   Skull Cavern entrance at night for Skeletron. Use the Guide Voodoo Doll on an underworld mine floor for the
   Wall of Flesh. Plantera can wake on a jungle mine floor once the three mechanical bosses are beaten, and a

@@ -8,8 +8,8 @@ using Terradew.Core.Protocol;
 namespace Terradew;
 
 /// <summary>
-/// The farmer's hand is either on the Stardew toolbar (farming) or on the Terraria hotbar (fighting).
-/// With the Terraria hand, the use button and number keys go to Terraria, aimed at the cursor.
+/// The farmer's hand is the selected hotbar slot. A Terraria item in that slot takes the use button and is aimed at
+/// the cursor; a Stardew item leaves the use button to Stardew. The hotbar is the first ten slots of the shared backpack.
 /// </summary>
 internal sealed class Hand
 {
@@ -17,40 +17,35 @@ internal sealed class Hand
 
     private readonly IModHelper helper;
     private readonly Stations stations;
-    private int lockedTool = -1;
+    private readonly Backpack backpack;
+    /// <summary>The hotbar slot seen on the last update, so a wheel step past the end of the bar can be wrapped.</summary>
+    private int lastSlot = -1;
 
-    public Hand(IModHelper helper, Stations stations)
+    public Hand(IModHelper helper, Stations stations, Backpack backpack)
     {
         this.helper = helper;
         this.stations = stations;
+        this.backpack = backpack;
     }
 
-    public bool Active { get; private set; }
-    public int Slot { get; private set; }
+    /// <summary>True when the selected hotbar slot holds a Terraria item.</summary>
+    public bool Active => Context.IsWorldReady && backpack.TerrariaOwns(Slot);
+
+    /// <summary>The selected hotbar slot: Stardew's current tool index, which its number keys and wheel set.</summary>
+    public int Slot => Math.Clamp(Game1.player.CurrentToolIndex, 0, 9);
+
     public bool UseHeld { get; private set; }
 
     public void Reset()
     {
-        Active = false;
         UseHeld = false;
-        lockedTool = -1;
+        lastSlot = -1;
     }
-
-    public void SetSlot(int slot) => Slot = Math.Clamp(slot, 0, 9);
 
     public void OnButtonPressed(ButtonPressedEventArgs e, ModConfig config, Bridge bridge)
     {
         if (!Context.IsPlayerFree)
             return;
-        if (config.ToggleHand.JustPressed())
-        {
-            Active = !Active;
-            lockedTool = Game1.player.CurrentToolIndex;
-            UseHeld = false;
-            helper.Input.SuppressActiveKeybinds(config.ToggleHand);
-            Game1.playSound(Active ? "swordswipe" : "toolSwap");
-            return;
-        }
 
         if (e.Button.IsActionButton() && TryTalk(e.Cursor.AbsolutePixels, bridge))
         {
@@ -58,16 +53,14 @@ internal sealed class Hand
             return;
         }
 
-        if (!Active)
-            return;
-        int number = Number(e.Button);
-        if (number >= 0)
+        // Stardew's - and = keys select slots 11 and 12, which the bar does not have.
+        if (e.Button is SButton.OemMinus or SButton.OemPlus)
         {
-            Slot = number;
             helper.Input.Suppress(e.Button);
             return;
         }
-        if (e.Button.IsUseToolButton())
+
+        if (Active && e.Button.IsUseToolButton())
         {
             helper.Input.Suppress(e.Button);
             // A station is placed on the ground, never used in Terraria, so the use goes no further.
@@ -97,24 +90,26 @@ internal sealed class Hand
         }
     }
 
-    public void OnWheel(MouseWheelScrolledEventArgs e)
-    {
-        if (!Active || !Context.IsPlayerFree || e.Delta == 0)
-            return;
-        Slot = (Slot + (e.Delta > 0 ? 9 : 1)) % 10;
-    }
-
     public void Update()
     {
         // The release of the use button is lost while the game is in the background; never hold it past that.
         if (!Game1.game1.IsActive)
             UseHeld = false;
-        if (!Active)
-            return;
-        if (lockedTool >= 0 && Game1.player.CurrentToolIndex != lockedTool)
-            Game1.player.CurrentToolIndex = lockedTool;
-        if (!Context.IsPlayerFree)
+        WrapToolIndex();
+        if (!Active || !Context.IsPlayerFree)
             UseHeld = false;
+    }
+
+    /// <summary>
+    /// Stardew's wheel moves the tool index through 0-11, but the bar has ten slots. Stepping up from slot 9 wraps to 0;
+    /// stepping down from slot 0 (or anything else past the end) comes back to 9.
+    /// </summary>
+    private void WrapToolIndex()
+    {
+        Farmer player = Game1.player;
+        if (player.CurrentToolIndex is 10 or 11)
+            player.CurrentToolIndex = lastSlot == 9 ? 0 : 9;
+        lastSlot = Slot;
     }
 
     private bool TryTalk(Vector2 cursor, Bridge bridge)
@@ -140,19 +135,4 @@ internal sealed class Hand
         }
         return false;
     }
-
-    private static int Number(SButton button) => button switch
-    {
-        SButton.D1 => 0,
-        SButton.D2 => 1,
-        SButton.D3 => 2,
-        SButton.D4 => 3,
-        SButton.D5 => 4,
-        SButton.D6 => 5,
-        SButton.D7 => 6,
-        SButton.D8 => 7,
-        SButton.D9 => 8,
-        SButton.D0 => 9,
-        _ => -1,
-    };
 }

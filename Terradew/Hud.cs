@@ -1,3 +1,4 @@
+using StardewModdingAPI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -8,22 +9,27 @@ using Terradew.Core.Protocol;
 
 namespace Terradew;
 
-/// <summary>Terraria's life, mana, buffs and hotbar, drawn in Stardew's HUD style.</summary>
+/// <summary>Terraria's life, mana, buffs and the shared hotbar, drawn in Stardew's HUD style.</summary>
 internal sealed class Hud
 {
     private sealed record Line(string Text, Color Color, int Until);
 
+    private const int SlotSize = 64;
+    private const int BarPad = 16;
+
     private readonly Bridge bridge;
     private readonly SpriteBook sprites;
     private readonly Hand hand;
+    private readonly Backpack backpack;
     private readonly List<Line> notices = new();
     private readonly StardewModdingAPI.IReflectedField<bool>? showingHealth;
 
-    public Hud(Bridge bridge, SpriteBook sprites, Hand hand, StardewModdingAPI.IModHelper helper)
+    public Hud(Bridge bridge, SpriteBook sprites, Hand hand, StardewModdingAPI.IModHelper helper, Backpack backpack)
     {
         this.bridge = bridge;
         this.sprites = sprites;
         this.hand = hand;
+        this.backpack = backpack;
         showingHealth = helper.Reflection.GetField<bool>(typeof(Game1), "showingHealth", required: false);
     }
 
@@ -41,6 +47,33 @@ internal sealed class Hud
             showingHealth?.SetValue(false);
     }
 
+    /// <summary>Stardew's own toolbar would draw over the shared hotbar, so it is taken off the screen each tick.</summary>
+    public void HideVanillaToolbar()
+    {
+        if (!Context.IsWorldReady)
+            return;
+        Game1.onScreenMenus.RemoveAll(menu => menu is Toolbar);
+    }
+
+    /// <summary>A left click on the hotbar selects its slot. Returns true when the click was on the bar and is used up.</summary>
+    public bool OnClick(int uiX, int uiY)
+    {
+        if (!Context.IsWorldReady || !Context.IsPlayerFree)
+            return false;
+        Rectangle bar = BarArea();
+        if (!bar.Contains(uiX, uiY))
+            return false;
+        for (int i = 0; i < Backpack.Hotbar; i++)
+        {
+            if (!SlotArea(bar, i).Contains(uiX, uiY))
+                continue;
+            Game1.player.CurrentToolIndex = i;
+            Game1.playSound("smallSelect");
+            break;
+        }
+        return true;
+    }
+
     public void Draw(SpriteBatch b)
     {
         if (Game1.eventUp || Game1.activeClickableMenu != null && Game1.activeClickableMenu is not BobberBar)
@@ -51,6 +84,7 @@ internal sealed class Hud
             string status = bridge.IsConnected ? "Terraria is loading…" : "Terraria not connected — open the world named Stardew Valley in tModLoader";
             b.DrawString(Game1.smallFont, status, new Vector2(16, 16), Color.White * 0.8f);
             DrawNotices(b, 48);
+            DrawHotbar(b);
             return;
         }
 
@@ -120,30 +154,60 @@ internal sealed class Hud
         }
     }
 
-    private void DrawHotbar(SpriteBatch b)
+    /// <summary>The bar at the bottom centre, or at the top when the farmer is low on screen (Stardew's rule, unless the toolbar is pinned).</summary>
+    private static Rectangle BarArea()
     {
-        InventoryState? inventory = bridge.Inventory;
-        if (inventory == null || inventory.Items.Count < 10)
-            return;
-        const int size = 56;
-        int width = size * 10 + 16;
+        int width = Backpack.Hotbar * SlotSize + BarPad * 2;
+        int height = SlotSize + BarPad * 2;
         int left = (Game1.uiViewport.Width - width) / 2;
         bool toolbarAtTop = Game1.options.pinToolbarToggle ? false : Game1.player.GetBoundingBox().Center.Y > Game1.viewport.Y + Game1.viewport.Height / 2 + 64;
-        int top = toolbarAtTop ? 120 : Game1.uiViewport.Height - 180;
-        float fade = hand.Active ? 1f : 0.55f;
-        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), left, top, width, size + 16, Color.White * fade, 1f, false);
-        for (int i = 0; i < 10; i++)
+        int top = toolbarAtTop ? 48 : Game1.uiViewport.Height - height - 16;
+        return new Rectangle(left, top, width, height);
+    }
+
+    private static Rectangle SlotArea(Rectangle bar, int index) => new(bar.X + BarPad + index * SlotSize, bar.Y + BarPad, SlotSize, SlotSize);
+
+    /// <summary>The bar is the toolbar: it shows whether or not Terraria is connected, since Stardew items still need it.</summary>
+    private void DrawHotbar(SpriteBatch b)
+    {
+        if (!Context.IsWorldReady)
+            return;
+        Rectangle bar = BarArea();
+        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), bar.X, bar.Y, bar.Width, bar.Height, Color.White, 1f, false);
+        int selected = hand.Slot;
+        for (int i = 0; i < Backpack.Hotbar; i++)
         {
-            int slotX = left + 8 + i * size;
-            int slotY = top + 8;
-            bool selected = i == hand.Slot;
-            b.Draw(Game1.staminaRect, new Rectangle(slotX + 2, slotY + 2, size - 4, size - 4), (selected && hand.Active ? Color.Gold : Color.SaddleBrown) * 0.35f * fade);
-            DrawItem(b, sprites, inventory.Items[i], slotX + size / 2, slotY + size / 2, 40, fade);
-            b.DrawString(Game1.tinyFont, ((i + 1) % 10).ToString(), new Vector2(slotX + 4, slotY + 2), Color.White * fade);
+            Rectangle slot = SlotArea(bar, i);
+            var position = new Vector2(slot.X, slot.Y);
+            b.Draw(Game1.menuTexture, position, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, 10), Color.White);
+            if (backpack.TerrariaOwns(i))
+                DrawItem(b, sprites, backpack.TerrariaItem(i), slot.Center.X, slot.Center.Y, 48);
+            else if (backpack.StardewItem(i) is Item item)
+                item.drawInMenu(b, position, 1f);
+            if (i == selected)
+                b.Draw(Game1.menuTexture, position, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, 56), Color.White);
+            b.DrawString(Game1.tinyFont, ((i + 1) % 10).ToString(), new Vector2(slot.X + 4, slot.Y + 2), Color.White);
         }
-        string coins = Coins.Format(inventory.Coins);
-        string mode = hand.Active ? "Terraria hand" : "Stardew hand";
-        b.DrawString(Game1.smallFont, $"{mode} · {coins}", new Vector2(left + 8, top - 30), Color.White * fade);
+
+        var parts = new List<string>();
+        if (bridge.Inventory != null)
+            parts.Add(Coins.Format(bridge.Inventory.Coins));
+        string? name = SelectedName(selected);
+        if (name != null)
+            parts.Add(name);
+        if (parts.Count > 0)
+            b.DrawString(Game1.smallFont, string.Join(" · ", parts), new Vector2(bar.X + 8, bar.Y - 30), Color.White);
+    }
+
+    /// <summary>The name of the item in a hotbar slot: its Terraria name, or its Stardew display name. Null when the slot is empty.</summary>
+    private string? SelectedName(int slot)
+    {
+        if (backpack.TerrariaOwns(slot))
+        {
+            ItemStack item = backpack.TerrariaItem(slot);
+            return item.IsEmpty ? null : item.Name;
+        }
+        return backpack.StardewItem(slot)?.DisplayName;
     }
 
     public static void DrawItem(SpriteBatch b, SpriteBook sprites, ItemStack item, int centerX, int centerY, int box, float alpha = 1f)

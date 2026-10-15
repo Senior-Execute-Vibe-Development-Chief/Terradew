@@ -19,6 +19,7 @@ public sealed class ModEntry : Mod
     private SpriteBook sprites = null!;
     private Stations stations = null!;
     private PotLook potLook = null!;
+    private Backpack backpack = null!;
     private Hand hand = null!;
     private Maps maps = null!;
     private Money money = null!;
@@ -44,7 +45,8 @@ public sealed class ModEntry : Mod
         sprites = new SpriteBook();
         stations = new Stations(sprites, bridge);
         potLook = new PotLook(sprites, bridge, () => Leading);
-        hand = new Hand(helper, stations);
+        backpack = new Backpack(bridge, Monitor);
+        hand = new Hand(helper, stations, backpack);
         maps = new Maps();
         money = new Money(helper);
         vitals = new Vitals(Monitor);
@@ -56,7 +58,7 @@ public sealed class ModEntry : Mod
         villagers = new Villagers();
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
-        hud = new Hud(bridge, sprites, hand, helper);
+        hud = new Hud(bridge, sprites, hand, helper, backpack);
         var harmony = new Harmony(ModManifest.UniqueID);
         draw.Install(harmony, Monitor);
         mining.Install(harmony, Monitor);
@@ -65,6 +67,7 @@ public sealed class ModEntry : Mod
         stations.Install(harmony, Monitor);
         potLook.Install(harmony, Monitor);
         new Clock().Install(harmony, Monitor);
+        BackpackGuards.Install(harmony, Monitor, backpack, sprites);
 
         bridge.Connected += OnConnected;
         bridge.Chat += chat =>
@@ -103,12 +106,12 @@ public sealed class ModEntry : Mod
         helper.Events.GameLoop.TimeChanged += (_, _) => villagers.Refresh(Game1.currentLocation);
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         helper.Events.Input.ButtonReleased += (_, e) => hand.OnButtonReleased(e);
-        helper.Events.Input.MouseWheelScrolled += (_, e) => hand.OnWheel(e);
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => bundles.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => villagers.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => stations.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => backpack.OnAssetRequested(e);
         helper.Events.World.ObjectListChanged += (_, e) => { if (Leading) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };
         helper.ConsoleCommands.Add("terradew", "terradew status | terradew <command for Terraria>, such as: summon, boss EyeofCthulhu, give CopperShortsword", OnCommand);
@@ -175,6 +178,7 @@ public sealed class ModEntry : Mod
             return;
         }
         tick++;
+        hud.HideVanillaToolbar();
         bridge.Pump();
         if (pendingChats.Count > 0 && Context.IsPlayerFree)
             Game1.activeClickableMenu = new ChatMenu(bridge, sprites, pendingChats.Dequeue());
@@ -184,6 +188,7 @@ public sealed class ModEntry : Mod
         GameLocation? location = player.currentLocation;
         if (location == null)
             return;
+        backpack.Update();
         hand.Update();
         if (bridge.IsConnected)
             maps.Update(bridge, location, e.Ticks, force: false);
@@ -256,8 +261,18 @@ public sealed class ModEntry : Mod
         {
             Helper.Input.SuppressActiveKeybinds(config.OpenMenu);
             bridge.Send(new RequestRecipes { Near = stations.Near(Game1.currentLocation, Game1.player.Tile) });
-            Game1.activeClickableMenu = new TerrariaMenu(bridge, sprites, stations);
+            Game1.activeClickableMenu = new TerrariaMenu(bridge, sprites, stations, backpack);
             return;
+        }
+        // A click on the hotbar selects a slot and goes no further.
+        if (e.Button == SButton.MouseLeft && Context.IsPlayerFree)
+        {
+            Vector2 ui = Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
+            if (hud.OnClick((int)ui.X, (int)ui.Y))
+            {
+                Helper.Input.Suppress(e.Button);
+                return;
+            }
         }
         hand.OnButtonPressed(e, config, bridge);
     }
@@ -266,10 +281,13 @@ public sealed class ModEntry : Mod
     {
         if (!e.IsLocalPlayer)
             return;
-        fishing.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
-        vitals.OnItemsAdded(e.Added);
+        // Placeholders stand in for Terraria items: moving them is not a Stardew pickup.
+        IEnumerable<Item> added = e.Added.Where(item => !Backpack.IsPlaceholder(item));
+        IEnumerable<ItemStackSizeChange> changed = e.QuantityChanged.Where(change => !Backpack.IsPlaceholder(change.Item));
+        fishing.OnInventoryChanged(added, changed, bridge);
+        vitals.OnItemsAdded(added);
         if (Leading)
-            mining.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
+            mining.OnInventoryChanged(added, changed, bridge);
     }
 
     private void OnCommand(string name, string[] args)
