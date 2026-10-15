@@ -1,3 +1,4 @@
 displayName = Terradew Bridge
 author = Terradew
 version = 0.1.0
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*, Core\bin\*, Core\obj\*, Core\*.csproj, obj/*, bin/*, Core/bin/*, Core/obj/*

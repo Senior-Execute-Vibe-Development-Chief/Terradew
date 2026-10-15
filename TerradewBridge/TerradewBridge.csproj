@@ -19,7 +19,11 @@
 
   <Import Project="$(TModPath)/tMLMod.targets" Condition="Exists('$(TModPath)/tMLMod.targets')" />
 
+  <!--
+    Core is a symlink to ../Terradew.Core. tModLoader's in-game builder compiles every .cs file under the mod
+    folder and ignores Compile items here, so the shared code has to live inside the folder.
+  -->
   <ItemGroup>
-    <Compile Include="..\Terradew.Core\**\*.cs" Exclude="..\Terradew.Core\bin\**;..\Terradew.Core\obj\**" LinkBase="Core" />
+    <Compile Remove="Core/bin/**;Core/obj/**;Core/*.csproj" />
   </ItemGroup>
 </Project>

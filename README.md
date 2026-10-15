@@ -54,10 +54,10 @@ You need Stardew Valley 1.6 with SMAPI 4, and tModLoader.
 1. **Build the Stardew mod:** `dotnet build Terradew/Terradew.csproj`. It installs itself into your Stardew
    `Mods` folder. If Stardew is not in the standard Steam or GOG folder, set `STARDEW_PATH` first.
 2. **Build the Terraria mod.** tModLoader builds mods from its `ModSources` folder
-   (`~/Library/Application Support/Terraria/tModLoader/ModSources` on macOS). Link both folders in:
+   (`~/Library/Application Support/Terraria/tModLoader/ModSources` on macOS). Link the mod folder in
+   (`TerradewBridge/Core` is a symlink to the shared code, so it comes along):
    ```sh
    ln -s "$PWD/TerradewBridge" "$HOME/Library/Application Support/Terraria/tModLoader/ModSources/TerradewBridge"
-   ln -s "$PWD/Terradew.Core" "$HOME/Library/Application Support/Terraria/tModLoader/ModSources/Terradew.Core"
    ```
    Then in tModLoader open **Workshop → Develop Mods** and choose **Build** next to Terradew Bridge. If
    tModLoader is not in the standard Steam folder, set `TMOD_PATH`.
