@@ -169,6 +169,32 @@
     "disliked": { "text": "Ugh, a gel? Slimy things in me cabin? Keep them away, I beg ye.$a", "stardew": ["-75"], "terraria": ["Gel", "Cobweb", "Mushroom"] },
     "hated": { "text": "That's an insult to a sailor, @. Dynamite and a bunny, and a bucket of trash besides. Take it back before the Merchant sees.$a", "stardew": ["168"], "terraria": ["Dynamite", "Bunny"] }
   },
+  "courage": {
+    "help": [
+      "Arr, bit of help here? Don't make me ask twice.",
+      "Ye there! Me cutlass is busy, lend a hand!",
+      "Someone come and bail me out of this!"
+    ],
+    "thanks": [
+      "Ye fought like a true sea dog, @. I owe ye a fish pie.$h",
+      "Ye saved me hide out there, @. The sea would have had me.$l"
+    ],
+    "battle": [
+      "Arr! Walk the plank, ye overgrown slime!",
+      "Yo ho! Blow me down, here I come!",
+      "No treasure for ye, monster! Keel haul time!",
+      "For the beach! Nobody sinks our shore!"
+    ],
+    "hurt": "Got a hard knock from that thing. Nurse says rest, so I am resting, and cursing the whole while.$s",
+    "danger": {
+      "boss": "A great beast is loose and the sea is restless, @. Ye know I will not sit this one out.$h",
+      "invasion": "Pirates, goblins, whoever is out there, they will find a sailor waiting. Lace up yer boots, @, and bring a cutlass.$h",
+      "pumpkinMoon": "A pumpkin moon hangs over the beach, and the scarecrows are wandering. Arr, I will fight them to the last sprout.$h",
+      "frostMoon": "Frost moon! The ice is creeping up the shore and the snowmen have teeth. I will not let them freeze me out, @.$u",
+      "eclipse": "The sun has gone dark and things are crawling out of the shadows. Stay close, @. We will sail through it together.$u",
+      "bloodMoon": "Blood moon, and the waves are red as wine. I hate a bloody sea, but I will sail into it with ye at me side.$l"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "with": [], "music": "playful",

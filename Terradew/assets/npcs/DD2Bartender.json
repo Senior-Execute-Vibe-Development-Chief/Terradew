@@ -89,6 +89,20 @@
     "disliked": { "text": "Ugh, you could have brought a cork instead. Thanks, I think.$a", "stardew": ["-80", "-81"], "terraria": ["#junk"] },
     "hated": { "text": "Get that out of my tavern before the Demolitionist sees it.$a", "stardew": ["168"], "terraria": ["#bossSummon", "#junk"] }
   },
+  "courage": {
+    "help": ["Bit of help here? I am not paid enough for this!", "Last call for whatever is biting me! Help!", "Hey! Somebody stop this one before the glass breaks!"],
+    "thanks": ["Eh, thanks, @. That one was going to wreck my cellar.$h", "Hah, you saved my bar, @. Drinks are on me next time.$h"],
+    "battle": ["Last call for you, you overgrown rat!", "Get out of my tavern, you big ugly thing!", "Free drinks to whoever ends this. Come on!"],
+    "hurt": "Ow. Something took a bite out of me, and I am not going back out there tonight. Sit, @, and keep the stool warm.$s",
+    "danger": {
+      "boss": "A big nasty is loose out there and it is headed for the valley. Bar is closing early. Grab a weapon, @.$a",
+      "invasion": "The invaders are at the gates. Good, I have been wanting an excuse to swing this bar stool at something.$h",
+      "pumpkinMoon": "Pumpkin moon is up. Scarecrows are walking and the pumpkin folk are howling. Keep your lantern lit, @.$h",
+      "frostMoon": "Frost moon, and the cold is coming down the hill. Bring a warm drink and a sharp blade, friend.$h",
+      "eclipse": "The sky went dark and the monsters came out with it. I am bolting the door, and then I am going out, @.$u",
+      "bloodMoon": "Blood moon. Zombies are pounding on my boards. Good. I have been itching for a fight all week.$h"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",

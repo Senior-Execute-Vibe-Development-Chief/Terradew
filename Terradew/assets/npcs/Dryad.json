@@ -89,6 +89,31 @@
     "disliked": { "text": "Metal and smoke. Take it away from my roots.$a", "stardew": ["335", "336", "-12"], "terraria": ["Gel", "#explosive"] },
     "hated": { "text": "Burn it, and do not tell me where the ashes went.$a", "stardew": ["287", "288", "-28"], "terraria": ["#explosive", "#bossSummon"] }
   },
+  "courage": {
+    "help": [
+      "Bit of help here? These thorns are not sharing.",
+      "Someone cut these vines off me, quickly please.",
+      "Could use a hand over here. Mind the bees."
+    ],
+    "thanks": [
+      "Thank you, @. A debt to a tree is repaid in leaves and shade.$h",
+      "I would have ended in the thorns without you. The forest remembers this, @.$l"
+    ],
+    "battle": [
+      "Roots, rise! Show this beast the patience of trees!",
+      "Take that, you tunnel-dwelling nuisance!",
+      "Bees, sting! Now, for the old oak, charge!"
+    ],
+    "hurt": "I am bruised and needle-sore. Let me rest among my roots until the sap rises again.$s",
+    "danger": {
+      "boss": "A great beast stirs in the deep woods, @. The trees are shuddering. I will stand and fight.$a",
+      "invasion": "Pirates and goblins in my grove. They will learn that roots grip tighter than any hook.$a",
+      "pumpkinMoon": "The pumpkin moon hangs low and the scarecrows whisper. I will keep watch with the vines.$h",
+      "frostMoon": "Frost creeps across the bark. The frost legion will find this forest is not so easily frozen.$h",
+      "eclipse": "The sun has gone out and the shadows crawl. Stay near the roots, @, and do not wander off.$s",
+      "bloodMoon": "The blood moon turns the leaves red. Something is wrong in these woods, and I intend to fix it.$a"
+    }
+  },
   "events": [
     { "id": "h2", "hearts": 2, "where": "Forest", "time": "day", "weather": "sunny", "music": "sweet",
       "after": "Walk gently on the way back, @. The roots remember who stepped on them.",

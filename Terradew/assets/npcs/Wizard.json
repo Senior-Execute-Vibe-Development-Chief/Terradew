@@ -104,6 +104,31 @@
       "terraria": ["#junk"]
     }
   },
+  "courage": {
+    "help": [
+      "Bit of help here? My spell is fizzling!",
+      "Someone hit that thing before it hexes me!",
+      "A little help, please. The mana is flaring!"
+    ],
+    "thanks": [
+      "Oh, @, you saved my beard from a very bad fireball. Thank you.$h",
+      "That was far too close. You are now a permanent resident of my favourite thoughts.$l"
+    ],
+    "battle": [
+      "Prepare to be thoroughly incinerated, beast!",
+      "Mana bolt! Hold still, you oversized toad!",
+      "By my beard, this tower will not fall tonight!"
+    ],
+    "hurt": "Ow. My hat is scorched and my dignity is in a ditch. I shall rest and consult the stars about this.$s",
+    "danger": {
+      "boss": "A boss is stalking the woods, @. Good. I have been waiting for a worthy spell to test.$h",
+      "invasion": "Goblins, pirates, whatever they are, they will meet my lightning rods. Stand with me.$h",
+      "pumpkinMoon": "The pumpkin moon rises and the scarecrows are restless. I have a hex for that.$h",
+      "frostMoon": "The frost moon brings legions of ice, and my fingers are freezing. Bring a coat and a spell.$s",
+      "eclipse": "The sun has gone dark and strange shapes crawl from the shadows. I shall light the way.$h",
+      "bloodMoon": "A blood moon! The mana tastes of iron tonight. Keep your sword sharp and stay near the tower.$a"
+    }
+  },
   "events": [
     {
       "id": "h2",

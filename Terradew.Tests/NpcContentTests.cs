@@ -35,6 +35,20 @@ internal static class NpcContentTests
             T.Assert(factsCopy.Residents[0].FrameCount == 25 && factsCopy.Residents[0].ExtraFrames == 9 && factsCopy.Happenings.Single() == "bloodMoon", "facts");
         });
 
+        failed += T.Check("courage: every town npc has a role and the moves round-trip", () =>
+        {
+            T.Assert(TownHomes.Npcs.All(n => TownCourage.Npcs.Contains(n)), "missing: " + string.Join(",", TownHomes.Npcs.Where(n => !TownCourage.Npcs.Contains(n))));
+            T.Assert(TownCourage.Npcs.All(n => TownHomes.VillagerOf(n) != null), "roles name town npcs");
+            T.Assert(TownCourage.RoleOf("ArmsDealer") == Role.Hero && TownCourage.RoleOf("Merchant") == Role.Coward && TownCourage.RoleOf("Nurse") == Role.Guard, "known roles");
+            T.Assert(TownCourage.Npcs.Where(TownCourage.IsHarmless).All(n => TownCourage.RoleOf(n) == Role.Coward), "only cowards are harmless");
+            T.Assert(TownCourage.Watch(Role.Hero, true) > TownCourage.Watch(Role.Hero, false), "heroes look further in danger");
+            T.Assert(TownCourage.Damage(Role.Coward) < TownCourage.Damage(Role.Guard) && TownCourage.Damage(Role.Guard) < TownCourage.Damage(Role.Hero), "damage order");
+            var moves = new VillagerMoves { Danger = "boss" };
+            moves.Moves.Add(new VillagerMove(19, (byte)VillagerMode.Fighting, "Town", 40.5f, 60f, 3, 21, 0, 0.5f, 42f, 61f));
+            var copy = (VillagerMoves)ProtocolTests.Roundtrip(moves);
+            T.Assert(copy.Danger == "boss" && copy.Moves.Single() == moves.Moves[0], "moves");
+        });
+
         failed += T.Check("gifts: names beat tags, loved beats hated, unlisted is neutral", () =>
         {
             var table = new GiftTable();

@@ -105,6 +105,31 @@
       "terraria": ["JojaCola", "#junk", "#seed"]
     }
   },
+  "courage": {
+    "help": [
+      "Eeek! It has teeth! Somebody throw a party for me!",
+      "Help! I am covered in confetti and it is HUNTING me!",
+      "Eeeek! Not the party crasher! Help, help, help!"
+    ],
+    "thanks": [
+      "Oh my gosh, @, you saved me! I am going to need a whole new party for this.$h",
+      "Thank you, thank you, @! I was two seconds from fainting into the punch bowl.$s"
+    ],
+    "battle": [
+      "Stop! I will throw confetti at you! Please go away!",
+      "Eeeek! Back off, I am only a party planner!",
+      "Noooo! My dress is far too nice to get dirty!"
+    ],
+    "hurt": "Ow, ow, my tiara is bent and my confetti is everywhere! I am going home to lie down for the rest of the day. Somebody bring a balloon.$s",
+    "danger": {
+      "boss": "A boss is loose and I am so scared! Every boss ruins a perfectly good party. Please stay near me, @, I beg you!$s",
+      "invasion": "An invasion! Goblins, pirates, martians, all crashing the party uninvited! Nobody invited them, I swear!$s",
+      "pumpkinMoon": "Pumpkin moon! The scarecrows are staring at me and the party decorations are alive! Eeeek!$s",
+      "frostMoon": "Frost moon! The frost legion is coming and my streamers are frozen solid. Nobody dance, it is too dangerous!$s",
+      "eclipse": "The sun went dark! Eclipse monsters everywhere and my lanterns will not even light. This is the worst party ever!$s",
+      "bloodMoon": "Blood moon! The zombies are at the door and the punch is looking suspicious! Stay with me, @, please!$a"
+    }
+  },
   "events": [
     {
       "id": "h2",

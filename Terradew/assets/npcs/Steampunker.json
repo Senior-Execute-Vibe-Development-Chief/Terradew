@@ -105,6 +105,32 @@
       "terraria": ["Gel", "Dynamite", "Bomb"]
     }
   },
+  "courage": {
+    "help": [
+      "Bit of help here? This one bites back!",
+      "Little help, please. My springs are jammed!",
+      "Cover me, I am reloading the goggles!"
+    ],
+    "thanks": [
+      "Oh, @, you saved my hide out there. Thank you. My gears are still rattling.$h",
+      "That was close, @. Next time I bring a bigger wrench and you get half of it.$u"
+    ],
+    "battle": [
+      "Hold still, you rusty heap, I am coming!",
+      "Full steam ahead! Eat brass, beastie!",
+      "For the lab! Nobody scraps my town!",
+      "Tick, tick, BOOM. Come and get some!"
+    ],
+    "hurt": "Ugh. My goggles are cracked and my springs are all over the floor. I am resting at home today, @. Do not make me build anything.$s",
+    "danger": {
+      "boss": "A Terraria boss is loose and my lab is shaking! I have my goggles polished and a wrench ready. Stay close, @!$u",
+      "invasion": "The invaders are at our gates. I have loaded the brass cannons, and nobody is stealing my screws today.$h",
+      "pumpkinMoon": "The Pumpkin Moon is rising and the scarecrows have started walking. I have oiled every joint for it.$h",
+      "frostMoon": "The Frost Moon is out and the cold is creeping into the pipes. My furnace is roaring. Keep your boots dry, @.$h",
+      "eclipse": "The sky has gone dark and things are crawling out of it. My goggles are on and I am ready to fight. Stay with me, @.$h",
+      "bloodMoon": "The blood moon is up and the streets are full of things that hunger. I barred the lab door and I am going out anyway.$u"
+    }
+  },
   "events": [
     { "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "playful",
       "after": "Careful with that lantern, it is still warm from the furnace. And keep the spare cogs out of the Mechanic's sight, she will try to borrow them.",

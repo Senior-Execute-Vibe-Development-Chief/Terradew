@@ -193,6 +193,31 @@
       "terraria": ["#explosive", "#bossSummon", "#weapon"]
     }
   },
+  "courage": {
+    "help": [
+      "Help! Someone rescue my hair from this monster!",
+      "Get it away from me! Someone, anyone, help!",
+      "Hands off my hairdo! Somebody call the guard!"
+    ],
+    "thanks": [
+      "Oh, @, you saved me! My hair is a wreck, but I am alive.$h",
+      "Thank you, @. I owe you a trim, and no arguing about it.$l"
+    ],
+    "battle": [
+      "Stay back! I have... a very sharp hairpin!",
+      "Take that! Ugh, it got my good ribbon!",
+      "I will not die with my hair in this state!"
+    ],
+    "hurt": "Look at my hairdo! Bruised, dusty and wobbling. I am resting at home with a cold cloth.$a",
+    "danger": {
+      "boss": "A giant monster is loose and my salon is right in its path. I am barricading the door with mannequins.$a",
+      "invasion": "An army is marching past my salon. I have locked every window and I am not coming out.$s",
+      "pumpkinMoon": "Pumpkins with terrible faces are everywhere. Their carving is dreadful and it frightens me.$a",
+      "frostMoon": "The frost is ruining my perms and the frozen soldiers are coming. I am wrapped in three scarves.$s",
+      "eclipse": "The sky has gone black! I cannot see my reflection at all, and that is simply terrifying.$s",
+      "bloodMoon": "The moon has gone red and I look terrible in red. I am hiding under the salon counter.$a"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "jaunty",

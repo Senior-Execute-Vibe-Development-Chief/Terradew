@@ -109,6 +109,33 @@
       "terraria": ["#bossSummon", "Bone"]
     }
   },
+  "courage": {
+    "help": [
+      "Bit of help here? It has more teeth than a footnote.",
+      "Little assistance, please! This is not in any book.",
+      "Oi! Someone with a sword, quickly. Reading time is over."
+    ],
+    "thanks": [
+      "Thank you, @. I was one bad bite away from becoming a footnote.$h",
+      "I owe you one, @. I will record it in the ledger, in ink.$u",
+      "Well done, @. Remind me never to read the warning labels again.$h"
+    ],
+    "battle": [
+      "Right, you ugly thing. Let us see what you know.",
+      "Page one, chapter one: I hit you very hard.",
+      "Stand aside. I have read every chapter on this.",
+      "Footnote: you are about to be extinct. Rather hard."
+    ],
+    "hurt": "Bruised all over, @, and my spectacles are somewhere in the mud. I am resting at home until the sun comes back. Do not let anyone touch the exhibits.$s",
+    "danger": {
+      "boss": "A boss is loose out there, @. I have read about this creature and every account ends badly. Bring a sword and do not stop to read the plaque.$h",
+      "invasion": "An invasion, @! Goblins or pirates or worse, the reports never agree. I am fetching my sword and my good boots. Stay close to me.$h",
+      "pumpkinMoon": "The Pumpkin Moon is rising, @. Scarecrows are walking the fields, and the books say that is not good. I will take the lantern, you take the scythe.$u",
+      "frostMoon": "The Frost Moon. The frost legion and their snowmen are out in force. Wrap up warm, @, and keep your sword sharp. I will not sit in the library while this happens.$h",
+      "eclipse": "The eclipse. Creatures from the dark are walking the valley in broad daylight. I have checked the sources twice and I still do not like them, @. Stay close.$u",
+      "bloodMoon": "The Blood Moon is up, @. Every zombie in the valley seems to have been reading my notes. Lock the library door and keep your sword ready.$h"
+    }
+  },
   "events": [
     {
       "id": "h2",

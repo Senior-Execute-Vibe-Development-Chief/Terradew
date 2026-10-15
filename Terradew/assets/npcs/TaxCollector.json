@@ -105,6 +105,31 @@
       "terraria": ["#junk", "#bossSummon", "WhoopieCushion"]
     }
   },
+  "courage": {
+    "help": [
+      "Help! This creature is not on any tax form!",
+      "Guards! I am being taxed by a monster!",
+      "Someone please, I am not paid enough for this!"
+    ],
+    "thanks": [
+      "Oh, @, you actually saved me? I will forgive your unpaid taxes this once.$h",
+      "Thank you, @. I am filing this rescue under miscellaneous expenses.$s"
+    ],
+    "battle": [
+      "Stay back! I have... a ledger and a pen!",
+      "I am only here for the paperwork, honestly!",
+      "Back off! I am a tax man, not a swordsman!"
+    ],
+    "hurt": "I got knocked flat and my receipts went everywhere. I am resting at home for the rest of the day, and I am billing the monster for this.$s",
+    "danger": {
+      "boss": "A boss is loose! Every boss costs this town a fortune in damages. I will be counting the losses from behind a locked door.$s",
+      "invasion": "An invasion! Goblins, pirates, martians, whoever they are, they will not pay their taxes either. I am hiding behind the desk.$s",
+      "pumpkinMoon": "The pumpkin moon is up and the scarecrows are walking. I am not a scarecrow. I am absolutely not going out there.$s",
+      "frostMoon": "The frost moon brings the frost legion and the cold ruins my ink. I am staying in with three blankets and a locked door.$s",
+      "eclipse": "The sun has gone dark and the eclipse monsters are about. Who is going to count the sun now? Please, nobody look at me.$s",
+      "bloodMoon": "Blood moon! The zombies are at the door and I have not finished the Friday audit. Hide me, quickly!$a"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "with": [], "music": "playful",

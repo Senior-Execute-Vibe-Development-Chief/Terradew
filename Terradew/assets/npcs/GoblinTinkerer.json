@@ -104,6 +104,32 @@
       "terraria": ["Spike", "Shiverthorn", "#junk"]
     }
   },
+  "courage": {
+    "help": [
+      "Oi! Something's sniffing around my forge!",
+      "Over here! Bring a hammer, I'm out of patience!",
+      "Bit of help here? They've got teeth and no manners!"
+    ],
+    "thanks": [
+      "Thanks, @. I'd have a few new dents without you.$h",
+      "Good work, @. Next time I bring the big hammer, not just my temper.$u"
+    ],
+    "battle": [
+      "You want my anvil? Come and get it!",
+      "Hold the line! Nothing gets past this forge!",
+      "Back to your hole, you overgrown rat!",
+      "Ha! Goblins are only allowed to be ugly here!"
+    ],
+    "hurt": "Got clonked right in the ribs. Give me a day of bandages and coals and I'll be back at the forge. Don't fuss, @.$s",
+    "danger": {
+      "boss": "Something huge is loose out there. I'm not chasing it. I'll stay right here and let it come to my forge, @.",
+      "invasion": "Goblin armies, pirates, whatever they are. They're at the gate. I'll hold the anvil line and not one step back.",
+      "pumpkinMoon": "Pumpkin Moon. Scarecrows lurking at the edge of the fields. I'll stay by the furnace, thanks.$h",
+      "frostMoon": "Frost Moon, and the presents are walking. I'd rather be warm behind my forge than chase a gift.$u",
+      "eclipse": "Solar eclipse. Dark things are dropping out of the sky. Stay near the light, @, and let them come to us.",
+      "bloodMoon": "Blood moon rising. Bolts on the doors, nails in the boards. Let them try to climb in here."
+    }
+  },
   "events": [
     {
       "id": "h2",

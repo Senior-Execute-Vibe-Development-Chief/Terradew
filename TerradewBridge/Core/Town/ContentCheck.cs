@@ -141,6 +141,35 @@ namespace Terradew.Core.Town
                     p.Add($"{where}: list at least 3 items or tags");
             }
 
+            CourageLines courage = c.Courage ?? new CourageLines();
+            void Shouts(string what, List<string> lines, int least)
+            {
+                if (lines.Count < least)
+                    p.Add($"{at}: courage {what} needs at least {least} lines");
+                foreach (string line in lines)
+                {
+                    Line(p, $"{at} courage {what}", line);
+                    if (line.Length > 60)
+                        p.Add($"{at} courage {what}: '{line}' is over 60 characters; it is shown over their head");
+                }
+            }
+            Shouts("help", courage.Help, 3);
+            Shouts("battle", courage.Battle, 3);
+            if (courage.Thanks.Count < 2)
+                p.Add($"{at}: courage thanks needs at least 2 lines");
+            foreach (string line in courage.Thanks)
+                Line(p, $"{at} courage thanks", line);
+            Line(p, $"{at} courage hurt", courage.Hurt);
+            foreach (string kind in TownCourage.Dangers)
+            {
+                if (!courage.Danger.TryGetValue(kind, out string? text))
+                    p.Add($"{at}: courage danger needs '{kind}'");
+                else
+                    Line(p, $"{at} courage danger {kind}", text);
+            }
+            foreach (string key in courage.Danger.Keys.Where(k => !TownCourage.Dangers.Contains(k)))
+                p.Add($"{at}: courage danger '{key}' is not a danger kind");
+
             var ids = new HashSet<string>();
             foreach (NpcEvent e in c.Events)
             {

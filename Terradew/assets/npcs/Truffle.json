@@ -190,6 +190,32 @@
       "terraria": ["#bossSummon", "Torch", "Hellstone"]
     }
   },
+  "courage": {
+    "help": [
+      "Please, someone! Something is sniffing my cap!",
+      "Help! The big ones are coming for my mushrooms!",
+      "Oh no, oh no, not the stairs! Help!"
+    ],
+    "thanks": [
+      "@, you saved me! I'm still shaking, but in a happy way.$l",
+      "Thank you, @. Next time I'll try to be brave, or at least quieter.$h"
+    ],
+    "battle": [
+      "Right! Charging! Oh no, it's looking at me!",
+      "I'm brave! I'm brave! Please don't look at me!",
+      "Stay back! I'm mainly made of spores!",
+      "Charging! Ah, changed my mind. Charging back!"
+    ],
+    "hurt": "I got knocked out, @. Everything went dark and fuzzy. Please let me rest in the cellar for the day.$s",
+    "danger": {
+      "boss": "Something huge is loose out there. I'm not coming out of the cellar until it's gone, @.$s",
+      "invasion": "An army is marching through the valley! I'm under the stairs with a lamp and a blanket.$u",
+      "pumpkinMoon": "The pumpkin moon is up and every scarecrow looks hungry. I'm staying in the cellar.$s",
+      "frostMoon": "Frost moon! The snowmen are marching and they're far too close to the pond. I'm hiding.$u",
+      "eclipse": "The sun went out! The mushrooms think it's night. I'm not coming up, not even for you.$u",
+      "bloodMoon": "Blood moon tonight, and the red light is creeping under my door. Please stay with me.$s"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "sweet",

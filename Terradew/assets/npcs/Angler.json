@@ -106,6 +106,31 @@
       "terraria": ["#seed", "#plant"]
     }
   },
+  "courage": {
+    "help": [
+      "Help! Help! There's a monster and I'm not a fighter!",
+      "Somebody come get me! It's looking at my bucket!",
+      "Please hurry! I'm too little for this! Hurry, hurry!"
+    ],
+    "thanks": [
+      "@, you saved me! I'm telling the Guide you're the bravest!$h",
+      "Thanks, @. Okay, I was scared. Don't tell anyone how scared!$s"
+    ],
+    "battle": [
+      "I'm not fighting! I'm just waving my rod around!",
+      "Stay back! My fishing rod is a weapon! Probably!",
+      "I can't fight! I can only throw bait! Go away!"
+    ],
+    "hurt": "I got knocked over and my hat fell in the water. I'm resting, and I'm not crying. Mostly not.$s",
+    "danger": {
+      "boss": "Something big is down there! I'm staying away from the water until it leaves. No more monsters, please.$u",
+      "invasion": "Goblins! Pirates! Frost soldiers! Martians! Okay, I'm hiding under the dock with my bucket.$u",
+      "pumpkinMoon": "The pumpkin things are everywhere making scary faces. I'm staying home with all the lights on.$u",
+      "frostMoon": "It's a frost moon, and the snow zombies are coming. I'm wearing three sweaters and I'm still shaking.$u",
+      "eclipse": "The sun went dark and the monsters came out! I'm hiding in the fish shop with the door locked.$u",
+      "bloodMoon": "The moon is red and the monsters are loud. I don't want to go outside. Can you come check on me?$u"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",

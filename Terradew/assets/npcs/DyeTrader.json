@@ -106,6 +106,32 @@
       "terraria": ["#bossSummon", "Cobweb", "SpiderEgg"]
     }
   },
+    "courage": {
+      "help": [
+        "Help! Something is ruining my fabulous silks!",
+        "Darling, a hand over here before the dye spills!",
+        "Could a brave soul please assist me? Now, darling!"
+      ],
+      "thanks": [
+        "Oh, @, you saved me from a fate worse than beige! Thank you, darling.$h",
+        "That was thrilling, @. Next time I will dye your armor to match your heroics.$u"
+      ],
+      "battle": [
+        "Step away from my silks, you ugly beast!",
+        "Nobody ruins my dye vats while I stand here!",
+        "Hold still, darling, this will not hurt much!",
+        "This is my tent, and I will defend every thread!"
+      ],
+      "hurt": "Darling, I am bruised from head to turban, and my silks are ruined. Rest is the only fashionable option today.$s",
+      "danger": {
+        "boss": "A boss is loose out there, @, and it is trampling my dunes. I will hold this tent steady until it passes.$s",
+        "invasion": "Goblins, pirates or the frost legion, whoever they are, they will not get past my vats. I stand firm here, darling.$h",
+        "pumpkinMoon": "The Pumpkin Moon is up and the scarecrows are walking. Stay by my tent, @, and let them come to us.$s",
+        "frostMoon": "The Frost Moon has frozen my dye vats solid. I will hold this tent steady, darling, cold toes and all.$a",
+        "eclipse": "The sun has gone dark and the eclipse monsters are about. Stay close, @. Nothing gets past my tent tonight.$s",
+        "bloodMoon": "The blood moon has turned every cloth the colour of red wine. Nothing crosses this tent while I stand guard.$s"
+      }
+    },
   "events": [
     {
       "id": "h2",

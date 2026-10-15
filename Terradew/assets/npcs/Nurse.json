@@ -191,6 +191,32 @@
       "terraria": ["Musket", "GrenadeLauncher"]
     }
   },
+    "courage": {
+      "help": [
+        "Someone hold that slime off my bandages, now!",
+        "I cannot heal and fight at once, so bring help!",
+        "Hold the line! Bring me the hurt, I will patch them!"
+      ],
+      "thanks": [
+        "Good hands, @, and good timing. I am not dead yet, so that is a win.$h",
+        "You kept my clinic standing and my patients breathing, @. Thank you.$l"
+      ],
+      "battle": [
+        "Back off, you little menace. I have stitched worse!",
+        "You want a fight? Fine. I have a needle for you!",
+        "Hold still! This will sting, and it is your fault!",
+        "I do not run from slimes. I just stitch them up!"
+      ],
+      "hurt": "I took a slime to the shin, which is a fine way to learn humility. Rest is an order, and I am giving it to myself.$a",
+      "danger": {
+        "boss": "A boss is loose and my bandage roll is ready. Keep your head down, @, and come to me if you bleed.$h",
+        "invasion": "An army is marching on the valley. Kettle is on, bandages are out, and I am not leaving my post.$h",
+        "pumpkinMoon": "The Pumpkin Moon is up and the scarecrows are restless. I will heal anyone who holds the line.$h",
+        "frostMoon": "Frost Moon. Cold hands make bad stitches, so I am bundled up and ready for the frost legion.$h",
+        "eclipse": "The sun has gone dark and the eclipse monsters are about. I am staying at my post with the lamp lit.$h",
+        "bloodMoon": "The blood moon is high. Every wound tonight will need me, so I am staying close to the door.$s"
+      }
+    },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",

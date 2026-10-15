@@ -41,7 +41,28 @@ namespace Terradew.Core.Town
 
         public GiftTable Gifts { get; set; } = new();
 
+        /// <summary>What they say when danger comes. See <see cref="TownCourage"/> for who runs and who fights.</summary>
+        public CourageLines Courage { get; set; } = new();
+
         public List<NpcEvent> Events { get; set; } = new();
+    }
+
+    public sealed class CourageLines
+    {
+        /// <summary>Shouted (over their head, so short) when an enemy comes near and they run.</summary>
+        public List<string> Help { get; set; } = new();
+
+        /// <summary>Said to the farmer after someone saves them.</summary>
+        public List<string> Thanks { get; set; } = new();
+
+        /// <summary>Shouted (over their head, so short) when they go after an enemy.</summary>
+        public List<string> Battle { get; set; } = new();
+
+        /// <summary>Said when talked to after being knocked out in a fight, for the rest of that day.</summary>
+        public string Hurt { get; set; } = "";
+
+        /// <summary>Said when talked to while danger lasts, by <see cref="TownCourage.Dangers"/> kind.</summary>
+        public Dictionary<string, string> Danger { get; set; } = new();
     }
 
     public sealed class GiftTable

@@ -171,6 +171,31 @@
     "disliked": { "text": "Trash? Honestly, @. I do not dress the dustbin. Please take that back out of my shop.$a", "stardew": ["168"], "terraria": ["Gel", "#junk"] },
     "hated": { "text": "Explosives, in my shop? Have you lost your mind? One spark and my whole stock is a bonfire. Out, out!$a", "stardew": ["286", "287"], "terraria": ["#explosive"] }
   },
+  "courage": {
+    "help": [
+      "Help! Something dreadful is coming, and I have only pins!",
+      "Not the curse, not again! Somebody help me, please!",
+      "Skeletron's ghosts are back! Someone, please help!"
+    ],
+    "thanks": [
+      "@, is it gone? Oh, thank goodness, my hands are still shaking.$s",
+      "You came for me. Nobody has done that since the curse. Thank you, @.$l"
+    ],
+    "battle": [
+      "Keep back! I am armed with pins and a bad temper!",
+      "Stay away from my hats! I mean it, I really do!",
+      "Oh, dear. For the shop! Take a pin, you brute!"
+    ],
+    "hurt": "I flinched at a shadow, tripped over a mannequin, and that was the end of me. Resting at home, and not a word about it.$s",
+    "danger": {
+      "boss": "There is a boss loose out there. I can hear it from the shop, and every mannequin has turned to face the door.$s",
+      "invasion": "Invaders at the gates! I have bolted the shop door and wedged a mannequin against it. Again.$s",
+      "pumpkinMoon": "The Pumpkin Moon is up and the scarecrows are shambling past. I am staying under the counter, thank you very much.$s",
+      "frostMoon": "The Frost Moon has the windows white and the cold in my bones, and the curse is humming again. Stay inside, @.$s",
+      "eclipse": "The sun has gone out and the eclipse creatures are howling outside. I am counting stitches to keep calm.$s",
+      "bloodMoon": "The moon went red again, just like the night the curse came. Lock every door, @, please.$s"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "playful",

@@ -106,6 +106,31 @@
       "terraria": ["#junk", "#bossSummon"]
     }
   },
+  "courage": {
+    "help": [
+      "Help! Guard! Somebody call the guard, or a cheaper one!",
+      "This is robbery! Well, it will be if it eats me!",
+      "Is that thing a customer? No? Then I am leaving!"
+    ],
+    "thanks": [
+      "I owe you a discount, @. Please do not tell the others.$h",
+      "@, you saved my skin, and my skin is worth at least three gold!$h"
+    ],
+    "battle": [
+      "Stay back! I have... a knife! It is a small knife!",
+      "For the store! For the ledgers! Ahh, AHH, AHHH!",
+      "I shall defend my inventory! Mostly with this knife!"
+    ],
+    "hurt": "Ow. That knife bounced off a slime and hit me in the shin. My pride is bruised too.$s",
+    "danger": {
+      "boss": "A boss is loose out there? The shop is closed. Yes, closed. Ask me tomorrow.$a",
+      "invasion": "Goblins, pirates, frost, Martians! Every army in the valley is at my door. Prices doubled from fear.$a",
+      "pumpkinMoon": "The pumpkins are walking and the scarecrows look angry. I am counting my coins under the bed.$a",
+      "frostMoon": "The frost moon is out, and the cold is coming for my inventory. Hide the potions, quickly!$a",
+      "eclipse": "The sun went dark and the monsters came out. I am staying behind the counter until it passes.$a",
+      "bloodMoon": "Blood moon tonight. Lock the door, bar the windows, and do not look at the sky, friend.$a"
+    }
+  },
   "events": [
     { "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "playful",
       "after": "Don't tell anyone about my secret stash, alright?",

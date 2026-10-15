@@ -84,6 +84,33 @@
     "disliked": { "text": "Seeds and milk? I am a gunsmith, not a farmer. Take it back and maybe find a flower shop.$a", "stardew": ["-6"], "terraria": ["#seed", "#plant"] },
     "hated":    { "text": "Are you trying to insult me? Food and junk in my guild? Get that out of my sight, @.$a", "stardew": ["-81"], "terraria": ["#food", "#junk", "#furniture"] }
   },
+  "courage": {
+    "help": [
+      "Bit of help here? This one has teeth.",
+      "Need a hand! I am reloading, not running!",
+      "Somebody cover me, I am out of bullets!"
+    ],
+    "thanks": [
+      "Ha! You fought like you were paid for it, @. Good work.$h",
+      "Thanks, @. That was a close one. I owe you a rifle and a drink.$h",
+      "You covered my back when it counted, @. I will not forget it.$s"
+    ],
+    "battle": [
+      "Come on then, I have been waiting all week!",
+      "Ha! Eat lead, you overgrown slime!",
+      "For the valley! Nobody bites my neighbours!",
+      "Hold still so I can hit you properly!"
+    ],
+    "hurt": "Those things hit harder than they look. The Nurse has me on bed rest, so I am stuck here till morning.$s",
+    "danger": {
+      "boss": "A boss is loose out there, @. I have loaded every barrel I own. Let us go hunt it.$h",
+      "invasion": "Goblins, pirates, whatever this is, they are at our gates. I am already loaded, @. Are you coming?$h",
+      "pumpkinMoon": "Pumpkin Moon tonight, and the scarecrows are walking. I cannot decide whether to laugh or shoot. I will shoot.$h",
+      "frostMoon": "Frost Moon tonight, and the snowmen are coming. Keep your hands warm, @, and your trigger finger warmer.$h",
+      "eclipse": "Eclipse. Monsters out in broad daylight. Grim work, but somebody has to do it, and it is us.$u",
+      "bloodMoon": "Blood moon tonight. The zombies are thick outside the mines. I am sharpening everything, @. Let us go.$u"
+    }
+  },
   "events": [
     { "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "playful",
       "after": "Keep the crates away from the stove, and do not shoot the Guide's books.",

@@ -109,6 +109,32 @@
       "terraria": ["ExplosiveBunny", "#bossSummon"]
     }
   },
+    "courage": {
+      "help": [
+        "Eek! Something is coming! Can someone help me?!",
+        "Please, somebody! The hens are screaming in the coop!",
+        "Not the bunnies! Someone help me, please!"
+      ],
+      "thanks": [
+        "Oh, @, you came running! My heart is still pounding.$l",
+        "Thank you, @. I thought I would be torn in two, but you held the line.$s"
+      ],
+      "battle": [
+        "Get back from my hens, you overgrown weasel!",
+        "I am cornered, so you had better be sorry!",
+        "Do not touch the animals! I bite too, you know!",
+        "Stay back! I am a fox at heart, and foxes bite!"
+      ],
+      "hurt": "I got knocked flat, and now every hen on the ranch is judging me. Stay home today, @. I need a nap.$s",
+      "danger": {
+        "boss": "Something huge is loose, @. Stay close to the barn and keep your voice low. The animals are frightened.$s",
+        "invasion": "An army is out there and my poor hens are hiding in the coop again. I will hold the barn door, I promise.$s",
+        "pumpkinMoon": "The Pumpkin Moon is up and I am shaking like a leaf. Please stay with me by the barn, @.$s",
+        "frostMoon": "The Frost Moon is so cold my tail has gone stiff. I will stay in the barn and keep the animals warm.$h",
+        "eclipse": "The sun went dark and every animal on the ranch went silent. I am scared, @, but I am not leaving them.$s",
+        "bloodMoon": "The blood moon has bats swarming everywhere. I will not leave the animals alone, not for anything.$s"
+      }
+    },
   "events": [
     {
       "id": "h2",

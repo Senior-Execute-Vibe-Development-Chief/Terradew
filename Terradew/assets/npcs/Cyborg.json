@@ -106,6 +106,32 @@
       "terraria": ["Ichor", "#magic"]
     }
   },
+  "courage": {
+    "help": [
+      "Assistance required. Immediately, please.",
+      "Hostile detected. Cover my left flank!",
+      "Bit of help here? My arm is jammed."
+    ],
+    "thanks": [
+      "Thank you, @. My sensors say you just saved my circuits. I owe you a cog, at least.$h",
+      "That was well done, @. You fight like someone who cares. Thank you for pulling me out of that.$l"
+    ],
+    "battle": [
+      "Target acquired. Engaging. Do not wander off.",
+      "Threat detected. Eliminating. Estimated time: short.",
+      "Charging. Remember the battlefield. We win this one.",
+      "Old weapon online. Ready to hurt something."
+    ],
+    "hurt": "Systems damaged. Repairs in progress. I am resting at home today, and the drain is quiet without me.$s",
+    "danger": {
+      "boss": "A boss is loose. My sensors are screaming. Hold the walkway, @, and do not look at the drain.$u",
+      "invasion": "Invaders on the surface. I am reading their formation now. Stay behind me, @, I will take the front.$h",
+      "pumpkinMoon": "The Pumpkin Moon is up and strange creatures stalk the fields. My sensors say they are not worth the fight. I will fight them anyway.$h",
+      "frostMoon": "The Frost Moon. The cold has reached the sewer and my heater is working overtime. I will hold this line.$s",
+      "eclipse": "The eclipse has darkened the sky and the monsters are emerging. I can see perfectly in the dark. I will fight in it.$u",
+      "bloodMoon": "Blood moon. The grate is red and the zombies are howling. I am going up to meet them. Stay close, @.$s"
+    }
+  },
   "events": [
     {
       "id": "h2",

@@ -108,6 +108,31 @@
       "terraria": ["Gel", "#bossSummon"]
     }
   },
+  "courage": {
+    "help": [
+      "Help! Someone, a princess is in terrible danger!",
+      "Oh dear, oh dear! Somebody fetch a knight!",
+      "Please, someone, the monster is coming this way!"
+    ],
+    "thanks": [
+      "Oh, @, you saved me! My heart is still racing.$h",
+      "Thank you, @. I shall never doubt your bravery again.$l"
+    ],
+    "battle": [
+      "Stay back! I am armed with a teacup!",
+      "Take that, you beastie! Oh, it bounced off.",
+      "Oh please, let me live! For the river house!"
+    ],
+    "hurt": "Ooh, my bruises have bruises. I am resting with a cold compress and a very large blanket.$u",
+    "danger": {
+      "boss": "The creature is loose! I am hiding under the blankets and I will not come out until it is gone.$s",
+      "invasion": "Goblins, pirates, frost soldiers, Martians! I am making a very small hiding place under the table.$a",
+      "pumpkinMoon": "The scarecrows are staring at me tonight. I am keeping the lamp lit and my eyes shut.$s",
+      "frostMoon": "The frost is so cold and the snow ghouls are on the path. My teeth are chattering too loudly.$s",
+      "eclipse": "The sky has gone dark again! I am pulling every curtain shut and humming very quietly.$u",
+      "bloodMoon": "The moon is red and the bats are out. I have invited them all to tea, just to be polite.$s"
+    }
+  },
   "events": [
     {
       "id": "h2",

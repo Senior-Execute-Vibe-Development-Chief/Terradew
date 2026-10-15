@@ -109,6 +109,32 @@
       "terraria": ["#junk", "#potion"]
     }
   },
+  "courage": {
+    "help": [
+      "Need a hand, @! This one's got a spring in its step!",
+      "Hey! Something's hissing at my workbench. Help?",
+      "Little help here? My wrench is too slow for this!"
+    ],
+    "thanks": [
+      "Thanks, @. You kept the gears turning and me in one piece.$h",
+      "That was close. Bring coffee next time, and I'll bring the spare parts.$h"
+    ],
+    "battle": [
+      "Come on then, get a taste of my wrench!",
+      "Stay right there. You come to me, I'm not moving!",
+      "Gears turning, bolts tightening. Try me!",
+      "Every bolt I've ever tightened was tighter than you!"
+    ],
+    "hurt": "Got knocked flat and my good wrench is now a pretzel. I need a day of rest at home, @. Don't bring me anything with gears yet.$s",
+    "danger": {
+      "boss": "A boss is loose out there. I'm not running after it. I'll hold my ground by the workbench and make it come to me, @.",
+      "invasion": "Armies are marching in. Fine by me. I'll hold this line with the bolts tightened and the wrench ready.$s",
+      "pumpkinMoon": "Pumpkin Moon. Scarecrows are wandering the fields and the pumpkins are glowing. Keep your lamps lit, @.$h",
+      "frostMoon": "Frost Moon. Cold gears seize up, so I'm keeping the heaters going and waiting for trouble to come knocking.",
+      "eclipse": "Solar eclipse. Something dark is coming down from the sky. Stay close, @, and keep your back to the wall.$s",
+      "bloodMoon": "Blood moon. I've sealed the shop door and the windows. If they want in, they'll have to go through my wrench."
+    }
+  },
   "events": [
     {
       "id": "h2",

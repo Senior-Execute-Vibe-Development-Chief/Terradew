@@ -104,6 +104,33 @@
       "terraria": ["#junk"]
     }
   },
+  "courage": {
+    "help": [
+      "Little help? This one is bigger than my fuse plan.",
+      "Need a hand! Quick, before it gets a lit one on me.",
+      "Bit of help here. Who has got a bomb spare?"
+    ],
+    "thanks": [
+      "Cheers, @! You saved my beard and my eyebrows.$h",
+      "Phew! That was closer than my last fireworks show, @.$u",
+      "You are a real pal, @. I owe you a bang or two.$h"
+    ],
+    "battle": [
+      "Boom time, you ugly crawler! Eat some dynamite!",
+      "Fire in the hole! Ha, it is about to be a hole.",
+      "Stand back, I am about to be very loud.",
+      "Get in there, you! Nothing says hello like a crater."
+    ],
+    "hurt": "Ow. Everything hurts, including my pride, and my pride is mostly made of gunpowder. I am going to lie down at home for the rest of the day, @.$u",
+    "danger": {
+      "boss": "A boss is loose, @! Good, I was getting bored of bombs with nothing to hit. Bring your best explosives and do not wait for me.$h",
+      "invasion": "An invasion! Goblins, pirates, frost legion, martians, whoever it is, they will get a warm welcome from me. Fire in the hole!$h",
+      "pumpkinMoon": "The Pumpkin Moon! Scarecrows and pumpkins everywhere. I have packed extra pumpkin fuses, @. Hope they do not light up too early.$h",
+      "frostMoon": "Frost Moon! Snowmen and frost legion. I am packing a cold-proof fuse and a lot of grudge. Stay close, @, I will keep the fire going.$h",
+      "eclipse": "The eclipse, @! Dark monsters in broad daylight. Totally normal. I will make some bright and reliable bangs for them.$u",
+      "bloodMoon": "Blood Moon! Zombies, bats, and whatever else is out there. I have plenty of dynamite and no plans to stop, @.$h"
+    }
+  },
   "events": [
     {
       "id": "h2",

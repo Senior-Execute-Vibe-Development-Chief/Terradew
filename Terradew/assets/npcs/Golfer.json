@@ -193,6 +193,32 @@
       "terraria": ["#bossSummon", "Grenade", "Boomstick"]
     }
   },
+  "courage": {
+    "help": [
+      "Help! Something is after my good trousers!",
+      "Fore! Fore! Somebody get this thing off my green!",
+      "Help, help! It's coming for my golf bag!"
+    ],
+    "thanks": [
+      "Oh, @, thank goodness. My heart is still doing a backswing.$h",
+      "I owe you a drink at the saloon, @. Something soft and cold, and I'm paying for once.$h"
+    ],
+    "battle": [
+      "Stay back! I have... a golf ball!",
+      "Take this! Oh, it barely even dented it!",
+      "Fore! Fore! Please just go away!",
+      "I'm very brave! Mostly from over here!"
+    ],
+    "hurt": "Ow. I've been knocked flat, @. Put me on the sofa with a lemonade and don't mind the bruise on my dignity.$s",
+    "danger": {
+      "boss": "A boss is loose and I'm not going anywhere near the course. Please, @, stay between me and the big scary thing.$s",
+      "invasion": "An army is marching this way! I've bolted every window and I'm hiding in the cupboard with my clubs.$u",
+      "pumpkinMoon": "The pumpkin moon is up and the scarecrows keep staring at my hat. I'm not leaving the house.$s",
+      "frostMoon": "The frost moon is out and the snowmen have my best driver. I'm staying under three blankets, @.$s",
+      "eclipse": "The sky has gone dark and those eclipse things are out. I'm hiding behind my golf bag, @!$u",
+      "bloodMoon": "Blood moon tonight, @. The red light makes my golf balls look like tomatoes. Stay close, please.$s"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "playful",

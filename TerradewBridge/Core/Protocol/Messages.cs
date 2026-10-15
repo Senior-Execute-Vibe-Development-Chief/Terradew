@@ -48,6 +48,7 @@ public enum MsgType : byte
     WallFight = 49,
     StationPlaced = 50,
     GiftTaken = 51,
+    VillagerMoves = 52,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -98,6 +99,7 @@ public abstract class Message
             MsgType.GiftItem => GiftItem.ReadFrom(r),
             MsgType.Friendships => Friendships.ReadFrom(r),
             MsgType.GiftTaken => GiftTaken.ReadFrom(r),
+            MsgType.VillagerMoves => VillagerMoves.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
     }
@@ -111,7 +113,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 10;
+    public const int CurrentProtocol = 11;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -505,6 +507,53 @@ public sealed class Friendships : Message
     public static Friendships ReadFrom(BinaryReader r) => new()
     {
         Entries = r.ReadList(x => new FriendshipEntry(x.ReadInt32(), x.ReadInt32()), 200),
+    };
+}
+
+/// <summary>
+/// What a followed town NPC is doing. Mode is a Terradew.Core.Town.VillagerMode. While Fighting, the place and tile
+/// (Stardew tiles, feet) are where Terraria moved them. Frame is the Terraria sheet frame while attacking, else -1;
+/// SwingItem is the item swung in a melee attack (0 for none) and Swing how far through the swing (0 to 1).
+/// ThreatX and ThreatY are the nearest enemy's Stardew tile while one is near.
+/// </summary>
+public readonly record struct VillagerMove(int NpcType, byte Mode, string PlaceKey, float TileX, float TileY, byte Facing,
+    short Frame, int SwingItem, float Swing, float ThreatX, float ThreatY);
+
+/// <summary>
+/// Sent several times a second while any followed town NPC is busy with an enemy, and about once a second otherwise.
+/// Danger is a TownCourage.Dangers kind while one lasts (a boss, an invasion), else empty.
+/// </summary>
+public sealed class VillagerMoves : Message
+{
+    public string Danger = "";
+    public List<VillagerMove> Moves = new();
+
+    public override MsgType Type => MsgType.VillagerMoves;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Danger);
+        w.WriteList(Moves, (x, e) =>
+        {
+            x.Write(e.NpcType);
+            x.Write(e.Mode);
+            x.Write(e.PlaceKey);
+            x.Write(Wire.Finite(e.TileX));
+            x.Write(Wire.Finite(e.TileY));
+            x.Write(e.Facing);
+            x.Write(e.Frame);
+            x.Write(e.SwingItem);
+            x.Write(Wire.Finite(e.Swing));
+            x.Write(Wire.Finite(e.ThreatX));
+            x.Write(Wire.Finite(e.ThreatY));
+        });
+    }
+
+    public static VillagerMoves ReadFrom(BinaryReader r) => new()
+    {
+        Danger = r.ReadString(),
+        Moves = r.ReadList(x => new VillagerMove(x.ReadInt32(), x.ReadByte(), x.ReadString(), x.ReadSingle(), x.ReadSingle(), x.ReadByte(),
+            x.ReadInt16(), x.ReadInt32(), x.ReadSingle(), x.ReadSingle(), x.ReadSingle()), 200),
     };
 }
 

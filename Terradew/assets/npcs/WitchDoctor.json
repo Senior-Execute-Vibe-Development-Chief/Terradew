@@ -105,6 +105,20 @@
       "terraria": ["#bar", "#ore"]
     }
   },
+  "courage": {
+    "help": ["Bit of help here? The spirits are shouting, not me.", "Help! This thing does not respect the drum!", "Someone pull this root off my leg, quickly!"],
+    "thanks": ["Thank you, @. The jungle owes you one.$h", "You came when the spirits called, @. I will not forget it.$h"],
+    "battle": ["Stand back. The spirits want this one for themselves.", "The drum wants blood. Come on, then!", "No mercy from the jungle, little wretch!"],
+    "hurt": "Ow. The beast laid into me and the spirits are sulking. I rest today, @. Sit with me and listen to the rain.$s",
+    "danger": {
+      "boss": "A great beast is loose and the spirits are howling for it. Grim work, @, but someone must walk out there.$h",
+      "invasion": "The invaders are at the gates. Drum, herb and blade, @. Let us send them back where they came from.$h",
+      "pumpkinMoon": "The pumpkin moon hangs low and the scarecrows are walking. Grim work, but the spirits love a good scare.$h",
+      "frostMoon": "The frost moon is up and the cold has teeth tonight. I will fight the frost things with my drum and my fire.$h",
+      "eclipse": "The sun is swallowed and the dark things crawl out. I am ready. The spirits are not, so I will sing for them.$s",
+      "bloodMoon": "Blood moon tonight. Things crawl up out of the grass, and I am not sleeping. Walk with me, @, and bring a torch.$h"
+    }
+  },
   "events": [
     {
       "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",
