@@ -23,6 +23,12 @@ internal sealed class TerrariaTools
     private Pickaxe? pickaxe;
     private Axe? axe;
     private MeleeWeapon? scythe;
+    /// <summary>Ticks since the last strike of a channelled tool that is still held down.</summary>
+    private int channelTicks;
+    // Terraria's ItemUseStyleID.Shoot: drills, chainsaws and jackhammers use it, and their held projectile keeps the animation pinned.
+    private const int ChannelStyle = 5;
+    // Most drills and chainsaws use the item about every seven to thirteen ticks in Terraria; a strike lands this often while held.
+    private const int ChannelTicks = 9;
 
     public TerrariaTools(IMonitor monitor, Hand hand)
     {
@@ -30,7 +36,11 @@ internal sealed class TerrariaTools
         this.hand = hand;
     }
 
-    public void Reset() => lastAnimation = 0;
+    public void Reset()
+    {
+        lastAnimation = 0;
+        channelTicks = 0;
+    }
 
     public void Update(Bridge bridge)
     {
@@ -41,18 +51,27 @@ internal sealed class TerrariaTools
         // A use starts when the animation jumps up: from rest, or a new swing right after the last one.
         bool started = animation > lastAnimation;
         lastAnimation = animation;
+        // A channelled tool holds its animation at a fixed value while the button is down, so it never jumps again. It strikes on a timer instead.
+        bool channelling = world != null && world.Held.UseStyle == ChannelStyle && hand.UseHeld && animation > 0;
+        if (!channelling)
+            channelTicks = 0;
         WatchForNoSwing(bridge, world, inventory, animation);
-        if (!started || world == null || inventory == null || !hand.Active || !Context.IsPlayerFree || player.currentLocation == null)
+        if ((!started && !channelling) || world == null || inventory == null || !hand.Active || !Context.IsPlayerFree || player.currentLocation == null)
             return;
         if (hand.Slot >= inventory.Items.Count)
             return;
         ItemStack held = inventory.Items[hand.Slot];
         if (held.IsEmpty || held.ItemType != world.Held.ItemType)
         {
-            monitor.Log($"Terradew: Terraria swung item {world.Held.ItemType} but Stardew's slot {hand.Slot + 1} holds {(held.IsEmpty ? "nothing" : held.Name)}; nothing happens in Stardew.", LogLevel.Info);
+            if (started)
+                monitor.Log($"Terradew: Terraria swung item {world.Held.ItemType} but Stardew's slot {hand.Slot + 1} holds {(held.IsEmpty ? "nothing" : held.Name)}; nothing happens in Stardew.", LogLevel.Info);
             return;
         }
         if (held.Pick == 0 && held.Hammer == 0 && held.Axe == 0 && !held.Blade)
+            return;
+        if (channelling && ++channelTicks >= ChannelTicks)
+            channelTicks = 0;
+        else if (channelling)
             return;
         try
         {
