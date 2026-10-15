@@ -275,20 +275,20 @@ public static class Inventory
         {
             const int Most = 60;
             var text = new string[Most];
-            var colors = new Color[Most];
+            var good = new bool[Most];
+            var bad = new bool[Most];
             var names = new string[Most];
-            text[0] = item.HoverName;
-            names[0] = "ItemName";
             int lines = 1;
             int logo = -1;
-            Main.MouseText_DrawItemTooltip_GetLinesInfo(item, ref logo, item.knockBack, ref lines, text, colors, names, out int prefixLine);
-            ItemLoader.ModifyTooltips(item, ref lines, names, ref text, ref colors, ref logo, prefixLine);
+            int research = -1;
+            Main.MouseText_DrawItemTooltip_GetLinesInfo(item, ref logo, ref research, item.knockBack, ref lines, text, good, bad, names, out int prefixLine);
+            List<TooltipLine> shown = ItemLoader.ModifyTooltips(item, ref lines, names, ref text, ref good, ref bad, ref logo, out _, prefixLine);
             var tooltip = new StringBuilder();
-            for (int i = 0; i < lines; i++)
+            foreach (TooltipLine entry in shown)
             {
-                if (names[i] == "ItemName" || string.IsNullOrWhiteSpace(text[i]))
+                if (!entry.Visible || entry.Name == "ItemName" || string.IsNullOrWhiteSpace(entry.Text))
                     continue;
-                string line = OtherTag.Replace(ColourTag.Replace(text[i], "$1"), "").Trim();
+                string line = OtherTag.Replace(ColourTag.Replace(entry.Text, "$1"), "").Trim();
                 if (line.Length == 0)
                     continue;
                 if (tooltip.Length > 0)
