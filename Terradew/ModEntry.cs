@@ -28,6 +28,7 @@ public sealed class ModEntry : Mod
     private MobRoutes routes = null!;
     private Fishing fishing = null!;
     private Mining mining = null!;
+    private readonly Explosions explosions = new();
     private WallClimb wallClimb = null!;
     private Bundles bundles = null!;
     private Houses houses = null!;
@@ -109,6 +110,7 @@ public sealed class ModEntry : Mod
         bridge.Notice += notice => hud.Notice(notice.Text, new Color(notice.R, notice.G, notice.B));
         bridge.StationPlaced += placed => stations.OnStationPlaced(placed, bridge);
         bridge.GiftTaken += taken => stories.OnGiftTaken(taken);
+        bridge.Exploded += blast => explosions.OnExplosion(blast);
         bridge.Recalled += recall => HomeRecall.OnRecall(recall, Monitor);
 
         helper.Events.GameLoop.SaveLoaded += (_, _) => StartFarm();

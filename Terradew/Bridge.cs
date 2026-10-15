@@ -57,6 +57,7 @@ internal sealed class Bridge : IDisposable
     public event Action<Notice>? Notice;
     public event Action<StationPlaced>? StationPlaced;
     public event Action<GiftTaken>? GiftTaken;
+    public event Action<Core.Protocol.Explosion>? Exploded;
     /// <summary>Terraria used a Recall Potion or a mirror. The farmer should go home.</summary>
     public event Action<Core.Protocol.Recall>? Recalled;
 
@@ -153,6 +154,10 @@ internal sealed class Bridge : IDisposable
             case Core.Protocol.GiftTaken taken:
                 // Always raised: Terraria already took the item, so the villager must still get it.
                 GiftTaken?.Invoke(taken);
+                break;
+            case Core.Protocol.Explosion blast:
+                // Always raised: Terraria already blew it up, so the Stardew breakables in reach must break too.
+                Exploded?.Invoke(blast);
                 break;
             case Core.Protocol.Recall recall:
                 // Always raised: Terraria already spent the item, so the farmer must still go home.

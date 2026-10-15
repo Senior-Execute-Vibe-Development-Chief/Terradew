@@ -54,6 +54,7 @@ public enum MsgType : byte
     PlayerLook = 53,
     Movement = 54,
     Recall = 55,
+    Explosion = 56,
     PlayerGlow = 57,
 }
 
@@ -95,6 +96,7 @@ public abstract class Message
             MsgType.StationPlaced => StationPlaced.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
             MsgType.Movement => Movement.ReadFrom(r),
+            MsgType.Explosion => Explosion.ReadFrom(r),
             MsgType.PlayerGlow => PlayerGlow.ReadFrom(r),
             MsgType.Recall => Recall.ReadFrom(r),
             MsgType.InventoryState => InventoryState.ReadFrom(r),
@@ -475,6 +477,35 @@ public sealed class StationPlaced : Message
     }
 
     public static StationPlaced ReadFrom(BinaryReader r) => new() { Seq = r.ReadInt32(), ItemType = r.ReadInt32(), Ok = r.ReadBoolean() };
+}
+
+/// <summary>A bomb Terraria blew up in the farmer's place. Stardew breaks the breakables its blast reaches.</summary>
+public sealed class Explosion : Message
+{
+    public string PlaceKey = "";
+    /// <summary>Blast centre in Stardew map tiles.</summary>
+    public float TileX;
+    public float TileY;
+    /// <summary>Blast radius in Stardew tiles.</summary>
+    public int Radius;
+
+    public override MsgType Type => MsgType.Explosion;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.Write(Wire.Finite(TileX));
+        w.Write(Wire.Finite(TileY));
+        w.Write(Radius);
+    }
+
+    public static Explosion ReadFrom(BinaryReader r) => new()
+    {
+        PlaceKey = r.ReadString(),
+        TileX = r.ReadSingle(),
+        TileY = r.ReadSingle(),
+        Radius = r.ReadInt32(),
+    };
 }
 
 public sealed class NpcInteract : Message
