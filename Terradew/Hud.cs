@@ -52,7 +52,11 @@ internal sealed class Hud
     {
         if (!Context.IsWorldReady)
             return;
-        Game1.onScreenMenus.RemoveAll(menu => menu is Toolbar);
+        for (int i = Game1.onScreenMenus.Count - 1; i >= 0; i--)
+        {
+            if (Game1.onScreenMenus[i] is Toolbar)
+                Game1.onScreenMenus.RemoveAt(i);
+        }
     }
 
     /// <summary>A left click on the hotbar selects its slot. Returns true when the click was on the bar and is used up.</summary>

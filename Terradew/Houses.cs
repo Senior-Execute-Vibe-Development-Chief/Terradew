@@ -72,7 +72,7 @@ internal sealed class Houses
         Dictionary<string, MapLayout> layouts = new();
         Dictionary<string, HashSet<Point>> used = new();
         var sentLayouts = new HashSet<string>();
-        IReadOnlyDictionary<string, CharacterData> characters = Game1.characterData;
+        IDictionary<string, CharacterData> characters = Game1.characterData;
 
         foreach (string npc in TownHomes.Npcs)
         {

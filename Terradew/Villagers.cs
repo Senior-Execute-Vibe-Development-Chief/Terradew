@@ -149,7 +149,7 @@ internal sealed class Villagers
     {
         try
         {
-            Game1.questOfTheDay = null;
+            Game1.netWorldState.Value.SetQuestOfTheDay(null);
         }
         catch (Exception error)
         {
