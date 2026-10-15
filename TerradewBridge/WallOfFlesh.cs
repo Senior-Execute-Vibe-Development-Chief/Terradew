@@ -79,7 +79,7 @@ public sealed class WallOfFlesh : GlobalNPC
         }
 
         float farmerX = player.position.X + player.width / 2f;
-        float farmerFeetY = player.position.Y + player.height;
+        float farmerFeetY = Puppet.FeetOf(player).Y;
 
         if (npc.type == NPCID.WallofFlesh)
         {

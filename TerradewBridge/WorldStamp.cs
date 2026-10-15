@@ -269,7 +269,7 @@ public sealed class WorldStamp
             followers.Clear();
             return;
         }
-        Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
+        Vector2 farmer = Puppet.FeetOf(player);
         foreach (var (i, type) in followers)
         {
             NPC npc = Main.npc[i];
@@ -416,7 +416,7 @@ public sealed class WorldStamp
         Current = place;
         if (place != null && TicksInPlace == FollowDelay)
             BringFollowers(place, player);
-        lastFeet = new Vector2(player.position.X + player.width / 2f, player.position.Y + player.height);
+        lastFeet = Puppet.FeetOf(player);
 
         var state = new WorldState
         {

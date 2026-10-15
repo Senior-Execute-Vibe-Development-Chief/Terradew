@@ -11,8 +11,7 @@ namespace Terradew;
 /// <summary>
 /// Shows the Terraria character in place of the farmer. Terraria draws its player each tick and sends the picture
 /// (see TerradewBridge.Body); here the farmer is hidden and the picture drawn on the farmer's feet, at the same scale
-/// as the Terraria creatures. Stardew-only actions keep the farmer, since Terraria has no animation for them, and so
-/// does any moment the pictures stop arriving.
+/// as the Terraria creatures. The farmer shows only while no pictures arrive, as when tModLoader is closed.
 /// </summary>
 internal sealed class TerrariaBody
 {
@@ -57,7 +56,7 @@ internal sealed class TerrariaBody
     {
         PlayerLook? look = bridge.Look;
         Farmer player = Game1.player;
-        showing = config.TerrariaBody && look != null && look.Width > 0 && look.Height > 0 && Context.IsWorldReady && FarmerLike(player) == false;
+        showing = config.TerrariaBody && look != null && look.Width > 0 && look.Height > 0 && Context.IsWorldReady && player.currentLocation != null;
         if (!showing || look == null || ReferenceEquals(look, shown))
             return;
         try
@@ -78,21 +77,6 @@ internal sealed class TerrariaBody
             showing = false;
             monitor.Log($"Terradew could not show your Terraria character. {error.Message}", LogLevel.Trace);
         }
-    }
-
-    /// <summary>
-    /// True while the farmer does something only Stardew can draw: a tool or rod, eating, sitting, riding, swimming,
-    /// a one-off animation such as harvesting, or a cutscene.
-    /// </summary>
-    private static bool FarmerLike(Farmer player)
-    {
-        if (player.currentLocation == null || Game1.eventUp)
-            return true;
-        if (player.UsingTool || player.isRidingHorse() || player.IsSitting() || player.isEating)
-            return true;
-        if (player.swimming.Value || player.bathingClothes.Value)
-            return true;
-        return player.FarmerSprite != null && player.FarmerSprite.PauseForSingleAnimation;
     }
 
     private static bool BeforeFarmerDraw(Farmer __instance)

@@ -291,7 +291,7 @@ public sealed class Town
         if (NPC.downedBoss3 || place == null || place.Key != "SkullCave" || NPC.AnyNPCs(NPCID.OldMan) || NPC.AnyNPCs(NPCID.SkeletronHead))
             return;
         Player player = Main.LocalPlayer;
-        Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
+        Vector2 farmer = Puppet.FeetOf(player);
         if (!stamp.TryOpenSpot(farmer, 3, 8, out Vector2 feet))
             return;
         NPC.NewNPC(new EntitySource_Misc("Terradew old man"), (int)feet.X, (int)feet.Y, NPCID.OldMan);

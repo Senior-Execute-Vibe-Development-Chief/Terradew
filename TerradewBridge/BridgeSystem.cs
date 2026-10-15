@@ -157,6 +157,9 @@ public sealed class BridgeSystem : ModSystem
     /// <summary>One bridge step. Runs after the world updates, or from the UI when Terraria skipped the world.</summary>
     private void Tick()
     {
+        // Terraria naps 20ms a frame while its window is in the background, which makes swings and creatures stutter.
+        if (Active && Main.instance != null && Main.instance.InactiveSleepTime != TimeSpan.Zero)
+            Main.instance.InactiveSleepTime = TimeSpan.Zero;
         if (!started)
             Start();
         worldTicks++;

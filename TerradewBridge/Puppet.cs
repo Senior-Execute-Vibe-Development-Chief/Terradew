@@ -21,6 +21,30 @@ public sealed class Puppet : ModPlayer
     /// <summary>Ticks of immunity after the farmer changes place, so a snap never lands on a creature.</summary>
     private const int SnapGrace = 45;
 
+    /// <summary>
+    /// Stardew draws the player at half size, standing on the farmer's feet, so its middle is half as high as Terraria's.
+    /// The Terraria body sits this much lower than the farmer's feet, putting its Center (where swings, shots and
+    /// light start) on the middle of the picture.
+    /// </summary>
+    public const float BodyDrop = 42 / 2f * (1f - SpriteLayout.BodyScale);
+
+    /// <summary>Ticks of immunity after a hit, about as long as Stardew's.</summary>
+    private const int HurtImmunity = 60;
+
+    /// <summary>The farmer's feet: the bottom middle of the farmer's body in Terraria pixels.</summary>
+    public static Vector2 FeetOf(Player player)
+        => new(player.position.X + player.width / 2f, player.position.Y + player.height - BodyDrop);
+
+    /// <summary>Where Stardew aims, in Terraria pixels, while Stardew drives the player.</summary>
+    public static bool TryAim(out Vector2 aim)
+    {
+        aim = default;
+        if (!Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place))
+            return false;
+        aim = place.ToWorld(pulse.AimX, pulse.AimY);
+        return true;
+    }
+
     private readonly HashSet<int> struckThisSwing = new();
     private int lastAnimation;
 
@@ -40,7 +64,7 @@ public sealed class Puppet : ModPlayer
     private int stuckTicks;
     private uint lastStuckReport;
 
-    private static bool Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place)
+    internal static bool Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place)
     {
         pulse = null!;
         place = null!;
@@ -126,6 +150,7 @@ public sealed class Puppet : ModPlayer
             return;
         Place();
         Walk();
+        Melee.PoseArm(Player);
         WatchForStuckUse();
         Player.breath = Player.breathMax;
         if (Player.dead)
@@ -207,7 +232,7 @@ public sealed class Puppet : ModPlayer
             return;
         }
         Vector2 feet = place.ToWorld(pulse.FeetX, pulse.FeetY);
-        (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, Player.width, Player.height);
+        (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y + BodyDrop, Player.width, Player.height);
         float east = x - Player.position.X;
         Player.position = new Vector2(x, y);
         Player.velocity = Vector2.Zero;
@@ -255,7 +280,9 @@ public sealed class Puppet : ModPlayer
                 Player.bodyFrame.Y = 0;
             return;
         }
-        walkCounter += walkSpeed * 1.3f;
+        // Terraria counts leg frames from speed in its own pixels; the picture is drawn at half the map scale, so
+        // the farmer's steps are twice as many picture pixels.
+        walkCounter += walkSpeed * (WorldProjection.Scale / SpriteLayout.DrawScale) * 1.3f;
         while (walkCounter > 8f)
         {
             walkCounter -= 8f;
@@ -320,6 +347,15 @@ public sealed class Puppet : ModPlayer
         }
     }
 
+    /// <summary>Terraria's own hit immunity is short for a top-down map; it lasts about as long as Stardew's.</summary>
+    public override void PostHurt(Player.HurtInfo info)
+    {
+        if (!BridgeSystem.Active)
+            return;
+        Player.immune = true;
+        Player.immuneTime = Math.Max(Player.immuneTime, HurtImmunity);
+    }
+
     public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource)
     {
         if (!BridgeSystem.Active)
@@ -346,7 +382,7 @@ public sealed class Puppet : ModPlayer
     private Rectangle FarmerBody()
     {
         int feetX = (int)(Player.position.X + Player.width / 2f);
-        int feetY = (int)(Player.position.Y + Player.height);
+        int feetY = (int)(Player.position.Y + Player.height - BodyDrop);
         return new Rectangle(feetX - SpriteLayout.FarmerWidth / 2, feetY - SpriteLayout.FarmerHeight, SpriteLayout.FarmerWidth, SpriteLayout.FarmerHeight);
     }
 
@@ -368,8 +404,69 @@ public sealed class Puppet : ModPlayer
 /// <summary>Turns off Terraria's left-or-right sword hitbox in the Terradew world; <see cref="Puppet"/> swings instead.</summary>
 public sealed class Melee : GlobalItem
 {
+    /// <summary>Melee weapons and tools: their hits land along Stardew's aim instead of Terraria's left-or-right box.</summary>
     public static bool UsesArc(Item item)
-        => item.damage > 0 && !item.noMelee && (item.useStyle == ItemUseStyleID.Swing || item.useStyle == ItemUseStyleID.Thrust) && item.pick == 0 && item.axe == 0 && item.hammer == 0;
+        => item.damage > 0 && !item.noMelee && (item.useStyle == ItemUseStyleID.Swing || item.useStyle == ItemUseStyleID.Thrust);
+
+    /// <summary>Swung items are drawn sweeping across the aim, in any direction.</summary>
+    private static bool AimsSwing(Item item, Player player)
+        => BridgeSystem.Active && player.whoAmI == Main.myPlayer && item.useStyle == ItemUseStyleID.Swing && !item.noUseGraphic;
+
+    /// <summary>How far the swing has turned, as the angle the blade points along in screen terms (y down).</summary>
+    private static bool TryBladeAngle(Item item, Player player, out float angle)
+    {
+        angle = 0f;
+        if (!AimsSwing(item, player) || player.itemAnimationMax <= 0 || !Puppet.TryAim(out Vector2 aim))
+            return false;
+        Vector2 toward = aim - player.Center;
+        float aimAngle = toward.LengthSquared() < 1f ? (player.direction == 1 ? 0f : MathF.PI) : MathF.Atan2(toward.Y, toward.X);
+        float progress = 1f - Math.Clamp(player.itemAnimation / (float)player.itemAnimationMax, 0f, 1f);
+        // From a third of a turn before the aim to a third past it, clockwise when facing right.
+        float sweep = (progress - 0.5f) * (2f * MathF.PI / 3f);
+        angle = aimAngle + (player.direction == 1 ? sweep : -sweep);
+        return true;
+    }
+
+    public override void UseStyle(Item item, Player player, Rectangle heldItemFrame)
+    {
+        if (!TryBladeAngle(item, player, out float angle))
+            return;
+        // At rotation zero the sprite's blade points up and away from the handle: up-right facing right, up-left facing left.
+        player.itemRotation = angle + (player.direction == 1 ? MathF.PI / 4f : 3f * MathF.PI / 4f);
+        Vector2 along = new(MathF.Cos(angle), MathF.Sin(angle));
+        player.itemLocation = player.Center + along * 4f;
+    }
+
+    /// <summary>Dust and grass cutting follow the drawn blade.</summary>
+    public override void UseItemHitbox(Item item, Player player, ref Rectangle hitbox, ref bool noHitbox)
+    {
+        if (!TryBladeAngle(item, player, out float angle))
+            return;
+        float length = MathF.Sqrt(item.width * item.width + item.height * item.height) * player.GetAdjustedItemScale(item);
+        Vector2 middle = player.itemLocation + new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * length * 0.6f;
+        hitbox.X = (int)(middle.X - hitbox.Width / 2f);
+        hitbox.Y = (int)(middle.Y - hitbox.Height / 2f);
+    }
+
+    /// <summary>The arm follows the blade: raised, half raised, level or lowered.</summary>
+    public static void PoseArm(Player player)
+    {
+        Item item = player.HeldItem;
+        if (item == null || item.IsAir || player.itemAnimation <= 0 || !TryBladeAngle(item, player, out float angle))
+            return;
+        float down = MathF.Sin(angle);
+        int frame = down < -0.75f ? 1 : down < -0.25f ? 2 : down < 0.45f ? 3 : 4;
+        player.bodyFrame.Y = frame * player.bodyFrame.Height;
+    }
+
+    /// <summary>Held down in Stardew, a weapon or tool keeps swinging, as tools do in Terraria.</summary>
+    public override bool? CanAutoReuseItem(Item item, Player player)
+    {
+        if (!BridgeSystem.Active || player.whoAmI != Main.myPlayer || !Puppet.TryAim(out _))
+            return null;
+        bool swung = item.useStyle == ItemUseStyleID.Swing || item.useStyle == ItemUseStyleID.Thrust || item.useStyle == ItemUseStyleID.Rapier;
+        return swung && (item.damage > 0 || item.pick > 0 || item.axe > 0 || item.hammer > 0) ? true : null;
+    }
 
     public override bool? CanHitNPC(Item item, Player player, NPC target)
     {

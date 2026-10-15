@@ -37,7 +37,7 @@ public static class Celestial
             return;
 
         Player player = Main.LocalPlayer;
-        Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
+        Vector2 farmer = Puppet.FeetOf(player);
         Vector2 feet;
         int type;
         switch (action.Kind)

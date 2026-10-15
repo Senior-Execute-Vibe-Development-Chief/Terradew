@@ -120,7 +120,7 @@ public sealed class Creatures : GlobalNPC
         {
             goal = bridge.Stamp.TryRoute(npc.whoAmI, out Vector2 step)
                 ? step
-                : new Vector2(player.position.X + player.width / 2f, player.position.Y + player.height);
+                : Puppet.FeetOf(player);
             arrive = 3f;
         }
         else
@@ -143,14 +143,42 @@ public sealed class Creatures : GlobalNPC
             }
         }
 
-        float speed = npc.townNPC ? 0.85f : npc.aiStyle == NPCAIStyleID.Slime ? 1.2f : npc.boss ? 2.4f : 1.5f;
+        // Terraria pixels per tick; one is four Stardew pixels. The farmer walks about 1.25 and Stardew's people 0.5.
+        float speed = npc.townNPC ? 0.5f : npc.aiStyle == NPCAIStyleID.Slime ? 0.6f : npc.boss ? 1.6f : npc.damage <= 0 ? 0.5f : 0.8f;
         PlaneMotion.PlaneStep aim = PlaneMotion.Aim(feet.X, feet.Y, goal.X, goal.Y, speed, arrive);
-        Collide(npc, new Vector2(aim.X, aim.Y));
+        Vector2 step = new(aim.X, aim.Y);
+        if (chasing)
+            step += Spread(npc, feet);
+        Collide(npc, step);
         if (MathF.Abs(aim.X) > 0.05f)
         {
             npc.direction = aim.X < 0f ? -1 : 1;
             npc.spriteDirection = npc.direction;
         }
+    }
+
+    /// <summary>
+    /// Chasers that overlap push apart, so a crowd surrounds the farmer instead of stacking on one spot. Terraria's
+    /// own walkers are kept apart by the ground they stand on; on a flat map nothing else would.
+    /// </summary>
+    private static Vector2 Spread(NPC npc, Vector2 feet)
+    {
+        Vector2 push = Vector2.Zero;
+        for (int i = 0; i < Main.maxNPCs; i++)
+        {
+            NPC other = Main.npc[i];
+            if (i == npc.whoAmI || !other.active || other.townNPC || other.friendly || other.aiStyle == NPCAIStyleID.Worm)
+                continue;
+            Vector2 apart = feet - new Vector2(other.position.X + other.width / 2f, other.position.Y + other.height);
+            float room = (npc.width + other.width) * 0.5f;
+            float distance = apart.Length();
+            if (distance >= room)
+                continue;
+            apart = distance < 0.01f ? new Vector2(npc.whoAmI < i ? -1f : 1f, 0f) : apart / distance;
+            push += apart * (room - distance) * 0.2f;
+        }
+        float length = push.Length();
+        return length > 0.6f ? push * (0.6f / length) : push;
     }
 
     private void Collide(NPC npc, Vector2 step)
@@ -257,7 +285,7 @@ public sealed class Creatures : GlobalNPC
         if (!BridgeSystem.Active || npc.townNPC || npc.boss || source is not EntitySource_SpawnNPC)
             return;
         Player player = Main.LocalPlayer;
-        Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
+        Vector2 farmer = Puppet.FeetOf(player);
         WorldStamp stamp = BridgeSystem.Instance.Stamp;
         if (!Invasions.Allowed(npc, stamp.Current))
         {

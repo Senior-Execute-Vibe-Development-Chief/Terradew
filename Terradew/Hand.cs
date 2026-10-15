@@ -36,6 +36,11 @@ internal sealed class Hand
 
     public bool UseHeld { get; private set; }
 
+    /// <summary>A click shorter than this many ticks is held this long, so Terraria sees it even between its frames.</summary>
+    private const int ShortestUse = 4;
+    private int heldTicks;
+    private bool released;
+
     public void Reset()
     {
         UseHeld = false;
@@ -67,6 +72,8 @@ internal sealed class Hand
             if (TryPlaceStation(bridge))
                 return;
             UseHeld = true;
+            heldTicks = 0;
+            released = false;
         }
     }
 
@@ -84,7 +91,10 @@ internal sealed class Hand
     {
         if (e.Button.IsUseToolButton() && UseHeld)
         {
-            UseHeld = false;
+            if (heldTicks < ShortestUse)
+                released = true;
+            else
+                UseHeld = false;
             if (Active)
                 helper.Input.Suppress(e.Button);
         }
@@ -96,6 +106,11 @@ internal sealed class Hand
         if (!Game1.game1.IsActive)
             UseHeld = false;
         WrapToolIndex();
+        if (UseHeld && ++heldTicks >= ShortestUse && released)
+        {
+            UseHeld = false;
+            released = false;
+        }
         if (!Active || !Context.IsPlayerFree)
             UseHeld = false;
     }
