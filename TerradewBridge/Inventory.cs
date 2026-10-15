@@ -299,9 +299,11 @@ public static class Inventory
             target = vanity ? 12 : 2;
         else if (item.accessory)
         {
-            int last = 3 + 5 + player.extraAccessorySlots;
-            for (int i = 3; i < last && i < 10; i++)
+            for (int i = 3; i < 10; i++)
             {
+                // The sixth and seventh slots need a Demon Heart or master mode.
+                if (!player.IsItemSlotUnlockedAndUsable(i))
+                    continue;
                 if (player.armor[i].IsAir)
                 {
                     target = i;
