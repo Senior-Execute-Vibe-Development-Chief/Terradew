@@ -97,7 +97,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 5;
+    public const int CurrentProtocol = 6;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -481,8 +481,8 @@ public sealed class DayStarted : Message
     public static DayStarted ReadFrom(BinaryReader r) => new() { TotalDays = r.ReadInt32() };
 }
 
-/// <summary>A house a Terraria town NPC can live in: a built Terraria House on the farm.</summary>
-public readonly record struct HomeEntry(string PlaceKey, int TileX, int TileY);
+/// <summary>The Stardew home a Terraria town NPC lives in: the place and the tile its bed or spot is on.</summary>
+public readonly record struct HomeEntry(string Npc, string PlaceKey, int TileX, int TileY);
 
 public sealed class Homes : Message
 {
@@ -491,11 +491,11 @@ public sealed class Homes : Message
     public override MsgType Type => MsgType.Homes;
 
     public override void Write(BinaryWriter w)
-        => w.WriteList(Entries, (x, e) => { x.Write(e.PlaceKey); x.Write(e.TileX); x.Write(e.TileY); });
+        => w.WriteList(Entries, (x, e) => { x.Write(e.Npc); x.Write(e.PlaceKey); x.Write(e.TileX); x.Write(e.TileY); });
 
     public static Homes ReadFrom(BinaryReader r) => new()
     {
-        Entries = r.ReadList(x => new HomeEntry(x.ReadString(), x.ReadInt32(), x.ReadInt32()), 1000),
+        Entries = r.ReadList(x => new HomeEntry(x.ReadString(), x.ReadString(), x.ReadInt32(), x.ReadInt32()), 1000),
     };
 }
 

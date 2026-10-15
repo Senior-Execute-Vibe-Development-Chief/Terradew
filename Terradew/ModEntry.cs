@@ -27,6 +27,7 @@ public sealed class ModEntry : Mod
     private WallClimb wallClimb = null!;
     private Bundles bundles = null!;
     private Houses houses = null!;
+    private Villagers villagers = null!;
     private Draw draw = null!;
     private Hud hud = null!;
     private bool helloSent;
@@ -47,13 +48,15 @@ public sealed class ModEntry : Mod
         fishing = new Fishing(helper);
         mining = new Mining();
         wallClimb = new WallClimb(bridge);
-        houses = new Houses();
+        houses = new Houses(Monitor);
+        villagers = new Villagers();
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper);
         var harmony = new Harmony(ModManifest.UniqueID);
         draw.Install(harmony, Monitor);
         mining.Install(harmony, Monitor);
+        villagers.Install(harmony, Monitor);
         wallClimb.Install(harmony, Monitor);
         new Clock().Install(harmony, Monitor);
 
@@ -88,12 +91,15 @@ public sealed class ModEntry : Mod
         helper.Events.Display.MenuChanged += (_, e) => fishing.OnMenuChanged(e.NewMenu, bridge, maps);
         helper.Events.Display.MenuChanged += (_, e) => wallClimb.OnMenuChanged(e.NewMenu);
         helper.Events.Player.Warped += (_, e) => wallClimb.OnWarped(e);
+        helper.Events.Player.Warped += (_, e) => villagers.Refresh(e.NewLocation);
+        helper.Events.GameLoop.TimeChanged += (_, _) => villagers.Refresh(Game1.currentLocation);
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         helper.Events.Input.ButtonReleased += (_, e) => hand.OnButtonReleased(e);
         helper.Events.Input.MouseWheelScrolled += (_, e) => hand.OnWheel(e);
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => bundles.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => villagers.OnAssetRequested(e);
         helper.Events.World.ObjectListChanged += (_, e) => { if (Leading) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };
         helper.ConsoleCommands.Add("terradew", "terradew status | terradew <command for Terraria>, such as: summon, boss EyeofCthulhu, give CopperShortsword", OnCommand);
@@ -226,6 +232,7 @@ public sealed class ModEntry : Mod
     private void OnDayStarted()
     {
         Clock.OnDayStarted();
+        villagers.Refresh(null);
         if (!Context.IsMainPlayer)
             return;
         houses.Publish(bridge);

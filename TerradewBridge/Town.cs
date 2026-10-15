@@ -13,8 +13,8 @@ using Terraria.ID;
 namespace TerradewBridge;
 
 /// <summary>
-/// Terraria town NPCs live in Terraria Houses the farmer builds on the farm. Each new Stardew morning,
-/// one NPC whose Terraria conditions are met moves into a free house. Residents who died come back.
+/// Terraria town NPCs live in the homes of the Stardew villagers (see TownHomes). Each new Stardew morning,
+/// one NPC whose Terraria conditions are met, and whose home Stardew has sent, moves in. Residents who died come back.
 /// </summary>
 public sealed class Town
 {
@@ -36,8 +36,8 @@ public sealed class Town
         foreach (string line in (savedHomes ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries))
         {
             string[] parts = line.Split('|');
-            if (parts.Length == 3 && int.TryParse(parts[1], out int x) && int.TryParse(parts[2], out int y))
-                homes.Add(new HomeEntry(parts[0], x, y));
+            if (parts.Length == 4 && int.TryParse(parts[2], out int x) && int.TryParse(parts[3], out int y))
+                homes.Add(new HomeEntry(parts[0], parts[1], x, y));
         }
         foreach (string line in (savedResidents ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries))
         {
@@ -52,7 +52,7 @@ public sealed class Town
         }
     }
 
-    public string SaveHomes() => string.Join("\n", homes.Select(h => $"{h.PlaceKey}|{h.TileX}|{h.TileY}"));
+    public string SaveHomes() => string.Join("\n", homes.Select(h => $"{h.Npc}|{h.PlaceKey}|{h.TileX}|{h.TileY}"));
 
     public string SaveResidents()
     {
@@ -68,9 +68,22 @@ public sealed class Town
         homes.AddRange(message.Entries);
         foreach (string name in residents.Keys.ToList())
         {
-            if (!homes.Any(h => h.PlaceKey == residents[name]))
+            HomeEntry? home = HomeOf(name);
+            if (home != null)
+                residents[name] = home.Value.PlaceKey;
+            else
                 residents.Remove(name);
         }
+    }
+
+    private HomeEntry? HomeOf(string npc)
+    {
+        foreach (HomeEntry home in homes)
+        {
+            if (home.Npc == npc && home.PlaceKey != null)
+                return home;
+        }
+        return null;
     }
 
     public void Watch(WorldStamp.PlaceState? place)
@@ -85,16 +98,14 @@ public sealed class Town
         Respawn();
         AdoptStrays();
         TownFacts facts = Facts(player);
-        int free = homes.Count(h => !residents.ContainsValue(h.PlaceKey));
-        string? next = TownRules.NextArrival(facts, free);
-        if (next != null && NPCID.Search.TryGetId(next, out int type))
+        string? next = TownRules.Waiting(facts).FirstOrDefault(n => HomeOf(n) != null);
+        if (next != null && NPCID.Search.TryGetId(next, out int type) && HomeOf(next) is HomeEntry home)
         {
-            HomeEntry home = homes.First(h => !residents.ContainsValue(h.PlaceKey));
             NPC? npc = SpawnAt(type, home);
             if (npc != null)
             {
                 residents[next] = home.PlaceKey;
-                BridgeSystem.Instance.Notice($"{npc.GivenOrTypeName} the {Lang.GetNPCNameValue(type)} has moved into a Terraria House!", 120, 255, 120);
+                BridgeSystem.Instance.Notice($"{npc.GivenOrTypeName} the {Lang.GetNPCNameValue(type)} has moved into {TownHomes.VillagerOf(next)}'s old home!", 120, 255, 120);
             }
         }
         SendFacts(link);
@@ -137,10 +148,10 @@ public sealed class Town
         {
             if (!NPCID.Search.TryGetId(resident.Key, out int type) || NPC.AnyNPCs(type))
                 continue;
-            HomeEntry home = homes.FirstOrDefault(h => h.PlaceKey == resident.Value);
-            if (home.PlaceKey == null)
+            HomeEntry? home = HomeOf(resident.Key);
+            if (home == null)
                 continue;
-            if (SpawnAt(type, home) != null)
+            if (SpawnAt(type, home.Value) != null)
                 BridgeSystem.Instance.Notice($"The {Lang.GetNPCNameValue(type)} is back home.", 120, 255, 120);
         }
     }
@@ -156,14 +167,16 @@ public sealed class Town
             string name = NPCID.Search.GetName(npc.type);
             if (residents.ContainsKey(name))
             {
-                Settle(npc, homes.FirstOrDefault(h => h.PlaceKey == residents[name]));
+                HomeEntry? home = HomeOf(name);
+                if (home != null)
+                    Settle(npc, home.Value);
                 continue;
             }
-            HomeEntry free = homes.FirstOrDefault(h => !residents.ContainsValue(h.PlaceKey));
-            if (free.PlaceKey == null)
+            HomeEntry? own = HomeOf(name);
+            if (own == null)
                 continue;
-            residents[name] = free.PlaceKey;
-            Settle(npc, free);
+            residents[name] = own.Value.PlaceKey;
+            Settle(npc, own.Value);
         }
     }
 

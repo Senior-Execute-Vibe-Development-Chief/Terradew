@@ -4,6 +4,7 @@ failed += SpriteTests.Run();
 failed += WorldLayoutTests.Run();
 failed += FishTableTests.Run();
 failed += TownRulesTests.Run();
+failed += TownHomesTests.Run();
 failed += RoutePlannerTests.Run();
 failed += EconomyClockTests.Run();
 failed += PlacesTests.Run();

@@ -14,7 +14,7 @@ two mods connect them over a local socket.
 
 ## How the two games split the work
 
-- **Stardew** owns the world: maps, walking, farming, the clock, NPC villagers, drawing everything.
+- **Stardew** owns the world: maps, walking, farming, the clock, the shops, drawing everything.
 - **Terraria** owns the fighting and the loot: creature AI, bosses, projectiles, life, mana, defense, buffs,
   the combat inventory, coins, crafting, shops and town NPCs.
 - Each Stardew place gets a fixed rectangle in the Terraria world, at the depth and in the biome it stands
@@ -111,9 +111,14 @@ saving, which is usually what you want while testing.
 Keys can be changed in `Mods/Terradew/config.json`.
 
 - **Crafting** uses stations you carry: craft a Work Bench, Furnace or Anvil and keep it in your inventory.
-- **Town NPCs** live in **Terraria Houses**, which Robin builds on the farm. The morning after a house is
-  finished, a townsperson whose Terraria conditions are met moves in (the Guide first, the Merchant once you
-  carry 50 silver, and so on). The full roster of vanilla town NPCs is in play, except Truffle and Santa Claus.
+- **Terraria townsfolk replace the Stardew villagers.** The villagers are gone: no talking, gifts, friendship,
+  marriage or heart events. Each Terraria town NPC moves into one villager's home instead, the morning after its
+  Terraria conditions are met (the Guide first, the Merchant once you carry 50 silver, and so on): the Guide in
+  the museum, the Merchant at Pierre's, the Nurse at Harvey's clinic, the Arms Dealer at the Adventurer's Guild,
+  the Angler at Willy's, the Goblin Tinkerer at Clint's, the Mechanic and Steampunker at Robin's, the
+  Tavernkeep at the Saloon, the Tax Collector at the Mayor's manor, the Zoologist at Marnie's, the Dye Trader at
+  Sandy's, the Wizard in the tower, and the rest in the other villagers' houses. The Stardew shops stay open
+  where they always were. The full roster of vanilla town NPCs is in play, except Truffle and Santa Claus.
   Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
 - **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
   farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
@@ -147,4 +152,5 @@ or run against, so expect a round of compile fixes on the first build, then play
 - Mine floors that need every monster killed for a ladder may need the ladder from a rock instead.
 - Hardmode's Hallow and Corruption do not spread over time; each place keeps the biome it is given.
 - Both mods must be the same version: they refuse to link if their protocol numbers differ.
+- Festivals and cutscenes may still show the old villagers, and the help-wanted board still posts their requests.
 - Multiplayer is not supported yet; the protocol is ready for one Terraria character per farmer.

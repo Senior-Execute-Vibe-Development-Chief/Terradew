@@ -4,18 +4,32 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
+using StardewValley.GameData.Characters;
 using Terradew.Core.Protocol;
+using Terradew.Core.Town;
 using Terradew.Core.World;
 
 namespace Terradew;
 
 /// <summary>
-/// Robin builds Terraria Houses on the farm. Each one is a home for one Terraria town NPC; the next morning
-/// an NPC whose Terraria conditions are met moves in.
+/// Tells Terraria where each town NPC lives. Every Terraria town NPC takes over the home of one Stardew villager
+/// (see <see cref="TownHomes"/>): the villager's first home in Stardew's character data is the house, and the NPC
+/// is placed on the nearest open tile there. The Terraria House building is no longer built by Robin; the
+/// building data is kept so old saves that already have one still load.
 /// </summary>
 internal sealed class Houses
 {
     public const string BuildingId = "Terradew.TerrariaHouse";
+
+    private readonly IMonitor monitor;
+
+    // Fallback search for a free tile around a home: rings of this many tiles out from the home tile.
+    private const int MaxRing = 8;
+
+    public Houses(IMonitor monitor)
+    {
+        this.monitor = monitor;
+    }
 
     public void OnAssetRequested(AssetRequestedEventArgs e)
     {
@@ -29,7 +43,7 @@ internal sealed class Houses
             data[BuildingId] = new BuildingData
             {
                 Name = "Terraria House",
-                Description = "A home for one Terraria townsperson. Someone moves in the morning after it is built, once their conditions are met.",
+                Description = "No longer used. Terraria town NPCs now live in their Stardew villager's home.",
                 Texture = shed.Texture,
                 SourceRect = shed.SourceRect,
                 Size = shed.Size,
@@ -37,7 +51,6 @@ internal sealed class Houses
                 HumanDoor = shed.HumanDoor,
                 IndoorMap = shed.IndoorMap,
                 IndoorMapType = shed.IndoorMapType,
-                Builder = "Robin",
                 BuildCost = 8000,
                 BuildDays = 1,
                 BuildMaterials = new List<BuildingMaterial>
@@ -49,34 +62,78 @@ internal sealed class Houses
         });
     }
 
-    public static IEnumerable<GameLocation> Interiors()
-    {
-        Farm farm = Game1.getFarm();
-        foreach (Building building in farm.buildings)
-        {
-            if (building.buildingType.Value != BuildingId || building.isUnderConstruction())
-                continue;
-            GameLocation? inside = building.GetIndoors();
-            if (inside != null)
-                yield return inside;
-        }
-    }
-
-    /// <summary>Sends every house, plus each interior's layout, so Terraria can place residents even before you visit.</summary>
+    /// <summary>
+    /// Sends each mapped town NPC's home, plus the layout of every map a home is on, so Terraria can place
+    /// residents even before you visit. An NPC whose villager has no usable home is left out.
+    /// </summary>
     public void Publish(Bridge bridge)
     {
         var homes = new Homes();
-        foreach (GameLocation inside in Interiors())
+        Dictionary<string, MapLayout> layouts = new();
+        Dictionary<string, HashSet<Point>> used = new();
+        var sentLayouts = new HashSet<string>();
+        IReadOnlyDictionary<string, CharacterData> characters = Game1.characterData;
+
+        foreach (string npc in TownHomes.Npcs)
         {
-            Place place = Maps.PlaceOf(inside);
-            MapLayout? layout = Maps.Build(inside, place);
-            if (layout == null)
-                continue;
-            bridge.Send(layout);
-            Point spot = Spot(inside, layout);
-            homes.Entries.Add(new HomeEntry(place.Key, spot.X, spot.Y));
+            try
+            {
+                string? villager = TownHomes.VillagerOf(npc);
+                if (villager == null || !characters.TryGetValue(villager, out CharacterData? data) || data.Home == null || data.Home.Count == 0)
+                    continue;
+                CharacterHomeData home = data.Home[0];
+                GameLocation? loc = Game1.getLocationFromName(home.Location);
+                if (loc == null)
+                    continue;
+                Place place = Maps.PlaceOf(loc);
+                if (!layouts.TryGetValue(place.Key, out MapLayout? layout))
+                {
+                    layout = Maps.Build(loc, place);
+                    if (layout == null)
+                        continue;
+                    layouts[place.Key] = layout;
+                }
+                if (sentLayouts.Add(place.Key))
+                    bridge.Send(layout);
+
+                if (!used.TryGetValue(place.Key, out HashSet<Point>? taken))
+                {
+                    taken = new HashSet<Point>();
+                    used[place.Key] = taken;
+                }
+                Point tile = home.Tile;
+                if (layout.IsBlocked(tile.X, tile.Y) || taken.Contains(tile))
+                    tile = FreeTileNear(layout, tile, taken) ?? Spot(loc, layout);
+                taken.Add(tile);
+                homes.Entries.Add(new HomeEntry(npc, place.Key, tile.X, tile.Y));
+            }
+            catch (Exception error)
+            {
+                monitor.Log($"Terradew could not place {npc} in a home. {error.Message}", LogLevel.Warn);
+            }
         }
         bridge.Send(homes);
+    }
+
+    /// <summary>The nearest tile, searching outward in rings from the home, that is open and not already taken.</summary>
+    private static Point? FreeTileNear(MapLayout layout, Point home, HashSet<Point> taken)
+    {
+        for (int radius = 1; radius <= MaxRing; radius++)
+        {
+            for (int dy = -radius; dy <= radius; dy++)
+            {
+                for (int dx = -radius; dx <= radius; dx++)
+                {
+                    // Only the ring's edge; the inner tiles were checked on earlier rings.
+                    if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != radius)
+                        continue;
+                    Point tile = new(home.X + dx, home.Y + dy);
+                    if (!layout.IsBlocked(tile.X, tile.Y) && !taken.Contains(tile))
+                        return tile;
+                }
+            }
+        }
+        return null;
     }
 
     private static Point Spot(GameLocation inside, MapLayout layout)

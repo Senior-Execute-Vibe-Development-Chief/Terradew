@@ -73,8 +73,9 @@ internal static class ProtocolTests
             T.Assert(((WorldFacts)Roundtrip(facts)).Residents[0].HomePlaceKey == "TerrariaHouse1", "facts");
 
             var homes = new Homes();
-            homes.Entries.Add(new HomeEntry("TerrariaHouse1", 3, 4));
-            T.Assert(((Homes)Roundtrip(homes)).Entries[0].TileY == 4, "homes");
+            homes.Entries.Add(new HomeEntry("Nurse", "Hospital", 3, 4));
+            HomeEntry homeCopy = ((Homes)Roundtrip(homes)).Entries[0];
+            T.Assert(homeCopy.Npc == "Nurse" && homeCopy.PlaceKey == "Hospital" && homeCopy.TileX == 3 && homeCopy.TileY == 4, "homes");
 
             T.Assert(((AdjustCoins)Roundtrip(new AdjustCoins { Seq = 7, Delta = -500 })).Delta == -500, "coins");
             T.Assert(((Hello)Roundtrip(new Hello { From = Side.Terraria, FarmId = "123", WorldFarmId = "99" })).WorldFarmId == "99", "hello");
