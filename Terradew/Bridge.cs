@@ -67,6 +67,8 @@ internal sealed class Bridge : IDisposable
     public event Action<StationPlaced>? StationPlaced;
     /// <summary>Terraria put chests on the mine floor the farmer just reached.</summary>
     public event Action<Core.Protocol.CaveChests>? CaveChestsArrived;
+    /// <summary>Terraria put dart-trap plates on the mine floor the farmer just reached.</summary>
+    public event Action<Core.Protocol.CaveTraps>? CaveTrapsArrived;
     public event Action<GiftTaken>? GiftTaken;
     public event Action<Core.Protocol.Explosion>? Exploded;
     /// <summary>Terraria used a Recall Potion or a mirror. The farmer should go home.</summary>
@@ -166,6 +168,10 @@ internal sealed class Bridge : IDisposable
             case Core.Protocol.CaveChests caves:
                 // Always raised: Stardew places them only on the floor the farmer is still on, so a stale floor is dropped there.
                 CaveChestsArrived?.Invoke(caves);
+                break;
+            case Core.Protocol.CaveTraps traps:
+                // Always raised: Stardew draws the plates only on the floor the farmer is still on, so a stale floor is dropped there.
+                CaveTrapsArrived?.Invoke(traps);
                 break;
             case Core.Protocol.GiftTaken taken:
                 // Always raised: Terraria already took the item, so the villager must still get it.

@@ -13,6 +13,7 @@ namespace TerradewBridge;
 /// Terraria creatures and chests on the Stardew mine floors. Terradew spawns the creatures itself, for the floor's band and
 /// biome, rather than leaning on Terraria's natural pools, which a stamped floor does not reliably reach. Every fifth floor
 /// is safe. Each new floor gets a chest now and then, which Stardew places and which gives Terraria loot when opened.
+/// Floors also get dart traps: a plate Stardew draws, and a dart Terraria fires when the farmer steps on it.
 /// </summary>
 public static class CaveLife
 {
@@ -20,6 +21,23 @@ public static class CaveLife
     private static readonly HashSet<string> warned = new();
     /// <summary>The mine floor each place last had chests sent for, so a floor gets its chests once per visit.</summary>
     private static readonly Dictionary<string, int> chestFloor = new();
+    /// <summary>The mine floor each place last had dart traps placed for, so a floor gets its traps once per visit.</summary>
+    private static readonly Dictionary<string, int> trapFloor = new();
+    /// <summary>The dart traps on the floor the farmer is on, in the place named by trapPlace.</summary>
+    private static readonly List<DartTrap> traps = new();
+    private static string trapPlace = "";
+
+    /// <summary>A dart trap on a mine floor. Tiles are map tiles, as Stardew names them; Rearm counts the ticks until it is armed.</summary>
+    private sealed class DartTrap
+    {
+        public int X;
+        public int Y;
+        public int SourceX;
+        public int SourceY;
+        public int DirX;
+        public int DirY;
+        public int Rearm;
+    }
 
     /// <summary>Runs once per bridge step while Stardew is linked: sends a new floor's chests, and spawns creatures on the floor.</summary>
     public static void Tick(Link link, WorldStamp stamp, Player player)
@@ -28,6 +46,8 @@ public static class CaveLife
         if (place?.Layout == null || !place.Layout.IsMineSlot || player.dead)
             return;
         SendChests(link, stamp, place, player);
+        PlaceTraps(link, place, player);
+        FireTraps(place, player);
         if (CaveRules.IsSafeFloor(place.Layout.Floor))
             return;
         if (--ticksToSpawn > 0)
@@ -41,6 +61,9 @@ public static class CaveLife
     public static void Reset()
     {
         chestFloor.Clear();
+        trapFloor.Clear();
+        traps.Clear();
+        trapPlace = "";
         ticksToSpawn = CaveRules.SpawnEvery;
     }
 
@@ -109,6 +132,112 @@ public static class CaveLife
         }
         if (message.Chests.Count > 0)
             link.Send(message);
+    }
+
+    /// <summary>
+    /// Picks a new floor's dart traps and sends their plates, once per floor visit. A floor with no traps still sends an
+    /// empty list, so the plates of an earlier visit to the floor are cleared.
+    /// </summary>
+    private static void PlaceTraps(Link link, WorldStamp.PlaceState place, Player player)
+    {
+        MapLayout map = place.Layout!;
+        if (trapFloor.TryGetValue(place.Key, out int sent) && sent == map.Floor)
+            return;
+        trapFloor[place.Key] = map.Floor;
+        traps.Clear();
+        trapPlace = place.Key;
+
+        var message = new CaveTraps { PlaceKey = place.Key, Floor = map.Floor };
+        int wanted = CaveRules.TrapCount(map.Floor, new Random(Main.rand.Next()));
+        Vector2 farmer = Puppet.FeetOf(player);
+        int fx = (int)(farmer.X / 16f) - place.OriginX;
+        int fy = (int)(farmer.Y / 16f) - place.OriginY;
+        for (int i = 0; i < wanted; i++)
+        {
+            if (!TryPickTrap(map, fx, fy, out DartTrap trap))
+                continue;
+            traps.Add(trap);
+            message.Plates.Add(new CaveTrapPlate(trap.X, trap.Y));
+        }
+        link.Send(message);
+    }
+
+    /// <summary>
+    /// A plate on an open tile at least TrapMinDistance from the farmer, with an open line of TrapLine tiles from it in one of
+    /// the four directions, which ends at the dart source. False when no such spot turns up.
+    /// </summary>
+    private static bool TryPickTrap(MapLayout map, int farmerX, int farmerY, out DartTrap trap)
+    {
+        trap = null!;
+        for (int attempt = 0; attempt < 200; attempt++)
+        {
+            int x = Main.rand.Next(map.Width);
+            int y = Main.rand.Next(map.Height);
+            if (map.IsBlocked(x, y) || Math.Max(Math.Abs(x - farmerX), Math.Abs(y - farmerY)) < CaveRules.TrapMinDistance)
+                continue;
+            if (traps.Exists(t => t.X == x && t.Y == y))
+                continue;
+            int first = Main.rand.Next(CaveRules.TrapDirections.Length);
+            for (int d = 0; d < CaveRules.TrapDirections.Length; d++)
+            {
+                (int dx, int dy) = CaveRules.TrapDirections[(first + d) % CaveRules.TrapDirections.Length];
+                if (!OpenLine(map, x, y, dx, dy))
+                    continue;
+                trap = new DartTrap { X = x, Y = y, SourceX = x + dx * CaveRules.TrapLine, SourceY = y + dy * CaveRules.TrapLine, DirX = dx, DirY = dy };
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>Whether the TrapLine tiles from a plate toward its dart source are all open, the source included.</summary>
+    private static bool OpenLine(MapLayout map, int x, int y, int dx, int dy)
+    {
+        for (int step = 1; step <= CaveRules.TrapLine; step++)
+        {
+            if (map.IsBlocked(x + dx * step, y + dy * step))
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Fires each armed dart trap the farmer's Terraria player stands on. A trap that fires waits TrapRearm ticks to arm again.
+    /// The player stands on a plate when the tile under its feet is the plate's tile.
+    /// </summary>
+    private static void FireTraps(WorldStamp.PlaceState place, Player player)
+    {
+        if (traps.Count == 0 || place.Key != trapPlace)
+            return;
+        int feetX = (int)(player.Center.X / 16f);
+        int feetY = (int)((player.position.Y + player.height - 1) / 16f);
+        foreach (DartTrap trap in traps)
+        {
+            if (trap.Rearm > 0)
+            {
+                trap.Rearm--;
+                continue;
+            }
+            if (place.OriginX + trap.X != feetX || place.OriginY + trap.Y != feetY)
+                continue;
+            Fire(place, trap);
+            trap.Rearm = CaveRules.TrapRearm;
+        }
+    }
+
+    /// <summary>Launches a dart from the trap's source along its line, toward the plate. It is hostile and owned by no player, as vanilla traps are.</summary>
+    private static void Fire(WorldStamp.PlaceState place, DartTrap trap)
+    {
+        float sourceX = (place.OriginX + trap.SourceX) * 16f + 8f;
+        float sourceY = (place.OriginY + trap.SourceY) * 16f + 8f;
+        float speedX = -trap.DirX * CaveRules.DartSpeed;
+        float speedY = -trap.DirY * CaveRules.DartSpeed;
+        int damage = CaveRules.TrapDamage(place.Layout!.Floor);
+        int index = Projectile.NewProjectile(new EntitySource_Misc("Terradew dart trap"), sourceX, sourceY, speedX, speedY,
+            ProjectileID.PoisonDartTrap, damage, 2f, Main.maxPlayers);
+        Projectile dart = Main.projectile[index];
+        dart.hostile = true;
+        dart.friendly = false;
     }
 
     /// <summary>The farmer opened a chest on a mine floor. Terraria rolls its loot and gives it.</summary>

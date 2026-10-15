@@ -69,6 +69,44 @@ internal static class CaveTests
             var open = (OpenCaveChest)ProtocolTests.Roundtrip(new OpenCaveChest { Kind = 3 });
             T.Assert(open.Kind == 3, "kind");
         });
+        failed += T.Check("dart traps stay off the entrance and safe floors, and never exceed three", () =>
+        {
+            var random = new Random(11);
+            for (int i = 0; i < 300; i++)
+            {
+                T.Assert(CaveRules.TrapCount(0, random) == 0, "the entrance has no traps");
+                T.Assert(CaveRules.TrapCount(5, random) == 0 && CaveRules.TrapCount(10, random) == 0, "safe floors have no traps");
+                for (int floor = 1; floor <= 60; floor++)
+                {
+                    int count = CaveRules.TrapCount(floor, random);
+                    T.Assert(count >= 0 && count <= 3, $"floor {floor} has 0..3 traps");
+                    T.Assert(!CaveRules.IsSafeFloor(floor) || count == 0, $"safe floor {floor} has none");
+                }
+            }
+        });
+        failed += T.Check("deeper floors get more dart traps", () =>
+        {
+            var random = new Random(5);
+            int shallow = 0, deep = 0;
+            for (int i = 0; i < 2000; i++)
+            {
+                int few = CaveRules.TrapCount(3, random);
+                T.Assert(few <= 1, "the top floors have at most one trap");
+                shallow += few;
+                deep += CaveRules.TrapCount(41, random);
+            }
+            T.Assert(deep > shallow, "floor 41 has more traps than floor 3");
+            T.Assert(CaveRules.TrapDamage(1) >= 20 && CaveRules.TrapDamage(500) <= 40, "dart damage stays in range");
+        });
+        failed += T.Check("dart trap plates round-trip", () =>
+        {
+            var plates = new CaveTraps { PlaceKey = "mine:upper#1", Floor = 7, Plates = { new CaveTrapPlate(12, 30), new CaveTrapPlate(3, 4) } };
+            var copy = (CaveTraps)ProtocolTests.Roundtrip(plates);
+            T.Assert(copy.PlaceKey == "mine:upper#1" && copy.Floor == 7, "floor fields");
+            T.Assert(copy.Plates.Count == 2 && copy.Plates[0] == new CaveTrapPlate(12, 30) && copy.Plates[1] == new CaveTrapPlate(3, 4), "plates");
+            var empty = (CaveTraps)ProtocolTests.Roundtrip(new CaveTraps { PlaceKey = "mine:upper#1", Floor = 8 });
+            T.Assert(empty.Plates.Count == 0 && empty.Floor == 8, "an empty list clears a floor");
+        });
         return failed;
     }
 

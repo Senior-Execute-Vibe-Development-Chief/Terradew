@@ -56,6 +56,9 @@ Decisions that shape play:
   houses and other places without spawns. Creatures you leave behind wait where they were while Terraria runs;
   hostile creatures are not kept when Terraria closes. Creatures find their way around rocks, fences and
   furniture: they route over the same blocked tiles Terraria sees.
+- **Mine floors have dart traps.** Up to three per floor (more on deeper floors, none on the entrance or safe floors), each a
+  gray plate on an open tile at least eight tiles from you, with a Terraria dart source six tiles away on a straight open line.
+  Stepping on a plate fires a poison dart from the source, which re-arms after two seconds.
 - **Stardew rocks drop Terraria ores** as well as their own, by depth: copper and tin up top, iron, silver and the
   evil ore in the cavern floors, gold and mud in the jungle floors, hellstone in the underworld. Hardmode adds its
   ores (and Skull Cavern holds the best of them), Chlorophyte waits for the three mechanical bosses, and the

@@ -14,9 +14,10 @@ using SObject = StardewValley.Object;
 namespace Terradew;
 
 /// <summary>
-/// Terraria chests on the Stardew mine floors. Terraria says where they lie on a floor the farmer just reached, and
-/// they are drawn with their Terraria item's sprite. Right-clicking one takes it away and Terraria rolls its loot.
-/// A chest is never picked up as a Stardew object, nor blown up.
+/// Terraria chests and dart-trap plates on the Stardew mine floors. Terraria says where they lie on a floor the farmer
+/// just reached, and the chests are drawn with their Terraria item's sprite. Right-clicking a chest takes it away and
+/// Terraria rolls its loot. A chest is never picked up as a Stardew object, nor blown up. A plate is only drawn; Terraria
+/// fires the dart.
 /// </summary>
 internal sealed class Caves
 {
@@ -30,12 +31,53 @@ internal sealed class Caves
 
     private readonly SpriteBook sprites;
     private readonly Bridge bridge;
+    /// <summary>The dart-trap plates Terraria put on the floor named by trapPlace and trapFloor.</summary>
+    private readonly List<CaveTrapPlate> plates = new();
+    private string trapPlace = "";
+    private int trapFloor = -1;
 
     public Caves(SpriteBook sprites, Bridge bridge)
     {
         this.sprites = sprites;
         this.bridge = bridge;
         instance = this;
+        bridge.CaveTrapsArrived += OnTraps;
+    }
+
+    /// <summary>
+    /// Terraria put dart-trap plates on the mine floor the farmer just reached. They are kept as sent and drawn only while the
+    /// farmer is on that floor, so a late message for a floor the farmer has not reached yet still shows when they arrive.
+    /// </summary>
+    public void OnTraps(CaveTraps message)
+    {
+        plates.Clear();
+        plates.AddRange(message.Plates);
+        trapPlace = message.PlaceKey;
+        trapFloor = message.Floor;
+    }
+
+    /// <summary>Draws the dart-trap plates on the mine floor the farmer is on, in the world pass, so anything standing on them is in front.</summary>
+    private void DrawTraps(SpriteBatch b, MineShaft shaft)
+    {
+        // The plates belong to one place: once the farmer is in another, they are forgotten.
+        if (Maps.PlaceOf(shaft).Key != trapPlace)
+        {
+            plates.Clear();
+            return;
+        }
+        if (shaft.mineLevel != trapFloor)
+            return;
+        foreach (CaveTrapPlate plate in plates)
+        {
+            // A plate lies on the floor of its tile, a little below the tile's top, so it draws behind anything standing on it.
+            Vector2 foot = new(plate.X * 64 + 20, plate.Y * 64 + 56);
+            if (!Utility.isOnScreen(foot, 64))
+                continue;
+            Vector2 position = Game1.GlobalToLocal(Game1.viewport, foot);
+            float depth = (plate.Y * 64 + 4) / 10000f;
+            b.Draw(Game1.staminaRect, position, null, new Color(70, 70, 78), 0f, Vector2.Zero, new Vector2(24f, 8f), SpriteEffects.None, depth);
+            b.Draw(Game1.staminaRect, position, null, new Color(120, 120, 130), 0f, Vector2.Zero, new Vector2(24f, 2f), SpriteEffects.None, depth);
+        }
     }
 
     public void OnAssetRequested(AssetRequestedEventArgs e)
@@ -126,6 +168,18 @@ internal sealed class Caves
         }
         try
         {
+            var mineDraw = AccessTools.Method(typeof(MineShaft), "draw", new[] { typeof(SpriteBatch) });
+            if (mineDraw == null)
+                monitor.Log("Terradew could not find MineShaft.draw; Terraria dart-trap plates will not be drawn.", LogLevel.Warn);
+            else
+                harmony.Patch(mineDraw, postfix: new HarmonyMethod(typeof(Caves), nameof(DrawTrapsPostfix)));
+        }
+        catch (Exception error)
+        {
+            monitor.Log($"Terradew could not draw Terraria dart-trap plates. {error.Message}", LogLevel.Warn);
+        }
+        try
+        {
             var explode = AccessTools.Method(typeof(SObject), "onExplosion", new[] { typeof(Farmer) });
             if (explode == null)
                 monitor.Log("Terradew could not find Object.onExplosion; bombs could destroy a Terraria chest.", LogLevel.Warn);
@@ -201,6 +255,14 @@ internal sealed class Caves
             return true;
         __result = false;
         return false;
+    }
+
+    /// <summary>After a mine floor is drawn, its dart-trap plates go over it.</summary>
+    private static void DrawTrapsPostfix(GameLocation __instance, SpriteBatch b)
+    {
+        if (instance == null || instance.plates.Count == 0 || __instance is not MineShaft shaft)
+            return;
+        instance.DrawTraps(b, shaft);
     }
 
     private static bool ExplosionPrefix(SObject __instance)

@@ -43,6 +43,39 @@ public static class CaveRules
         _ => Array.Empty<string>(),
     };
 
+    /// <summary>Tiles between a dart trap's plate and its dart source, counting the source: the line that must lie open.</summary>
+    public const int TrapLine = 6;
+    /// <summary>Fewest tiles from the farmer a dart trap's plate may lie, so one never triggers on arrival.</summary>
+    public const int TrapMinDistance = 8;
+    /// <summary>Terraria ticks a dart trap waits after firing before it is armed again: two seconds.</summary>
+    public const int TrapRearm = 120;
+    /// <summary>Pixels per Terraria tick a dart flies.</summary>
+    public const float DartSpeed = 8f;
+    /// <summary>The four directions a dart trap's line can run, as tile steps.</summary>
+    public static readonly (int Dx, int Dy)[] TrapDirections = { (1, 0), (-1, 0), (0, 1), (0, -1) };
+
+    /// <summary>
+    /// How many dart-trap plates a fresh mine floor gets. None on the entrance or a safe floor. Deeper floors get more,
+    /// up to three, and a floor sometimes gets none.
+    /// </summary>
+    public static int TrapCount(int floor, Random random)
+    {
+        if (floor <= 0 || IsSafeFloor(floor))
+            return 0;
+        if (random.NextDouble() < 0.4)
+            return 0;
+        int most = floor switch
+        {
+            < 10 => 1,
+            < 30 => 2,
+            _ => 3,
+        };
+        return random.Next(1, most + 1);
+    }
+
+    /// <summary>The damage of a dart: Terraria's poison dart trap, a little more on deeper floors.</summary>
+    public static int TrapDamage(int floor) => Math.Clamp(20 + floor / 5, 20, 40);
+
     /// <summary>The chance that a fresh mine floor has a chest: about one in seven at the top, more likely deeper, never certain.</summary>
     public static float ChestChance(int floor) => Math.Clamp(0.15f + floor / 200f, 0.15f, 0.6f);
 

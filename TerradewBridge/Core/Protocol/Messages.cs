@@ -59,6 +59,7 @@ public enum MsgType : byte
     PlayerGlow = 57,
     DustFrame = 58,
     CaveChests = 59,
+    CaveTraps = 61,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -119,6 +120,7 @@ public abstract class Message
             MsgType.PlayerLook => PlayerLook.ReadFrom(r),
             MsgType.DustFrame => DustFrame.ReadFrom(r),
             MsgType.CaveChests => CaveChests.ReadFrom(r),
+            MsgType.CaveTraps => CaveTraps.ReadFrom(r),
             MsgType.OpenCaveChest => OpenCaveChest.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
@@ -812,6 +814,41 @@ public sealed class CaveChests : Message
         PlaceKey = r.ReadString(),
         Floor = r.ReadInt32(),
         Chests = r.ReadList(x => new CaveChest(x.ReadInt32(), x.ReadInt32(), x.ReadByte(), x.ReadInt32()), 16),
+    };
+}
+
+/// <summary>
+/// The pressure plate of a dart trap on a mine floor: its tile on that floor's map. Terraria fires the dart from a source
+/// a few tiles away on the same line, and Stardew only draws the plate.
+/// </summary>
+public readonly record struct CaveTrapPlate(int X, int Y);
+
+/// <summary>
+/// Terraria put dart-trap plates on a mine floor the farmer just reached. Stardew draws them on open tiles of the floor.
+/// Only drawn while the farmer is on that floor, so a plate from an earlier floor is dropped.
+/// </summary>
+public sealed class CaveTraps : Message
+{
+    /// <summary>The Stardew place the floor is in, as Maps names it.</summary>
+    public string PlaceKey = "";
+    /// <summary>The Stardew mine level the plates belong to.</summary>
+    public int Floor;
+    public List<CaveTrapPlate> Plates = new();
+
+    public override MsgType Type => MsgType.CaveTraps;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.Write(Floor);
+        w.WriteList(Plates, (x, p) => { x.Write(p.X); x.Write(p.Y); });
+    }
+
+    public static CaveTraps ReadFrom(BinaryReader r) => new()
+    {
+        PlaceKey = r.ReadString(),
+        Floor = r.ReadInt32(),
+        Plates = r.ReadList(x => new CaveTrapPlate(x.ReadInt32(), x.ReadInt32()), 16),
     };
 }
 
