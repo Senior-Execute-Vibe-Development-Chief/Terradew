@@ -30,6 +30,7 @@ public enum MsgType : byte
     RequestRecipes = 19,
     Gathered = 20,
     PlaceStation = 21,
+    SlotMask = 22,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -77,6 +78,7 @@ public abstract class Message
             MsgType.RequestRecipes => RequestRecipes.ReadFrom(r),
             MsgType.Gathered => Gathered.ReadFrom(r),
             MsgType.PlaceStation => PlaceStation.ReadFrom(r),
+            MsgType.SlotMask => SlotMask.ReadFrom(r),
             MsgType.StationPlaced => StationPlaced.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
             MsgType.InventoryState => InventoryState.ReadFrom(r),
@@ -101,7 +103,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 8;
+    public const int CurrentProtocol = 9;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -315,6 +317,8 @@ public sealed class InventoryAction : Message
     public InventoryKind Kind;
     public int A;
     public int B;
+    /// <summary>Counts up per action; Terraria echoes the last one it applied in <see cref="InventoryState.AckSeq"/>.</summary>
+    public int Seq;
 
     public override MsgType Type => MsgType.InventoryAction;
 
@@ -323,9 +327,31 @@ public sealed class InventoryAction : Message
         w.Write((byte)Kind);
         w.Write(A);
         w.Write(B);
+        w.Write(Seq);
     }
 
-    public static InventoryAction ReadFrom(BinaryReader r) => new() { Kind = (InventoryKind)r.ReadByte(), A = r.ReadInt32(), B = r.ReadInt32() };
+    public static InventoryAction ReadFrom(BinaryReader r) => new() { Kind = (InventoryKind)r.ReadByte(), A = r.ReadInt32(), B = r.ReadInt32(), Seq = r.ReadInt32() };
+}
+
+/// <summary>
+/// The one shared backpack: main slot i (0-49) holds either a Stardew item or a Terraria item, never both.
+/// Bit i of Owned is set when Stardew holds a real item in slot i. Terraria fills those slots with a blocker item
+/// so its own pickups go elsewhere, and clears blockers from slots Stardew no longer holds.
+/// </summary>
+public sealed class SlotMask : Message
+{
+    public const int Slots = 50;
+    public ulong Owned;
+
+    public override MsgType Type => MsgType.SlotMask;
+
+    public bool Has(int slot) => slot >= 0 && slot < Slots && (Owned & (1UL << slot)) != 0;
+
+    public static ulong Bit(int slot) => slot >= 0 && slot < Slots ? 1UL << slot : 0UL;
+
+    public override void Write(BinaryWriter w) => w.Write(Owned);
+
+    public static SlotMask ReadFrom(BinaryReader r) => new() { Owned = r.ReadUInt64() };
 }
 
 public sealed class Craft : Message
@@ -492,6 +518,8 @@ public sealed class Heal : Message
 {
     public int Life;
     public int Mana;
+    /// <summary>Seconds of Terraria's Well Fed buff the food gives. Zero gives none.</summary>
+    public int WellFedSeconds;
 
     public override MsgType Type => MsgType.Heal;
 
@@ -499,9 +527,10 @@ public sealed class Heal : Message
     {
         w.Write(Life);
         w.Write(Mana);
+        w.Write(WellFedSeconds);
     }
 
-    public static Heal ReadFrom(BinaryReader r) => new() { Life = r.ReadInt32(), Mana = r.ReadInt32() };
+    public static Heal ReadFrom(BinaryReader r) => new() { Life = r.ReadInt32(), Mana = r.ReadInt32(), WellFedSeconds = r.ReadInt32() };
 }
 
 /// <summary>Stardew is saving. Terraria saves its world and character to match.</summary>
@@ -915,6 +944,8 @@ public sealed class InventoryState : Message
     public uint BackTint = DyeTint.None;
     public uint FrontTint = DyeTint.None;
     public uint ShoeTint = DyeTint.None;
+    /// <summary>The last <see cref="InventoryAction.Seq"/> applied before this state was taken.</summary>
+    public int AckSeq;
 
     public override MsgType Type => MsgType.InventoryState;
 
@@ -940,6 +971,7 @@ public sealed class InventoryState : Message
         w.Write(BackTint);
         w.Write(FrontTint);
         w.Write(ShoeTint);
+        w.Write(AckSeq);
     }
 
     public static InventoryState ReadFrom(BinaryReader r) => new()
@@ -964,6 +996,7 @@ public sealed class InventoryState : Message
         BackTint = r.ReadUInt32(),
         FrontTint = r.ReadUInt32(),
         ShoeTint = r.ReadUInt32(),
+        AckSeq = r.ReadInt32(),
     };
 }
 

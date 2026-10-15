@@ -59,6 +59,14 @@ internal static class ProtocolTests
             T.Assert(dyedCopy.WingsTint == 2 && dyedCopy.ShieldTint == 3 && dyedCopy.BackTint == 4 && dyedCopy.FrontTint == 5 && dyedCopy.ShoeTint == 0xFFFFFFFF, "accessory dye tints");
             T.Assert(new InventoryState().HeadTint == DyeTint.None, "undyed by default");
 
+            T.Assert(((InventoryState)Roundtrip(new InventoryState { AckSeq = 41 })).AckSeq == 41, "inventory ack seq");
+            var action = (InventoryAction)Roundtrip(new InventoryAction { Kind = InventoryKind.Swap, A = 3, B = 47, Seq = 9 });
+            T.Assert(action.Kind == InventoryKind.Swap && action.A == 3 && action.B == 47 && action.Seq == 9, "inventory action seq");
+            var mask = (SlotMask)Roundtrip(new SlotMask { Owned = SlotMask.Bit(0) | SlotMask.Bit(49) });
+            T.Assert(mask.Has(0) && mask.Has(49) && !mask.Has(1) && !mask.Has(50) && SlotMask.Bit(50) == 0, "slot mask");
+            var heal = (Heal)Roundtrip(new Heal { Life = 20, Mana = 5, WellFedSeconds = 300 });
+            T.Assert(heal.Life == 20 && heal.Mana == 5 && heal.WellFedSeconds == 300, "heal well fed");
+
             var recipes = new RecipeList();
             recipes.Recipes.Add(new RecipeEntry { RecipeIndex = 2, Result = new ItemStack { ItemType = 36, Stack = 1 }, Ingredients = new List<ItemStack> { new ItemStack { ItemType = 9, Stack = 10 } }, CanCraft = true });
             var recipesCopy = (RecipeList)Roundtrip(recipes);
