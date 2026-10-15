@@ -242,12 +242,19 @@ internal sealed class Flight
         _ => new Vector2(0f, 1f),
     };
 
-    /// <summary>Moves the farmer through the air, over walls but not off the map, and through any exit touched.</summary>
+    /// <summary>
+    /// Moves the farmer through the air, over walls but not off the map or into floor no path reaches (Reach), and
+    /// through any exit touched. Each axis is tried on its own, so the farmer slides along a sealed edge.
+    /// </summary>
     private void Glide(Farmer player, GameLocation location, Vector2 step)
     {
         if (step == Vector2.Zero)
             return;
         Vector2 next = player.Position + step;
+        if (IntoSealed(location, player, new Vector2(next.X, player.Position.Y)))
+            next.X = player.Position.X;
+        if (IntoSealed(location, player, next))
+            next.Y = player.Position.Y;
         // Exits sit just past the map's edge, so the farmer may reach a little beyond it.
         next.X = Math.Clamp(next.X, -48f, location.Map.DisplayWidth - 16f);
         next.Y = Math.Clamp(next.Y, -48f, location.Map.DisplayHeight - 16f);
@@ -258,6 +265,24 @@ internal sealed class Flight
             Reset();
             player.warpFarmer(warp);
         }
+    }
+
+    /// <summary>True when the farmer's box at this position touches a sealed tile it is not already over.</summary>
+    private static bool IntoSealed(GameLocation location, Farmer player, Vector2 position)
+    {
+        Rectangle now = player.GetBoundingBox();
+        Rectangle box = now;
+        box.Offset((int)(position.X - player.Position.X), (int)(position.Y - player.Position.Y));
+        for (int y = box.Top / 64; y <= (box.Bottom - 1) / 64; y++)
+        {
+            for (int x = box.Left / 64; x <= (box.Right - 1) / 64; x++)
+            {
+                bool already = x >= now.Left / 64 && x <= (now.Right - 1) / 64 && y >= now.Top / 64 && y <= (now.Bottom - 1) / 64;
+                if (!already && Reach.Sealed(location, x, y))
+                    return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -354,7 +379,7 @@ internal sealed class Flight
     {
         if (!location.isTileOnMap(new Vector2(x, y)) || location.isWaterTile(x, y))
             return false;
-        if (location.Map.GetLayer("Back")?.Tiles[x, y] == null)
+        if (location.Map.GetLayer("Back")?.Tiles[x, y] == null || Reach.Sealed(location, x, y))
             return false;
         if (!location.isTilePassable(new xTile.Dimensions.Location(x, y), Game1.viewport))
             return false;

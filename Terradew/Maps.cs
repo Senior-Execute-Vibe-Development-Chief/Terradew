@@ -30,6 +30,8 @@ internal sealed class Maps
     /// <summary>Sends the current map when the farmer arrives, and again whenever its obstacles change.</summary>
     public void Update(Bridge bridge, GameLocation location, uint tick, bool force)
     {
+        if (!Flight.Airborne && Game1.player?.currentLocation == location)
+            Reach.Stood(location, Game1.player.TilePoint);
         Place place = PlaceOf(location);
         bool arrived = place.Key != lastKey;
         if (!arrived && !force && tick % 30 != 0)
@@ -66,7 +68,8 @@ internal sealed class Maps
                 bool wet = location.isWaterTile(x, y);
                 if (wet)
                     water++;
-                blocked[y * width + x] = wet || location.IsTileBlockedBy(new Vector2(x, y), Mask, Mask, false);
+                // Floor behind walls that no path reaches counts as wall, so nothing spawns or wanders there.
+                blocked[y * width + x] = wet || Reach.Sealed(location, x, y) || location.IsTileBlockedBy(new Vector2(x, y), Mask, Mask, false);
             }
         }
         return new MapLayout
