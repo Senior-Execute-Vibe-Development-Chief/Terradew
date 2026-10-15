@@ -415,6 +415,7 @@ public sealed class WorldStamp
                     continue;
                 state.Entities.Add(Describe(npc, NameOf(npc)));
                 SpriteDump.Npc(npc.type);
+                if (npc.townNPC) SpriteDump.NpcHead(Terraria.GameContent.TownNPCProfiles.GetHeadIndexSafe(npc));
             }
             for (int i = 0; i < Main.maxProjectiles; i++)
             {

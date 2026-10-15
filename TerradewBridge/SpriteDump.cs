@@ -20,6 +20,7 @@ internal static class SpriteDump
     private const int MaxAttempts = 3;
 
     private static readonly HashSet<int> npcDone = new();
+    private static readonly HashSet<int> npcHeadDone = new();
     private static readonly HashSet<int> projectileDone = new();
     private static readonly HashSet<int> itemDone = new();
     private static readonly HashSet<int> buffDone = new();
@@ -51,6 +52,13 @@ internal static class SpriteDump
         if (!npcDone.Add(type))
             return;
         ExportNpc(type);
+    }
+
+    public static void NpcHead(int headIndex)
+    {
+        if (headIndex < 0 || !npcHeadDone.Add(headIndex))
+            return;
+        ExportNpcHead(headIndex);
     }
 
     public static void Projectile(int type)
@@ -135,6 +143,13 @@ internal static class SpriteDump
         string file = SpriteNames.Npc(type);
         string? error = Sheet(file, $"Images/NPC_{type}", () => { Main.instance.LoadNPC(type); return TextureAssets.Npc[type]; });
         Failed(npcDone, type, file, error);
+    }
+
+    private static void ExportNpcHead(int headIndex)
+    {
+        string file = SpriteNames.NpcHead(headIndex);
+        string? error = Sheet(file, $"Images/NPC_Head_{headIndex}", () => TextureAssets.NpcHead[headIndex]);
+        Failed(npcHeadDone, headIndex, file, error);
     }
 
     private static void ExportProjectile(int type)

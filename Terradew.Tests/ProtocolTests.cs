@@ -72,6 +72,8 @@ internal static class ProtocolTests
 
             T.Assert(((AdjustCoins)Roundtrip(new AdjustCoins { Seq = 7, Delta = -500 })).Delta == -500, "coins");
             T.Assert(((Hello)Roundtrip(new Hello { From = Side.Terraria, FarmId = "123", WorldFarmId = "99" })).WorldFarmId == "99", "hello");
+            var chat = (NpcChat)Roundtrip(new NpcChat { NpcId = 4, NpcType = 22, Name = "Guide", Text = "Hi", HasShop = true, HealCost = 75, HeadIndex = 7 });
+            T.Assert(chat.NpcType == 22 && chat.Name == "Guide" && chat.HasShop && chat.HealCost == 75 && chat.HeadIndex == 7, "chat");
             T.Assert(((Routes)Roundtrip(new Routes { PlaceKey = "Farm", Steps = new List<RouteEntry> { new RouteEntry(1, 2, 3) } })).Steps[0].TileY == 3, "routes");
             T.Assert(Roundtrip(new RequestRecipes()) is RequestRecipes, "empty message");
         });

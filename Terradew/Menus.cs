@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
+using Terradew.Core;
 using Terradew.Core.Economy;
 using Terradew.Core.Protocol;
 
@@ -293,6 +294,8 @@ internal sealed class ChatMenu : IClickableMenu
 {
     private const int Width = 760;
     private const int Height = 320;
+    private const int PortraitSize = 160;
+    private const int PortraitPad = 12;
 
     private readonly Bridge bridge;
     private readonly SpriteBook sprites;
@@ -338,9 +341,25 @@ internal sealed class ChatMenu : IClickableMenu
     public override void draw(SpriteBatch b)
     {
         MenuArt.Box(b, xPositionOnScreen, yPositionOnScreen, width, height);
-        b.DrawString(Game1.dialogueFont, chat.Name, new Vector2(xPositionOnScreen + 32, yPositionOnScreen + 24), Game1.textColor);
-        string text = Game1.parseText(chat.Text, Game1.smallFont, Width - 72);
-        b.DrawString(Game1.smallFont, text, new Vector2(xPositionOnScreen + 32, yPositionOnScreen + 84), Game1.textColor);
+        int textX = xPositionOnScreen + 32;
+        int textWidth = Width - 72;
+        Texture2D? head = chat.HeadIndex >= 0 ? sprites.Load(SpriteNames.NpcHead(chat.HeadIndex)) : null;
+        if (head != null)
+        {
+            // The portrait sits in its own frame on the left, like Stardew's, at the largest whole scale up to 4 that keeps it inside the menu.
+            int scale = Math.Clamp(PortraitSize / Math.Max(head.Width, head.Height), 1, 4);
+            int frameWidth = head.Width * scale + PortraitPad * 2;
+            int frameHeight = head.Height * scale + PortraitPad * 2;
+            int frameX = xPositionOnScreen + 24;
+            int frameY = yPositionOnScreen + 24;
+            MenuArt.Box(b, frameX, frameY, frameWidth, frameHeight);
+            b.Draw(head, new Rectangle(frameX + PortraitPad, frameY + PortraitPad, head.Width * scale, head.Height * scale), Color.White);
+            textX = frameX + frameWidth + 24;
+            textWidth = xPositionOnScreen + Width - 32 - textX;
+        }
+        b.DrawString(Game1.dialogueFont, chat.Name, new Vector2(textX, yPositionOnScreen + 24), Game1.textColor);
+        string text = Game1.parseText(chat.Text, Game1.smallFont, textWidth);
+        b.DrawString(Game1.smallFont, text, new Vector2(textX, yPositionOnScreen + 84), Game1.textColor);
         int mouseX = Game1.getMouseX();
         int mouseY = Game1.getMouseY();
         foreach ((Rectangle area, string label, _) in buttons)

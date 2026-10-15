@@ -50,6 +50,7 @@ public static class Shops
             HasShop = hasShop,
             IsNurse = nurse,
             HealCost = nurse ? HealCost(player) : 0,
+            HeadIndex = npc.townNPC ? Terraria.GameContent.TownNPCProfiles.GetHeadIndexSafe(npc) : -1,
         });
         if (hasShop)
             link.Send(Stock(npc));

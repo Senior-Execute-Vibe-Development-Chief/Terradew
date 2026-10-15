@@ -97,7 +97,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 3;
+    public const int CurrentProtocol = 4;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -942,6 +942,8 @@ public sealed class NpcChat : Message
     public bool HasShop;
     public bool IsNurse;
     public long HealCost;
+    /// <summary>The town NPC's head portrait sheet (see SpriteNames.NpcHead), or -1 when it has none.</summary>
+    public int HeadIndex = -1;
 
     public override MsgType Type => MsgType.NpcChat;
 
@@ -954,6 +956,7 @@ public sealed class NpcChat : Message
         w.Write(HasShop);
         w.Write(IsNurse);
         w.Write(HealCost);
+        w.Write(HeadIndex);
     }
 
     public static NpcChat ReadFrom(BinaryReader r) => new()
@@ -965,6 +968,7 @@ public sealed class NpcChat : Message
         HasShop = r.ReadBoolean(),
         IsNurse = r.ReadBoolean(),
         HealCost = r.ReadInt64(),
+        HeadIndex = r.ReadInt32(),
     };
 }
 
