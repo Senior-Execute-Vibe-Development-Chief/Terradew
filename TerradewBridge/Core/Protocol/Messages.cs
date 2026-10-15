@@ -115,7 +115,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 14;
+    public const int CurrentProtocol = 15;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -1107,6 +1107,10 @@ public struct ItemStack
     public short Hammer;
     /// <summary>A swung or thrust blade: in Stardew it cuts weeds and grass like the scythe.</summary>
     public bool Blade;
+    /// <summary>Terraria can use it from the hand: potions, boss summons, mount and pet items, weapons.</summary>
+    public bool Usable;
+    /// <summary>Terraria's tooltip below the name, one line per line, with chat tags taken out.</summary>
+    public string Tooltip;
 
     public bool IsEmpty => ItemType <= 0 || Stack <= 0;
 
@@ -1124,6 +1128,8 @@ public struct ItemStack
         w.Write(Axe);
         w.Write(Hammer);
         w.Write(Blade);
+        w.Write(Usable);
+        w.Write(Tooltip ?? "");
     }
 
     public static ItemStack ReadFrom(BinaryReader r) => new()
@@ -1140,6 +1146,8 @@ public struct ItemStack
         Axe = r.ReadInt16(),
         Hammer = r.ReadInt16(),
         Blade = r.ReadBoolean(),
+        Usable = r.ReadBoolean(),
+        Tooltip = r.ReadString(),
     };
 }
 

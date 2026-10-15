@@ -127,7 +127,7 @@ internal sealed class BackpackSlots
             backpack.Send(new InventoryAction { Kind = InventoryKind.Unequip, A = slot });
         else if (item.Equippable)
             backpack.Send(new InventoryAction { Kind = InventoryKind.Equip, A = slot });
-        else if (item.Consumable)
+        else if (item.Consumable || item.Usable)
         {
             backpack.Send(new InventoryAction { Kind = InventoryKind.Use, A = slot });
             used = true;

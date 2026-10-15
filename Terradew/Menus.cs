@@ -35,7 +35,10 @@ internal static class MenuArt
         if (item.IsEmpty)
             return "";
         string text = item.Stack > 1 ? $"{item.Name} ({item.Stack})" : item.Name;
-        if (item.Damage > 0)
+        // Terraria's own tooltip, damage included; older bridges send none.
+        if (!string.IsNullOrEmpty(item.Tooltip))
+            text += "\n" + item.Tooltip;
+        else if (item.Damage > 0)
             text += $"\n{item.Damage} damage";
         return text;
     }

@@ -129,19 +129,41 @@ public sealed class Puppet : ModPlayer
             Main.npcChatText = "";
             Player.SetTalkNPC(-1);
         }
-        if (hand && pulse.Slot < 10 && Player.itemAnimation == 0)
+        if (hand && pulse.Slot < 10 && Player.itemAnimation == 0 && Inventory.PendingUse == 0)
             Player.selectedItem = pulse.Slot;
         Vector2 aim = place.ToWorld(pulse.AimX, pulse.AimY);
         Main.mouseX = (int)(aim.X - Main.screenPosition.X);
         Main.mouseY = (int)(aim.Y - Main.screenPosition.Y);
         Player.mouseInterface = false;
         Player.controlUseItem = hand && pulse.Has(PulseFlags.UseHeld);
-        if (Inventory.PendingUse > 0 && Player.itemAnimation == 0)
-        {
-            Inventory.PendingUse--;
-            Player.controlUseItem = true;
-        }
+        if (Inventory.PendingUse > 0)
+            UsePending();
         return true;
+    }
+
+    /// <summary>
+    /// Presses use once for the item used from the menu. When Terraria will not use it, such as a boss summon by day
+    /// or with the boss already out, Stardew is told why it did nothing.
+    /// </summary>
+    private void UsePending()
+    {
+        if (Player.itemAnimation > 0)
+        {
+            // It started: once is enough.
+            if (Player.selectedItem == Inventory.PendingSlot)
+                Inventory.PendingUse = 0;
+            return;
+        }
+        Player.selectedItem = Inventory.PendingSlot;
+        Player.controlUseItem = true;
+        Player.releaseUseItem = true;
+        if (--Inventory.PendingUse > 0)
+            return;
+        Item item = Player.HeldItem;
+        string name = item?.IsAir == false ? item.Name : "That item";
+        string why = Main.dayTime ? " It is daytime in Terraria, and some items only work at night." : " Terraria would not use it now.";
+        BridgeSystem.Instance.Mod.Logger.Info($"Terradew: {name} was used from the menu but did nothing (day {Main.dayTime}, time {Main.time:0}).");
+        BridgeSystem.Instance.Notice($"{name} did nothing.{why}", 255, 200, 80);
     }
 
     public override void PostUpdate()

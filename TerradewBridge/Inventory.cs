@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.Xna.Framework;
 using Terradew.Core;
 using Terradew.Core.Protocol;
 using Terraria;
@@ -22,8 +25,11 @@ public static class Inventory
     /// <summary>The last <see cref="InventoryAction.Seq"/> applied, echoed back in every <see cref="InventoryState"/>.</summary>
     private static int lastAckSeq;
 
-    /// <summary>Ticks to hold the use button for an item used from the menu.</summary>
+    /// <summary>Ticks left to try using an item from the menu, which waits for the hand to be free.</summary>
     public static int PendingUse;
+
+    /// <summary>The hotbar slot holding the item used from the menu.</summary>
+    public static int PendingSlot;
 
     public static void ForceResend()
     {
@@ -167,7 +173,9 @@ public static class Inventory
         SpriteDump.Shoe(player.shoe);
     }
 
-    public static ItemStack Describe(Item? item)
+    public static ItemStack Describe(Item? item) => Describe(item, true);
+
+    public static ItemStack Describe(Item? item, bool tooltip)
     {
         // A blocker is no Terraria item, so Stardew sees the slot as empty.
         if (item == null || item.IsAir || StardewSlot.Is(item))
@@ -187,7 +195,65 @@ public static class Inventory
             Axe = (short)(item.axe * 5),
             Hammer = (short)item.hammer,
             Blade = Melee.UsesArc(item),
+            Usable = item.useStyle != ItemUseStyleID.None,
+            Tooltip = tooltip ? Tooltip(item) : "",
         };
+    }
+
+    /// <summary>Tooltips by item and prefix. They hold the player's own numbers, such as damage, so they are redone now and then.</summary>
+    private static readonly Dictionary<(int Type, int Prefix), string> tooltips = new();
+    private static uint tooltipsMade;
+
+    /// <summary>Chat tags: colour tags keep their text; item, glyph and other tags go.</summary>
+    private static readonly Regex ColourTag = new(@"\[c/[0-9A-Fa-f]+:([^\]]*)\]", RegexOptions.Compiled);
+    private static readonly Regex OtherTag = new(@"\[[a-zA-Z]+(/[^:\]]*)?:[^\]]*\]", RegexOptions.Compiled);
+
+    /// <summary>The lines Terraria shows under the item's name when you hover over it, as Terraria and other mods make them.</summary>
+    private static string Tooltip(Item item)
+    {
+        if (Main.dedServ)
+            return "";
+        if (Main.GameUpdateCount - tooltipsMade > 600)
+        {
+            tooltips.Clear();
+            tooltipsMade = Main.GameUpdateCount;
+        }
+        if (tooltips.TryGetValue((item.type, item.prefix), out string? known))
+            return known;
+        string made;
+        try
+        {
+            const int Most = 60;
+            var text = new string[Most];
+            var colors = new Color[Most];
+            var names = new string[Most];
+            text[0] = item.HoverName;
+            names[0] = "ItemName";
+            int lines = 1;
+            int logo = -1;
+            Main.MouseText_DrawItemTooltip_GetLinesInfo(item, ref logo, item.knockBack, ref lines, text, colors, names, out int prefixLine);
+            ItemLoader.ModifyTooltips(item, ref lines, names, ref text, ref colors, ref logo, prefixLine);
+            var tooltip = new StringBuilder();
+            for (int i = 0; i < lines; i++)
+            {
+                if (names[i] == "ItemName" || string.IsNullOrWhiteSpace(text[i]))
+                    continue;
+                string line = OtherTag.Replace(ColourTag.Replace(text[i], "$1"), "").Trim();
+                if (line.Length == 0)
+                    continue;
+                if (tooltip.Length > 0)
+                    tooltip.Append('\n');
+                tooltip.Append(line);
+            }
+            made = tooltip.ToString();
+        }
+        catch (Exception error)
+        {
+            BridgeSystem.Instance.Mod.Logger.Debug($"Terradew could not make the tooltip for {item.Name}: {error.Message}");
+            made = "";
+        }
+        tooltips[(item.type, item.prefix)] = made;
+        return made;
     }
 
     private static HashSet<int>? stationTiles;
@@ -422,24 +488,26 @@ public static class Inventory
         (player.inventory[slot], player.armor[target]) = (player.armor[target], player.inventory[slot]);
     }
 
-    /// <summary>Potions, life crystals and other consumables used from the menu go through the hotbar.</summary>
+    /// <summary>
+    /// Anything Terraria can use, used from the menu: potions, life crystals, boss summons, mount and pet items. It goes
+    /// through the hotbar, so Terraria's own rules for it apply, such as the Suspicious Looking Eye needing night.
+    /// </summary>
     private static void UseFromInventory(Player player, int slot)
     {
         if (slot < 0 || slot >= 50 || player.inventory[slot].IsAir || StardewSlot.Is(player.inventory[slot]))
             return;
         Item item = player.inventory[slot];
-        if (item.healLife > 0 || item.healMana > 0 || item.buffType > 0 || item.type == ItemID.LifeCrystal || item.type == ItemID.ManaCrystal || item.type == ItemID.LifeFruit)
+        if (item.useStyle == ItemUseStyleID.None)
+            return;
+        if (slot >= 10)
         {
-            if (slot >= 10)
-            {
-                if (!StardewSlot.Is(player.inventory[player.selectedItem]))
-                    (player.inventory[slot], player.inventory[player.selectedItem]) = (player.inventory[player.selectedItem], player.inventory[slot]);
-                else
-                    return;
-            }
-            else
-                player.selectedItem = slot;
-            PendingUse = 3;
+            if (StardewSlot.Is(player.inventory[player.selectedItem]))
+                return;
+            (player.inventory[slot], player.inventory[player.selectedItem]) = (player.inventory[player.selectedItem], player.inventory[slot]);
+            PendingSlot = player.selectedItem;
         }
+        else
+            PendingSlot = slot;
+        PendingUse = 20;
     }
 }

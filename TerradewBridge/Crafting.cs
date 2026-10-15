@@ -84,7 +84,7 @@ public static class Crafting
             foreach (Item ingredient in recipe.requiredItem)
             {
                 if (ingredient != null && !ingredient.IsAir)
-                    entry.Ingredients.Add(Inventory.Describe(ingredient));
+                    entry.Ingredients.Add(Inventory.Describe(ingredient, false));
             }
             list.Recipes.Add(entry);
         }
