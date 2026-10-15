@@ -205,6 +205,7 @@ public sealed class BridgeSystem : ModSystem
         {
             Body.Publish(link, player, worldTicks);
             Motion.Publish(link, player, worldTicks);
+            Glow.Publish(link, player, worldTicks);
         }
         Courage.Publish(link, worldTicks);
         if (worldTicks % 120 == 0)
@@ -316,6 +317,9 @@ public sealed class BridgeSystem : ModSystem
                 if (heal.WellFedSeconds > 0)
                     player.AddBuff(BuffID.WellFed, heal.WellFedSeconds * 60);
                 break;
+            case RemoveBuff removeBuff:
+                RemoveBuffIfAllowed(player, removeBuff.BuffType);
+                break;
             case SaveWorld save:
                 if (WrongFarm)
                     break;
@@ -332,6 +336,24 @@ public sealed class BridgeSystem : ModSystem
             case Command command:
                 Notice(Commands.Run(player, command.Text), 200, 230, 255);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// A right click on a buff icon ends that buff, as it does in Terraria, but only when the buff is not a debuff.
+    /// DelBuff also dismisses minion, pet and mount buffs, as Terraria's own right click does.
+    /// </summary>
+    private static void RemoveBuffIfAllowed(Player player, int buffType)
+    {
+        if (buffType <= 0)
+            return;
+        for (int i = 0; i < player.buffType.Length; i++)
+        {
+            if (player.buffType[i] != buffType)
+                continue;
+            if (!Main.debuff[buffType])
+                player.DelBuff(i);
+            return;
         }
     }
 

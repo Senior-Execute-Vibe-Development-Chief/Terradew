@@ -16,6 +16,7 @@ internal sealed class Hud
 
     private const int SlotSize = 64;
     private const int BarPad = 16;
+    private const int BuffOrigin = 16;
 
     private readonly Bridge bridge;
     private readonly SpriteBook sprites;
@@ -99,8 +100,8 @@ internal sealed class Hud
         DrawLife(b, lifeX, safe, world.Life, world.LifeMax);
         DrawMana(b, manaX, safe, world.Mana, world.ManaMax);
 
-        int x = 16;
-        int y = 16;
+        int x = BuffOrigin;
+        int y = BuffOrigin;
         y = DrawBuffs(b, world, x, y);
         DrawNotices(b, y + 8);
         DrawHotbar(b);
@@ -156,28 +157,48 @@ internal sealed class Hud
             IClickableMenu.drawHoverText(b, $"Life {life}/{lifeMax}", Game1.smallFont);
     }
 
+    /// <summary>The square of the buff at an index. Eight icons fit a row, and each row leaves room under it for the time.</summary>
+    private static Rectangle BuffSlot(int index, int x, int y) => new(x + index % 8 * 40, y + index / 8 * 52, 32, 32);
+
+    /// <summary>
+    /// Terraria's buffs, eight to a row. Each time sits centred under its icon, with a shadow so it reads on any background.
+    /// </summary>
     private int DrawBuffs(SpriteBatch b, WorldState world, int x, int y)
     {
-        int column = 0;
-        foreach (BuffState buff in world.Buffs)
+        for (int i = 0; i < world.Buffs.Count; i++)
         {
+            BuffState buff = world.Buffs[i];
             Texture2D? icon = sprites.Load(SpriteNames.Buff(buff.BuffType));
-            int left = x + column * 40;
+            Rectangle slot = BuffSlot(i, x, y);
             if (icon != null)
-                b.Draw(icon, new Rectangle(left, y, 32, 32), Color.White);
+                b.Draw(icon, slot, Color.White);
             else
-                b.Draw(Game1.staminaRect, new Rectangle(left, y, 32, 32), Color.Gray * 0.6f);
+                b.Draw(Game1.staminaRect, slot, Color.Gray * 0.6f);
             int seconds = buff.Time / 60;
             string time = seconds >= 60 ? $"{seconds / 60}m" : $"{seconds}s";
-            b.DrawString(Game1.tinyFont, time, new Vector2(left, y + 32), Color.White);
-            column++;
-            if (column >= 8)
-            {
-                column = 0;
-                y += 52;
-            }
+            Vector2 size = Game1.tinyFont.MeasureString(time);
+            Vector2 at = new(slot.Center.X - size.X / 2f, slot.Bottom + 1);
+            b.DrawString(Game1.tinyFont, time, at + new Vector2(1, 1), Color.Black * 0.6f);
+            b.DrawString(Game1.tinyFont, time, at, Color.White);
         }
-        return column == 0 ? y : y + 52;
+        int rows = (world.Buffs.Count + 7) / 8;
+        return y + rows * 52;
+    }
+
+    /// <summary>A right click on a Terraria buff icon asks Terraria to end that buff. Returns true when the click was on an icon and is used up.</summary>
+    public bool OnRightClick(int uiX, int uiY)
+    {
+        WorldState? world = bridge.World;
+        if (!Context.IsWorldReady || !Context.IsPlayerFree || !bridge.Linked || world == null)
+            return false;
+        for (int i = 0; i < world.Buffs.Count; i++)
+        {
+            if (!BuffSlot(i, BuffOrigin, BuffOrigin).Contains(uiX, uiY))
+                continue;
+            bridge.Send(new RemoveBuff { BuffType = world.Buffs[i].BuffType });
+            return true;
+        }
+        return false;
     }
 
     private void DrawNotices(SpriteBatch b, int y)

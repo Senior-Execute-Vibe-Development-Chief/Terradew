@@ -38,6 +38,12 @@ internal sealed class Bridge : IDisposable
     /// <summary>How the Terraria character moves: speed, wings and mount. Null once Terraria stops sending.</summary>
     public Movement? Movement => movement != null && Link.NowMs() - movementAtMs < 3000 ? movement : null;
 
+    private PlayerGlow? glow;
+    private long glowAtMs;
+
+    /// <summary>The light the Terraria character gives off from its buffs and gear. Null once Terraria stops sending.</summary>
+    public PlayerGlow? Glow => glow != null && Link.NowMs() - glowAtMs < 3000 ? glow : null;
+
     /// <summary>The Terraria player as Terraria draws it. Null once Terraria stops sending (it resends at least twice a second).</summary>
     public PlayerLook? Look => look != null && Link.NowMs() - lookAtMs < 1500 ? look : null;
 
@@ -51,6 +57,8 @@ internal sealed class Bridge : IDisposable
     public event Action<Notice>? Notice;
     public event Action<StationPlaced>? StationPlaced;
     public event Action<GiftTaken>? GiftTaken;
+    /// <summary>Terraria used a Recall Potion or a mirror. The farmer should go home.</summary>
+    public event Action<Core.Protocol.Recall>? Recalled;
 
     public bool IsConnected => link.Connected;
 
@@ -146,6 +154,10 @@ internal sealed class Bridge : IDisposable
                 // Always raised: Terraria already took the item, so the villager must still get it.
                 GiftTaken?.Invoke(taken);
                 break;
+            case Core.Protocol.Recall recall:
+                // Always raised: Terraria already spent the item, so the farmer must still go home.
+                Recalled?.Invoke(recall);
+                break;
             case VillagerMoves moves:
                 this.moves = moves;
                 movesAtMs = Link.NowMs();
@@ -153,6 +165,10 @@ internal sealed class Bridge : IDisposable
             case Movement moving:
                 movement = moving;
                 movementAtMs = Link.NowMs();
+                break;
+            case PlayerGlow playerGlow:
+                glow = playerGlow;
+                glowAtMs = Link.NowMs();
                 break;
             case PlayerLook playerLook:
                 look = playerLook;

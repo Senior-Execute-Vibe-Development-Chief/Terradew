@@ -35,6 +35,7 @@ public enum MsgType : byte
     GiftItem = 24,
     Friendships = 25,
     PlaceTorch = 26,
+    RemoveBuff = 27,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -52,6 +53,8 @@ public enum MsgType : byte
     VillagerMoves = 52,
     PlayerLook = 53,
     Movement = 54,
+    Recall = 55,
+    PlayerGlow = 57,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -87,10 +90,13 @@ public abstract class Message
             MsgType.Gathered => Gathered.ReadFrom(r),
             MsgType.PlaceStation => PlaceStation.ReadFrom(r),
             MsgType.PlaceTorch => PlaceTorch.ReadFrom(r),
+            MsgType.RemoveBuff => RemoveBuff.ReadFrom(r),
             MsgType.SlotMask => SlotMask.ReadFrom(r),
             MsgType.StationPlaced => StationPlaced.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
             MsgType.Movement => Movement.ReadFrom(r),
+            MsgType.PlayerGlow => PlayerGlow.ReadFrom(r),
+            MsgType.Recall => Recall.ReadFrom(r),
             MsgType.InventoryState => InventoryState.ReadFrom(r),
             MsgType.CoinAck => CoinAck.ReadFrom(r),
             MsgType.RecipeList => RecipeList.ReadFrom(r),
@@ -635,6 +641,48 @@ public sealed class Movement : Message
 }
 
 /// <summary>
+/// The light the Terraria character gives off from its gear and buffs: light pets, Shine, helmets and wings.
+/// Stardew lights the farmer with it, even while nothing is held. Sent when it changes and about once a second.
+/// </summary>
+public sealed class PlayerGlow : Message
+{
+    /// <summary>How bright the glow is, 0 for none up to 255.</summary>
+    public byte Light;
+    /// <summary>The glow colour, packed the way Terraria packs colours (red in the low byte).</summary>
+    public uint Color;
+
+    public override MsgType Type => MsgType.PlayerGlow;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Light);
+        w.Write(Color);
+    }
+
+    public static PlayerGlow ReadFrom(BinaryReader r) => new()
+    {
+        Light = r.ReadByte(),
+        Color = r.ReadUInt32(),
+    };
+}
+
+/// <summary>
+/// Terraria used an item that takes the character home, such as a Recall Potion or a Magic Mirror. Terraria does not
+/// teleport; Stardew warps the farmer to their bed.
+/// </summary>
+public sealed class Recall : Message
+{
+    /// <summary>Terraria's item type of the item used, such as ItemID.MagicMirror.</summary>
+    public int ItemType;
+
+    public override MsgType Type => MsgType.Recall;
+
+    public override void Write(BinaryWriter w) => w.Write(ItemType);
+
+    public static Recall ReadFrom(BinaryReader r) => new() { ItemType = r.ReadInt32() };
+}
+
+/// <summary>
 /// Sent several times a second while any followed town NPC is busy with an enemy, and about once a second otherwise.
 /// Danger is a TownCourage.Dangers kind while one lasts (a boss, an invasion), else empty.
 /// </summary>
@@ -801,6 +849,18 @@ public sealed class Heal : Message
     public static Heal ReadFrom(BinaryReader r) => new() { Life = r.ReadInt32(), Mana = r.ReadInt32(), WellFedSeconds = r.ReadInt32() };
 }
 
+/// <summary>A right click on a Terraria buff icon in Stardew. Terraria ends that buff if the player is allowed to remove it.</summary>
+public sealed class RemoveBuff : Message
+{
+    public int BuffType;
+
+    public override MsgType Type => MsgType.RemoveBuff;
+
+    public override void Write(BinaryWriter w) => w.Write(BuffType);
+
+    public static RemoveBuff ReadFrom(BinaryReader r) => new() { BuffType = r.ReadInt32() };
+}
+
 /// <summary>Stardew is saving. Terraria saves its world and character to match.</summary>
 public sealed class SaveWorld : Message
 {
@@ -924,6 +984,8 @@ public enum EntityFlags : ushort
     Friendly = 32,
     Hostile = 64,
     Chasing = 128,
+    /// <summary>A slime, which hops as it moves rather than sliding. Drawn with a hop arc while it travels.</summary>
+    Hopper = 256,
 }
 
 /// <summary>A Terraria NPC. X and Y are its feet (bottom center) in Terraria world pixels.</summary>

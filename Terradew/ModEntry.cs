@@ -85,6 +85,7 @@ public sealed class ModEntry : Mod
         BackpackGuards.Install(harmony, Monitor, backpack, sprites);
         InventoryTab.Install(harmony, Monitor, bridge, backpack, sprites);
         flight.Install(harmony, Monitor);
+        helper.Events.Display.RenderedWorld += (_, e) => TerrariaBody.DrawAirborne(e.SpriteBatch);
         MoneyBox.Install(harmony, Monitor, bridge, sprites);
 
         bridge.Connected += OnConnected;
@@ -108,6 +109,7 @@ public sealed class ModEntry : Mod
         bridge.Notice += notice => hud.Notice(notice.Text, new Color(notice.R, notice.G, notice.B));
         bridge.StationPlaced += placed => stations.OnStationPlaced(placed, bridge);
         bridge.GiftTaken += taken => stories.OnGiftTaken(taken);
+        bridge.Recalled += recall => HomeRecall.OnRecall(recall, Monitor);
 
         helper.Events.GameLoop.SaveLoaded += (_, _) => StartFarm();
         helper.Events.GameLoop.ReturnedToTitle += (_, _) => StopFarm();
@@ -312,6 +314,16 @@ public sealed class ModEntry : Mod
         {
             Vector2 ui = Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
             if (hud.OnClick((int)ui.X, (int)ui.Y))
+            {
+                Helper.Input.Suppress(e.Button);
+                return;
+            }
+        }
+        // A right click on a Terraria buff icon asks Terraria to end that buff, and goes no further.
+        if (e.Button == SButton.MouseRight && Context.IsPlayerFree)
+        {
+            Vector2 ui = Utility.ModifyCoordinatesForUIScale(e.Cursor.ScreenPixels);
+            if (hud.OnRightClick((int)ui.X, (int)ui.Y))
             {
                 Helper.Input.Suppress(e.Button);
                 return;

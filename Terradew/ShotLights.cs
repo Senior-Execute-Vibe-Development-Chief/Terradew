@@ -74,8 +74,9 @@ internal static class ShotLights
         candidates.Sort((a, b) => a.Distance.CompareTo(b.Distance));
 
         int count = Math.Min(MaxLights, candidates.Count);
+        string here = location.NameOrUniqueName;
         for (int slot = 0; slot < count; slot++)
-            Place(slot, candidates[slot].Position, candidates[slot].Shot);
+            Place(slot, candidates[slot].Position, candidates[slot].Shot, here);
         for (int slot = count; slot < lit; slot++)
             Game1.currentLightSources.Remove(IdOf(slot));
         lit = count;
@@ -88,7 +89,11 @@ internal static class ShotLights
         lastLocation = null;
     }
 
-    private static void Place(int slot, Vector2 position, ProjectileState shot)
+    /// <summary>
+    /// Lights one shot. The light is bound to <paramref name="place"/> through onlyLocation, so Stardew never draws it
+    /// in another location. Clear() takes these lights down on a location change, before the new location is lit.
+    /// </summary>
+    private static void Place(int slot, Vector2 position, ProjectileState shot, string place)
     {
         string id = IdOf(slot);
         float radius = shot.Light / FullLight * FullRadius;
@@ -100,7 +105,7 @@ internal static class ShotLights
             light.color.Value = color;
             return;
         }
-        Game1.currentLightSources[id] = new LightSource(id, LightSource.sconceLight, position, radius, color, LightSource.LightContext.None, 0L);
+        Game1.currentLightSources[id] = new LightSource(id, LightSource.sconceLight, position, radius, color, LightSource.LightContext.None, 0L, onlyLocation: place);
     }
 
     /// <summary>Stardew lights subtract their colour, so the visible colour is inverted.</summary>

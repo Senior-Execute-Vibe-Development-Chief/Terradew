@@ -125,7 +125,11 @@ public sealed class WorldStamp
     /// Terraria AI styles of shots that ride on their owner: spears (19), drills and chainsaws (20), crystal leaf (43)
     /// and held guns and bows (75).
     /// </summary>
-    private static readonly HashSet<int> AttachedAiStyles = new() { 19, 20, 43, 75 };
+    /// <summary>
+    /// Terraria AI styles of shots that ride on their owner: spear (19), drill (20), crystal leaf (42) and held projectile (75).
+    /// The crystal leaf's laser shot is style 43 and flies free, so it is not here.
+    /// </summary>
+    private static readonly HashSet<int> AttachedAiStyles = new() { 19, 20, 42, 75 };
 
     /// <summary>
     /// The Dryad's Ward is drawn by Terraria's own code, not from its sprite, so Stardew would see nothing.
@@ -598,6 +602,8 @@ public sealed class WorldStamp
             flags |= EntityFlags.Hostile;
         if (Creatures.IsChasing(npc))
             flags |= EntityFlags.Chasing;
+        if (npc.aiStyle == NPCAIStyleID.Slime)
+            flags |= EntityFlags.Hopper;
         return new EntityState
         {
             Id = npc.whoAmI,

@@ -84,6 +84,20 @@ public sealed class Puppet : ModPlayer
         Player.noKnockback = true;
         Player.breath = Player.breathMax;
         Place();
+        Animate();
+    }
+
+    /// <summary>
+    /// Gives Terraria a velocity that matches how the farmer moves, for this tick's update only (the player is put back
+    /// on the farmer's feet after it). Terraria then plays the mount's run, the wings' flap and the jump pose itself.
+    /// </summary>
+    private void Animate()
+    {
+        bool airborne = Airborne;
+        if (!Player.mount.Active && !airborne)
+            return;
+        float run = walkSpeed * (WorldProjection.Scale / SpriteLayout.DrawScale);
+        Player.velocity = new Vector2(Player.direction * run, airborne ? -0.5f : 0f);
     }
 
     public override void SetControls()
@@ -94,7 +108,8 @@ public sealed class Puppet : ModPlayer
         Player.controlRight = false;
         Player.controlUp = false;
         Player.controlDown = false;
-        Player.controlJump = false;
+        // Held while the farmer flies or leaps, so Terraria flaps the wings and fires the rocket boots.
+        Player.controlJump = Airborne;
         Player.controlHook = false;
         Player.controlMount = false;
         Player.controlQuickHeal = false;
@@ -294,6 +309,9 @@ public sealed class Puppet : ModPlayer
         {
             walkSpeed = 0f;
         }
+        // Riding or in the air, Terraria poses the legs itself (sitting, or the jump pose) from the velocity Animate gave.
+        if (Player.mount.Active || Airborne)
+            return;
         if (walkSpeed <= 0f)
         {
             walkCounter = 0f;

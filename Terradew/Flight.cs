@@ -32,7 +32,10 @@ internal sealed class Flight
     private const float JumpHeight = 52f;
     private const int JumpTicks = 40;
     /// <summary>The leap moves forward until a little past the top of the arc; the rest is the drop.</summary>
-    private const float JumpForward = 0.62f;
+    private const float JumpSpeed = 4.5f;
+
+    /// <summary>Ticks a leap keeps sliding forward after touching down over a wall or water, looking for ground.</summary>
+    private const int CarryTicks = 24;
     private const float FallSpeed = 9f;
     /// <summary>How far to look for open ground, in tiles.</summary>
     private const int SearchTiles = 30;
@@ -151,22 +154,18 @@ internal sealed class Flight
                 break;
             case Mode.Jumping:
                 jumpTick++;
-                height = JumpHeight * MathF.Sin(MathF.PI * jumpTick / JumpTicks);
-                if (jumpTick <= JumpTicks * JumpForward)
-                {
-                    Glide(player, location, jumpStep);
+                height = JumpHeight * MathF.Sin(MathF.PI * Math.Min(jumpTick, JumpTicks) / JumpTicks);
+                // The leap carries forward the whole way down, and on past its end while there is nowhere to stand.
+                Glide(player, location, jumpStep);
+                if (mode != Mode.Jumping || jumpTick < JumpTicks)
                     break;
-                }
-                // Past the top: come down here if it is open ground, else drop to open ground.
-                if (landing == null)
+                if (Open(location, player, player.Position))
                 {
-                    if (Open(location, player, player.Position))
-                        landing = player.Position;
-                    else
-                        StartLanding(player, location);
+                    Reset();
+                    Game1.playSound("thudStep");
                 }
-                if (jumpTick >= JumpTicks)
-                    Land(player);
+                else if (jumpTick > JumpTicks + CarryTicks)
+                    StartLanding(player, location);
                 break;
             case Mode.Landing:
                 Descend(player, location);
@@ -194,9 +193,9 @@ internal sealed class Flight
         Vector2 direction = Held();
         if (direction == Vector2.Zero)
             direction = Facing(player.FacingDirection);
-        // A leap covers about three tiles at walking pace, more on a faster mount.
-        float speed = player.getMovementSpeed() * 1.4f;
-        jumpStep = direction * speed;
+        // A leap covers about three tiles, more on a faster mount, the same everywhere (Stardew's own walking speed
+        // changes with paths and buffs, so it is not used).
+        jumpStep = direction * JumpSpeed * Math.Clamp(movement.Speed, 1f, 2.2f);
         Game1.playSound("dwoop");
     }
 
@@ -258,14 +257,14 @@ internal sealed class Flight
     }
 
     /// <summary>
-    /// Comes down: straight south to the first open ground, else to the open ground nearest both here and the takeoff
-    /// point. Over open ground it simply lands where it is.
+    /// Comes down on the nearest open ground south, east or west (see FindLanding), or back where it took off if
+    /// there is none. Over open ground it simply lands where it is.
     /// </summary>
     private void StartLanding(Farmer player, GameLocation location)
     {
         velocity = Vector2.Zero;
         landing = FindLanding(location, player) ?? takeoff;
-        mode = mode == Mode.Jumping ? Mode.Jumping : Mode.Landing;
+        mode = Mode.Landing;
     }
 
     private void Descend(Farmer player, GameLocation location)
@@ -285,43 +284,32 @@ internal sealed class Flight
     private void Land(Farmer player)
     {
         if (landing is { } spot)
-        {
-            // A jump that came down over a wall drops the rest of the way.
-            if (mode == Mode.Jumping && Vector2.Distance(spot, player.Position) > 1f)
-            {
-                mode = Mode.Landing;
-                return;
-            }
             player.Position = spot;
-        }
         Reset();
         Game1.playSound("thudStep");
     }
 
+    /// <summary>
+    /// Where to come down: here if it is open, else the nearest open ground south, east or west, never north (as if
+    /// falling). Straight south wins a tie.
+    /// </summary>
     private static Vector2? FindLanding(GameLocation location, Farmer player)
     {
         Vector2 here = player.Position;
         if (Open(location, player, here))
             return here;
-        // South first, as if falling.
-        for (int down = 1; down <= SearchTiles; down++)
-        {
-            Vector2 spot = here + new Vector2(0f, down * 64f);
-            if (spot.Y > location.Map.DisplayHeight)
-                break;
-            if (Open(location, player, spot))
-                return spot;
-        }
-        Vector2 start = instance?.takeoff ?? here;
+        Point tile = new((int)MathF.Round(here.X / 64f), (int)MathF.Round(here.Y / 64f));
         Vector2? best = null;
         float bestScore = float.MaxValue;
-        Point tile = new((int)(here.X / 64f), (int)(here.Y / 64f));
-        for (int dy = -SearchTiles; dy <= SearchTiles; dy++)
+        for (int dy = 0; dy <= SearchTiles; dy++)
         {
+            // Nothing further south can beat what was found.
+            if (dy * 64f > bestScore)
+                break;
             for (int dx = -SearchTiles; dx <= SearchTiles; dx++)
             {
                 Vector2 spot = new((tile.X + dx) * 64f, (tile.Y + dy) * 64f);
-                float score = Vector2.Distance(spot, here) + Vector2.Distance(spot, start);
+                float score = Vector2.Distance(spot, here) + Math.Abs(dx) * 0.01f;
                 if (score >= bestScore || !Open(location, player, spot))
                     continue;
                 best = spot;
@@ -338,6 +326,17 @@ internal sealed class Flight
         box.Offset((int)(position.X - player.Position.X), (int)(position.Y - player.Position.Y));
         if (box.Left < 0 || box.Top < 0 || box.Right > location.Map.DisplayWidth || box.Bottom > location.Map.DisplayHeight)
             return false;
-        return !location.isCollidingPosition(box, Game1.viewport, true, 0, false, player);
+        if (location.isCollidingPosition(box, Game1.viewport, true, 0, false, player))
+            return false;
+        // Stardew lets nothing walk into water, but nothing stops a farmer dropping into a lake from above.
+        for (int y = box.Top / 64; y <= (box.Bottom - 1) / 64; y++)
+        {
+            for (int x = box.Left / 64; x <= (box.Right - 1) / 64; x++)
+            {
+                if (location.isWaterTile(x, y))
+                    return false;
+            }
+        }
+        return true;
     }
 }

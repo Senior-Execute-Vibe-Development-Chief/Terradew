@@ -22,6 +22,17 @@ internal sealed class Draw
     private const int WallOfFleshType = 113;
     private const int WallOfFleshEyeType = 114;
     private const int MoonLordCoreType = 398;
+    /// <summary>The crystal leaf's laser shot, which Terraria draws as a beam along its flight rather than from its sprite.</summary>
+    private const int CrystalLeafShotType = 227;
+
+    /// <summary>A hopping slime's height at its jump's peak, in Stardew pixels, before its size scales it.</summary>
+    private const float HopHeight = 14f;
+    /// <summary>How far a slime travels, in Terraria pixels, for each hop. Walking it on from one hop to the next.</summary>
+    private const float HopTerrariaPixels = 32f;
+    /// <summary>The crystal leaf's laser, as Terraria pixels long and Stardew pixels thick.</summary>
+    private const float LaserTerrariaLength = 12f;
+    private const float LaserThickness = 6f;
+    private static readonly Color LaserColour = new(150, 255, 170);
 
     /// <summary>
     /// Depth of the flesh band. Stardew draws larger depths later, so this sits above every creature south of
@@ -37,6 +48,17 @@ internal sealed class Draw
     private readonly IMonitor monitor;
     private bool drewSorted;
     private bool loggedDrawError;
+    /// <summary>Hop state by entity id. Rebuilt from each new world state, so slimes that left the world drop out.</summary>
+    private Dictionary<int, HopState> hops = new();
+    private WorldState? hopWorld;
+
+    /// <summary>A hopping slime's position in the last world state, and its phase through its hops (radians; each half turn is one hop).</summary>
+    private sealed class HopState
+    {
+        public float X;
+        public float Y;
+        public float Phase;
+    }
 
     public Draw(Bridge bridge, SpriteBook sprites, Hand hand, IModHelper helper, IMonitor monitor)
     {
@@ -106,6 +128,12 @@ internal sealed class Draw
         WorldState? world = bridge.World;
         if (world == null || !bridge.WorldIsFor(key))
             return;
+        // Hops advance once per new world state, so drawing the same state again (or twice in a frame) does not hop it further.
+        if (!ReferenceEquals(world, hopWorld))
+        {
+            hopWorld = world;
+            AdvanceHops(world);
+        }
 
         foreach (EntityState entity in world.Entities)
         {
@@ -162,6 +190,47 @@ internal sealed class Draw
     /// </summary>
     private static bool IsComposite(int type) => type is >= 127 and <= 131 or >= 246 and <= 249 or >= 396 and <= 398;
 
+    /// <summary>
+    /// Moves each slime's hop on from its last position. A slime that moved walks its phase on by the distance it
+    /// travelled, so it hops as it goes; one that stood still settles onto the ground at the nearest landing.
+    /// </summary>
+    private void AdvanceHops(WorldState world)
+    {
+        var next = new Dictionary<int, HopState>();
+        foreach (EntityState entity in world.Entities)
+        {
+            if (!entity.Has(EntityFlags.Hopper))
+                continue;
+            if (!hops.TryGetValue(entity.Id, out HopState? hop))
+                hop = new HopState { X = entity.X, Y = entity.Y };
+            float dx = entity.X - hop.X;
+            float dy = entity.Y - hop.Y;
+            float moved = MathF.Sqrt(dx * dx + dy * dy);
+            if (moved > 0.05f)
+                hop.Phase = (hop.Phase + moved * MathF.PI / HopTerrariaPixels) % MathF.PI;
+            else
+            {
+                // Each landing is a multiple of pi; ease towards the nearest one.
+                float landing = MathF.Round(hop.Phase / MathF.PI) * MathF.PI;
+                hop.Phase += (landing - hop.Phase) * 0.25f;
+            }
+            hop.X = entity.X;
+            hop.Y = entity.Y;
+            next[entity.Id] = hop;
+        }
+        hops = next;
+    }
+
+    /// <summary>How far a slime is lifted off the ground right now, in Stardew pixels. Zero for one that is not hopping.</summary>
+    private float HopLift(EntityState entity)
+    {
+        if (!hops.TryGetValue(entity.Id, out HopState? hop))
+            return 0f;
+        // The lift is HopHeight scaled by the slime's size, and follows |sin| so each hop rises and lands.
+        float height = HopHeight * Math.Clamp(entity.Height / 24f, 0.5f, 2.5f);
+        return height * MathF.Abs(MathF.Sin(hop.Phase));
+    }
+
     private void DrawEntity(SpriteBatch b, EntityState entity, float x, float y, bool sorted, WallFight? wall)
     {
         Texture2D? sheet = sprites.Load(SpriteNames.NpcSheet(entity.NpcType, entity.Look)) ?? sprites.Load(SpriteNames.Npc(entity.NpcType));
@@ -183,6 +252,9 @@ internal sealed class Draw
         // quarter clockwise so the mouth and eyes face north.
         float rotation = onWall ? MathF.PI / 2f : entity.Rotation;
         bool airborne = entity.Has(EntityFlags.Flyer) || entity.Has(EntityFlags.Worm) || IsComposite(entity.NpcType) || Math.Abs(rotation) > 0.01f;
+        // A hopping slime is lifted by its hop, and its shadow stays on the ground, shrinking and fading as it rises.
+        float lift = entity.Has(EntityFlags.Hopper) && !airborne && !onWall ? HopLift(entity) : 0f;
+        float aloft = lift / (HopHeight * Math.Clamp(entity.Height / 24f, 0.5f, 2.5f));
         Rectangle? source = sheet != null && entity.FrameW > 0 && entity.FrameH > 0
             ? Clamp(new Rectangle(entity.FrameX, entity.FrameY, entity.FrameW, entity.FrameH), sheet)
             : null;
@@ -196,8 +268,8 @@ internal sealed class Draw
         {
             var shadow = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y)));
             // Stardew's shadow is 12 pixels across: as wide as the body is drawn, a little narrower for big ones.
-            float shadowScale = Math.Clamp(drawnWidth * 0.7f / Game1.shadowTexture.Width, 2f, 12f);
-            b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.6f * alpha, 0f,
+            float shadowScale = Math.Clamp(drawnWidth * 0.7f / Game1.shadowTexture.Width, 2f, 12f) * (1f - 0.35f * aloft);
+            b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.6f * alpha * (1f - 0.5f * aloft), 0f,
                 new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), shadowScale, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
         }
 
@@ -205,7 +277,7 @@ internal sealed class Draw
         bool centred = onWall || airborne;
         Vector2 centre = onWall
             ? new Vector2(x, (wall?.WallY ?? 0) + thickness / 2f)
-            : airborne ? new Vector2(x, y - bodyHeight / 2f) : new Vector2(x, y);
+            : airborne ? new Vector2(x, y - bodyHeight / 2f) : new Vector2(x, y - lift);
         // Whole screen pixels, so each art pixel covers the same number of them and nothing shimmers as it moves.
         Vector2 local = Snap(Game1.GlobalToLocal(Game1.viewport, centre));
 
@@ -313,7 +385,24 @@ internal sealed class Draw
             ? Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y)))
             : Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y));
         float scale = SpriteLayout.DrawScale * (projectile.Scale <= 0f ? 1f : projectile.Scale);
+        if (projectile.ProjType == CrystalLeafShotType)
+        {
+            DrawLaser(b, sheet, source, position, projectile.Rotation, projectile.Scale <= 0f ? 1f : projectile.Scale, Depth(y, sorted, 32f));
+            return;
+        }
         b.Draw(sheet, position, source, color, projectile.Rotation, new Vector2(source.Width / 2f, source.Height / 2f), scale, effects, Depth(y, sorted, 32f));
+    }
+
+    /// <summary>
+    /// The crystal leaf's shot is a beam that Terraria draws in code along its flight, and its transparency can leave
+    /// it invisible in Stardew. So it is drawn at full strength in a light green, its own texture stretched along its
+    /// direction of travel (its rotation) and centred on the shot.
+    /// </summary>
+    private static void DrawLaser(SpriteBatch b, Texture2D sheet, Rectangle source, Vector2 position, float rotation, float scale, float depth)
+    {
+        float length = LaserTerrariaLength * WorldProjection.Scale * scale;
+        var stretch = new Vector2(length / source.Width, LaserThickness * scale / source.Height);
+        b.Draw(sheet, position, source, LaserColour, rotation, new Vector2(source.Width / 2f, source.Height / 2f), stretch, SpriteEffects.None, depth);
     }
 
     private void DrawDrop(SpriteBatch b, DropState drop, float x, float y, bool sorted)

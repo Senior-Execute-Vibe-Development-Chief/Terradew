@@ -23,9 +23,9 @@ internal static class MoneyBox
     private const long MaxDialValue = 99_999_999;
 
     // Offsets are measured from vanilla's layout, from the box's xPositionOnScreen and yPositionOnScreen:
-    // the gold dial is drawn at (68, 196), and the "G" sits just right of its digits at about (200, 196).
+    // the gold dial is drawn at (68, 196), and the "G" sits at the far left, just before its first digit.
     // The patch and coin are 24 pixels square. Adjust these if the box art moves.
-    private static readonly Point GPosition = new(200, 196);
+    private static readonly Point GPosition = new(44, 196);
     private const int GBox = 24;
 
     /// <summary>The parchment colour behind the "G", so the coin covers it cleanly.</summary>

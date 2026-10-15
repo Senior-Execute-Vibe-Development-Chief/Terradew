@@ -100,6 +100,20 @@ internal sealed class TerrariaBody
         float air = Math.Clamp(lift / 48f, 0f, 1f);
         b.Draw(Game1.shadowTexture, feet, Game1.shadowTexture.Bounds, Color.Black * (0.6f - 0.25f * air), 0f,
             new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), 4f - 1.5f * air, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
-        b.Draw(body.texture, feet - new Vector2(0f, lift), null, Color.White, 0f, new Vector2(body.shown.FeetX, body.shown.FeetY), SpriteLayout.DrawScale * Flight.Grow, SpriteEffects.None, depth);
+        // In the air the body is drawn after the whole world (see DrawAirborne), above trees, roofs and everything else.
+        if (!Flight.Airborne)
+            b.Draw(body.texture, feet - new Vector2(0f, lift), null, Color.White, 0f, new Vector2(body.shown.FeetX, body.shown.FeetY), SpriteLayout.DrawScale * Flight.Grow, SpriteEffects.None, depth);
+    }
+
+    /// <summary>Draws the flying or leaping body over the finished world, under the HUD and menus.</summary>
+    public static void DrawAirborne(SpriteBatch b)
+    {
+        TerrariaBody? body = instance;
+        if (!Flight.Airborne || body == null || !body.showing || body.texture == null || body.shown == null)
+            return;
+        Rectangle box = Game1.player.GetBoundingBox();
+        Vector2 feet = Game1.GlobalToLocal(Game1.viewport, new Vector2(box.Center.X, box.Bottom));
+        feet = new Vector2(MathF.Round(feet.X), MathF.Round(feet.Y - MathF.Round(Flight.Lift)));
+        b.Draw(body.texture, feet, null, Color.White, 0f, new Vector2(body.shown.FeetX, body.shown.FeetY), SpriteLayout.DrawScale * Flight.Grow, SpriteEffects.None, 1f);
     }
 }

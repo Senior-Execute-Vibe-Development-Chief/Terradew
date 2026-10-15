@@ -28,6 +28,7 @@ internal sealed class Torches
     /// <summary>The location the held light was made in, and the light strength it was made with.</summary>
     private string heldPlace = "";
     private int heldLight;
+    private uint heldColour;
     /// <summary>The location the placed torches below are tracked in, and the Terraria item type of each torch on its tile.</summary>
     private string place = "";
     private Dictionary<Vector2, int> placed = new();
@@ -61,37 +62,49 @@ internal sealed class Torches
             return;
         }
         ItemStack held = backpack.TerrariaOwns(hand.Slot) ? backpack.TerrariaItem(hand.Slot) : default;
-        UpdateHeldLight(held.Light);
+        UpdateHeldLight(held.Light, bridge.Glow);
         UpdatePlaced();
     }
 
-    /// <summary>Keeps one light at the farmer while a light item is in the Terraria hand. It is remade on a location change.</summary>
-    private void UpdateHeldLight(int light)
+    /// <summary>
+    /// Keeps one light at the farmer while a light item is in the Terraria hand or the farmer's own gear and buffs glow.
+    /// The brighter of the two sets the strength and colour. It is remade on a location change or when either changes.
+    /// </summary>
+    private void UpdateHeldLight(int held, PlayerGlow? glow)
     {
         Farmer player = Game1.player;
         GameLocation? here = player.currentLocation;
+        int glowLight = glow?.Light ?? 0;
+        int light = Math.Max(held, glowLight);
         if (light <= 0 || here == null)
         {
             RemoveHeldLight();
             return;
         }
+        // A torch keeps its flame colour unless the gear glows brighter than it.
+        Color colour = held > 0 && held >= glowLight ? LightColour : Invert(new Color { PackedValue = glow!.Color });
         string name = here.NameOrUniqueName;
-        if (!Game1.currentLightSources.ContainsKey(LightId) || heldPlace != name || heldLight != light)
+        if (!Game1.currentLightSources.ContainsKey(LightId) || heldPlace != name || heldLight != light || heldColour != colour.PackedValue)
         {
             RemoveHeldLight();
             float radius = light / 200f * 2.5f;
-            Game1.currentLightSources[LightId] = new LightSource(LightId, LightSource.lantern, player.getStandingPosition(), radius, LightColour, LightSource.LightContext.None, player.UniqueMultiplayerID);
+            Game1.currentLightSources[LightId] = new LightSource(LightId, LightSource.lantern, player.getStandingPosition(), radius, colour, LightSource.LightContext.None, player.UniqueMultiplayerID, onlyLocation: name);
             heldPlace = name;
             heldLight = light;
+            heldColour = colour.PackedValue;
         }
         Game1.currentLightSources[LightId].position.Value = player.getStandingPosition();
     }
+
+    /// <summary>Stardew lights subtract their colour, so the visible colour is inverted.</summary>
+    private static Color Invert(Color visible) => new(255 - visible.R, 255 - visible.G, 255 - visible.B);
 
     private void RemoveHeldLight()
     {
         Game1.currentLightSources.Remove(LightId);
         heldPlace = "";
         heldLight = 0;
+        heldColour = 0;
     }
 
     /// <summary>
