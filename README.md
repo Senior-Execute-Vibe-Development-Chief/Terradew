@@ -48,7 +48,16 @@ Decisions that shape play:
   creature and projectile hitbox to half, and only hits on the farmer's own body count, so hits match the picture.
 - **Creatures that are chasing you follow you** through a door or warp if they are close behind, but never into
   houses and other places without spawns. Creatures you leave behind wait where they were while Terraria runs;
-  hostile creatures are not kept when Terraria closes.
+  hostile creatures are not kept when Terraria closes. Creatures find their way around rocks, fences and
+  furniture: they route over the same blocked tiles Terraria sees.
+- **Stardew rocks drop Terraria ores** as well as their own: copper and tin up top, iron and lead deeper, then
+  silver, gold and the evil ores once the Eye of Cthulhu and the evil boss are down, and the hardmode ores after
+  the Wall of Flesh. Mystic stones give life crystals. Chopping wood gives Terraria wood for that place.
+- **Invasions happen in one place each** and are announced: the Goblin Army attacks Town, the Frost Legion the
+  Mountain, the Pirates the Beach, the Martians the Farm. Invaders come in from that map's edges.
+- **Hardmode turns the Quarry Mine and the Railroad into the Hallow**, with its own creatures and fish.
+- **The Terraria hotbar is driven from Stardew while the Stardew window is in front.** Click into the Terraria
+  window to use its own menus (Escape, Settings, Save & Exit).
 
 ## Setup
 
@@ -122,6 +131,5 @@ The shared code is covered by tests. The two game mods were written without eith
 or run against, so expect a round of compile fixes on the first build, then play-testing. Known gaps:
 
 - Mine floors that need every monster killed for a ladder may need the ladder from a rock instead.
-- Hardmode spreads Hallow and Corruption through Terraria tiles; Stardew places are restamped on every visit,
-  so that spread does not show on the farm.
+- Hardmode's Hallow and Corruption do not spread over time; each place keeps the biome it is given.
 - Multiplayer is not supported yet; the protocol is ready for one Terraria character per farmer.

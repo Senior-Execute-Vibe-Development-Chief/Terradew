@@ -9,7 +9,7 @@ namespace Terradew;
 /// <summary>Tells Terraria what the farmer cannot walk through on each map, and which biome the map is.</summary>
 internal sealed class Maps
 {
-    private const CollisionMask Mask = CollisionMask.Buildings | CollisionMask.Furniture | CollisionMask.Objects | CollisionMask.TerrainFeatures;
+    internal const CollisionMask Mask = CollisionMask.Buildings | CollisionMask.Furniture | CollisionMask.Objects | CollisionMask.TerrainFeatures;
 
     private string lastKey = "";
     private int lastHash;

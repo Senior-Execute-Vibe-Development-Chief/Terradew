@@ -24,6 +24,7 @@ public sealed class ModEntry : Mod
     private MobRoutes routes = null!;
     private Fishing fishing = null!;
     private Mining mining = null!;
+    private WallClimb wallClimb = null!;
     private Houses houses = null!;
     private Draw draw = null!;
     private Hud hud = null!;
@@ -43,10 +44,13 @@ public sealed class ModEntry : Mod
         routes = new MobRoutes();
         fishing = new Fishing(helper);
         mining = new Mining();
+        wallClimb = new WallClimb(bridge);
         houses = new Houses();
         draw = new Draw(bridge, sprites, hand, helper);
         hud = new Hud(bridge, sprites, hand, helper);
-        draw.Install(new Harmony(ModManifest.UniqueID), Monitor);
+        var harmony = new Harmony(ModManifest.UniqueID);
+        draw.Install(harmony, Monitor);
+        wallClimb.Install(harmony, Monitor);
 
         bridge.Connected += OnConnected;
         bridge.Chat += chat =>
@@ -71,6 +75,8 @@ public sealed class ModEntry : Mod
         helper.Events.Display.RenderingHud += (_, _) => hud.BeforeHud();
         helper.Events.Display.RenderedHud += (_, e) => hud.Draw(e.SpriteBatch);
         helper.Events.Display.MenuChanged += (_, e) => fishing.OnMenuChanged(e.NewMenu, bridge, maps);
+        helper.Events.Display.MenuChanged += (_, e) => wallClimb.OnMenuChanged(e.NewMenu);
+        helper.Events.Player.Warped += (_, e) => wallClimb.OnWarped(e);
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         helper.Events.Input.ButtonReleased += (_, e) => hand.OnButtonReleased(e);
         helper.Events.Input.MouseWheelScrolled += (_, e) => hand.OnWheel(e);
