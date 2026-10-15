@@ -97,7 +97,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 4;
+    public const int CurrentProtocol = 5;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -836,6 +836,15 @@ public sealed class InventoryState : Message
     public int BackSlot;
     public int FrontSlot;
     public int ShoeSlot;
+    /// <summary>Packed 0xRRGGBBAA dye tints per worn piece, from <see cref="DyeTint"/>. 0xFFFFFFFF means undyed.</summary>
+    public uint HeadTint = DyeTint.None;
+    public uint BodyTint = DyeTint.None;
+    public uint LegTint = DyeTint.None;
+    public uint WingsTint = DyeTint.None;
+    public uint ShieldTint = DyeTint.None;
+    public uint BackTint = DyeTint.None;
+    public uint FrontTint = DyeTint.None;
+    public uint ShoeTint = DyeTint.None;
 
     public override MsgType Type => MsgType.InventoryState;
 
@@ -853,6 +862,14 @@ public sealed class InventoryState : Message
         w.Write(BackSlot);
         w.Write(FrontSlot);
         w.Write(ShoeSlot);
+        w.Write(HeadTint);
+        w.Write(BodyTint);
+        w.Write(LegTint);
+        w.Write(WingsTint);
+        w.Write(ShieldTint);
+        w.Write(BackTint);
+        w.Write(FrontTint);
+        w.Write(ShoeTint);
     }
 
     public static InventoryState ReadFrom(BinaryReader r) => new()
@@ -869,6 +886,14 @@ public sealed class InventoryState : Message
         BackSlot = r.ReadInt32(),
         FrontSlot = r.ReadInt32(),
         ShoeSlot = r.ReadInt32(),
+        HeadTint = r.ReadUInt32(),
+        BodyTint = r.ReadUInt32(),
+        LegTint = r.ReadUInt32(),
+        WingsTint = r.ReadUInt32(),
+        ShieldTint = r.ReadUInt32(),
+        BackTint = r.ReadUInt32(),
+        FrontTint = r.ReadUInt32(),
+        ShoeTint = r.ReadUInt32(),
     };
 }
 

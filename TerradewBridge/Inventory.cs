@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Terradew.Core;
 using Terradew.Core.Protocol;
 using Terraria;
 using Terraria.DataStructures;
@@ -54,6 +55,14 @@ public static class Inventory
             BackSlot = player.back,
             FrontSlot = player.front,
             ShoeSlot = player.shoe,
+            HeadTint = TintOf(player.dye[0]),
+            BodyTint = TintOf(player.dye[1]),
+            LegTint = TintOf(player.dye[2]),
+            WingsTint = AccessoryTint(player, slot => slot.wingSlot > 0),
+            ShieldTint = AccessoryTint(player, slot => slot.shieldSlot > 0),
+            BackTint = AccessoryTint(player, slot => slot.backSlot > 0),
+            FrontTint = AccessoryTint(player, slot => slot.frontSlot > 0),
+            ShoeTint = AccessoryTint(player, slot => slot.shoeSlot > 0),
         };
         for (int i = 0; i < InventoryState.InventorySlots && i < player.inventory.Length; i++)
             state.Items.Add(Describe(player.inventory[i]));
@@ -62,6 +71,27 @@ public static class Inventory
         link.Send(state);
         link.Send(new CoinAck { Seq = lastCoinSeq, Total = state.Coins });
         ExportGear(player);
+    }
+
+    /// <summary>
+    /// The dye for the first accessory (armor[3..9]) whose item fills a sprite slot. Dye slots 3..9 line up with those
+    /// accessory slots, so the dye at the same index is the one that colours it.
+    /// </summary>
+    private static uint AccessoryTint(Player player, Func<Item, bool> fills)
+    {
+        for (int i = 3; i < 10 && i < player.armor.Length && i < player.dye.Length; i++)
+        {
+            if (!player.armor[i].IsAir && fills(player.armor[i]))
+                return TintOf(player.dye[i]);
+        }
+        return DyeTint.None;
+    }
+
+    private static uint TintOf(Item? dye)
+    {
+        if (dye == null || dye.IsAir || dye.type <= 0)
+            return DyeTint.None;
+        return DyeTint.Rgba(ItemID.Search.GetName(dye.type));
     }
 
     private static void ExportGear(Player player)
@@ -102,6 +132,8 @@ public static class Inventory
             hash = unchecked(hash * 31 + item.type * 7919L + item.stack);
         hash = unchecked(hash * 31 + player.head * 13 + player.body * 17 + player.legs * 19);
         hash = unchecked(hash * 31 + player.wings * 23 + player.shield * 29 + player.back * 37 + player.front * 41 + player.shoe * 43);
+        foreach (Item dye in player.dye)
+            hash = unchecked(hash * 31 + dye.type * 7907L);
         return hash;
     }
 

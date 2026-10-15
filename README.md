@@ -115,6 +115,9 @@ Keys can be changed in `Mods/Terradew/config.json`.
   finished, a townsperson whose Terraria conditions are met moves in (the Guide first, the Merchant once you
   carry 50 silver, and so on). The full roster of vanilla town NPCs is in play, except Truffle and Santa Claus.
   Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
+- **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
+  farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
+  head portrait when you talk to them.
 - **Fishing** is Stardew's minigame with a Terraria catch, from the place's biome and depth.
 - **Bosses** come from their normal Terraria summons, used with the Terraria hand: the Suspicious Looking Eye at
   night, Worm Food in the Secret Woods, the Abeemination in the jungle mine floors. Talk to the Old Man at the
@@ -143,4 +146,5 @@ or run against, so expect a round of compile fixes on the first build, then play
 
 - Mine floors that need every monster killed for a ladder may need the ladder from a rock instead.
 - Hardmode's Hallow and Corruption do not spread over time; each place keeps the biome it is given.
+- Both mods must be the same version: they refuse to link if their protocol numbers differ.
 - Multiplayer is not supported yet; the protocol is ready for one Terraria character per farmer.

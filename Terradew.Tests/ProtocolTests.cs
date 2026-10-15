@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Terradew.Core;
 using Terradew.Core.Protocol;
 
 internal static class ProtocolTests
@@ -52,6 +53,11 @@ internal static class ProtocolTests
             T.Assert(inventoryCopy.Items[0].Name == "Copper Shortsword" && inventoryCopy.Coins == 123456, "inventory");
             T.Assert(inventoryCopy.HeadSlot == 2 && !inventoryCopy.Male, "armor slots still round-trip");
             T.Assert(inventoryCopy.WingsSlot == 7 && inventoryCopy.ShieldSlot == 8 && inventoryCopy.BackSlot == 9 && inventoryCopy.FrontSlot == 10 && inventoryCopy.ShoeSlot == 11, "accessory slots");
+            var dyed = new InventoryState { HeadTint = 0xFF8C8CFF, BodyTint = 0x11223344, LegTint = 1, WingsTint = 2, ShieldTint = 3, BackTint = 4, FrontTint = 5, ShoeTint = 0xFFFFFFFF };
+            var dyedCopy = (InventoryState)Roundtrip(dyed);
+            T.Assert(dyedCopy.HeadTint == 0xFF8C8CFF && dyedCopy.BodyTint == 0x11223344 && dyedCopy.LegTint == 1, "armor dye tints");
+            T.Assert(dyedCopy.WingsTint == 2 && dyedCopy.ShieldTint == 3 && dyedCopy.BackTint == 4 && dyedCopy.FrontTint == 5 && dyedCopy.ShoeTint == 0xFFFFFFFF, "accessory dye tints");
+            T.Assert(new InventoryState().HeadTint == DyeTint.None, "undyed by default");
 
             var recipes = new RecipeList();
             recipes.Recipes.Add(new RecipeEntry { RecipeIndex = 2, Result = new ItemStack { ItemType = 36, Stack = 1 }, Ingredients = new List<ItemStack> { new ItemStack { ItemType = 9, Stack = 10 } }, CanCraft = true });

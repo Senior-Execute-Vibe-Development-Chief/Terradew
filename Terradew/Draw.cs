@@ -321,19 +321,22 @@ internal sealed class Draw
         var flip = face == 3 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         int Shown(int armor, int vanity) => !gear.Equipment[vanity].IsEmpty ? gear.Equipment[vanity].ItemType : gear.Equipment[armor].IsEmpty ? 0 : gear.Equipment[armor].ItemType;
         // Legs, body and head share one layer; the small offsets order them within it.
-        DrawPiece(b, feet, "legs", gear.LegSlot, Shown(2, 12), 0, 0f, away, front, flip, Math.Min(1f, depth));
-        DrawPiece(b, feet, "body", gear.BodySlot, Shown(1, 11), gear.Male ? 0 : 1, 40f, away, front, flip, Math.Min(1f, depth + 0.0001f));
-        DrawPiece(b, feet, "head", gear.HeadSlot, Shown(0, 10), 0, 72f, away, front, flip, Math.Min(1f, depth + 0.0002f));
+        DrawPiece(b, feet, "legs", gear.LegSlot, Shown(2, 12), 0, 0f, away, front, flip, Math.Min(1f, depth), gear.LegTint);
+        DrawPiece(b, feet, "body", gear.BodySlot, Shown(1, 11), gear.Male ? 0 : 1, 40f, away, front, flip, Math.Min(1f, depth + 0.0001f), gear.BodyTint);
+        DrawPiece(b, feet, "head", gear.HeadSlot, Shown(0, 10), 0, 72f, away, front, flip, Math.Min(1f, depth + 0.0002f), gear.HeadTint);
         // Accessories: wings and back behind the body, shoes just over the legs, shield and front over the head.
-        DrawAccessory(b, feet, "wings", gear.WingsSlot, away, flip, Math.Clamp(depth - 0.0001f, 0f, 1f));
-        DrawAccessory(b, feet, "back", gear.BackSlot, away, flip, Math.Clamp(depth - 0.0001f, 0f, 1f));
-        DrawAccessory(b, feet, "shoe", gear.ShoeSlot, away, flip, Math.Clamp(depth + 0.00005f, 0f, 1f));
-        DrawAccessory(b, feet, "shield", gear.ShieldSlot, away, flip, Math.Clamp(depth + 0.0003f, 0f, 1f));
-        DrawAccessory(b, feet, "front", gear.FrontSlot, away, flip, Math.Clamp(depth + 0.0003f, 0f, 1f));
+        DrawAccessory(b, feet, "wings", gear.WingsSlot, away, flip, Math.Clamp(depth - 0.0001f, 0f, 1f), gear.WingsTint);
+        DrawAccessory(b, feet, "back", gear.BackSlot, away, flip, Math.Clamp(depth - 0.0001f, 0f, 1f), gear.BackTint);
+        DrawAccessory(b, feet, "shoe", gear.ShoeSlot, away, flip, Math.Clamp(depth + 0.00005f, 0f, 1f), gear.ShoeTint);
+        DrawAccessory(b, feet, "shield", gear.ShieldSlot, away, flip, Math.Clamp(depth + 0.0003f, 0f, 1f), gear.ShieldTint);
+        DrawAccessory(b, feet, "front", gear.FrontSlot, away, flip, Math.Clamp(depth + 0.0003f, 0f, 1f), gear.FrontTint);
     }
 
+    /// <summary>The packed 0xRRGGBBAA dye tint from the Terraria side, as a multiply colour. 0xFFFFFFFF is plain white.</summary>
+    private static Color TintOf(uint packed) => new Color((int)(packed >> 24) & 0xFF, (int)(packed >> 16) & 0xFF, (int)(packed >> 8) & 0xFF, (int)packed & 0xFF);
+
     /// <summary>A worn Terraria accessory drawn at the feet like armor, with no item icon fallback. A missing sprite file is skipped.</summary>
-    private void DrawAccessory(SpriteBatch b, Vector2 feet, string part, int slot, bool away, SpriteEffects flip, float depth)
+    private void DrawAccessory(SpriteBatch b, Vector2 feet, string part, int slot, bool away, SpriteEffects flip, float depth, uint tint)
     {
         if (slot <= 0)
             return;
@@ -341,19 +344,21 @@ internal sealed class Draw
         Texture2D? texture = away ? sprites.BackView(file) : sprites.Load(file);
         if (texture == null)
             return;
-        b.Draw(texture, feet, null, Color.White, 0f, new Vector2(texture.Width / 2f, texture.Height), 2f, flip, depth);
+        b.Draw(texture, feet, null, TintOf(tint), 0f, new Vector2(texture.Width / 2f, texture.Height), 2f, flip, depth);
     }
 
-    private void DrawPiece(SpriteBatch b, Vector2 feet, string part, int slot, int item, int variant, float lift, bool away, bool front, SpriteEffects flip, float depth)
+    private void DrawPiece(SpriteBatch b, Vector2 feet, string part, int slot, int item, int variant, float lift, bool away, bool front, SpriteEffects flip, float depth, uint tint)
     {
         if (slot <= 0 && item <= 0)
             return;
         Texture2D? texture = null;
         var effect = flip;
+        bool icon = false;
         if (front && item > 0)
         {
             texture = sprites.Load(SpriteNames.Item(item));
             effect = SpriteEffects.None;
+            icon = true;
         }
         else if (slot > 0)
         {
@@ -364,11 +369,13 @@ internal sealed class Draw
         {
             texture = sprites.Load(SpriteNames.Item(item));
             effect = SpriteEffects.None;
+            icon = true;
         }
         if (texture == null)
             return;
         float y = front ? lift : 0f;
-        b.Draw(texture, feet - new Vector2(0f, y), null, Color.White, 0f, new Vector2(texture.Width / 2f, texture.Height), 2f, effect, depth);
+        // Item icons are the item itself, so only the armor and accessory sprites take the dye.
+        b.Draw(texture, feet - new Vector2(0f, y), null, icon ? Color.White : TintOf(tint), 0f, new Vector2(texture.Width / 2f, texture.Height), 2f, effect, depth);
     }
 
     private static Rectangle Clamp(Rectangle source, Texture2D sheet)

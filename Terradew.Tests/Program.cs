@@ -11,5 +11,6 @@ failed += GridPathTests.Run();
 failed += MiningTests.Run();
 failed += WallClimbTests.Run();
 failed += CelestialTests.Run();
+failed += DyeTintTests.Run();
 Console.WriteLine(failed == 0 ? "all passed" : $"{failed} failed");
 return failed == 0 ? 0 : 1;
