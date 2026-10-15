@@ -79,6 +79,8 @@ public sealed class Puppet : ModPlayer
 
     public override void PreUpdate()
     {
+        // The farmer's own light (held torch, Shine, gear) is sent by Glow and Torches, so WorldLights skips it.
+        WorldLights.OwnUpdate = Player.whoAmI == Main.myPlayer;
         if (!BridgeSystem.Active)
             return;
         Player.gravity = 0f;
@@ -184,6 +186,7 @@ public sealed class Puppet : ModPlayer
 
     public override void PostUpdate()
     {
+        WorldLights.OwnUpdate = false;
         if (!BridgeSystem.Active)
             return;
         Place();

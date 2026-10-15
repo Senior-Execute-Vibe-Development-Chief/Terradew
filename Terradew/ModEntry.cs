@@ -173,6 +173,7 @@ public sealed class ModEntry : Mod
         hand.Reset();
         tools.Reset();
         ShotLights.Reset();
+        WorldLights.Reset();
         fishing.Reset();
         wallClimb.Reset();
         pendingChats.Clear();
@@ -238,6 +239,7 @@ public sealed class ModEntry : Mod
         vitals.Update(bridge, config);
         tools.Update(bridge);
         ShotLights.Update(bridge);
+        WorldLights.Update(bridge);
         body.Update(config);
         routes.Update(bridge, maps, player, Maps.PlaceOf(location).Key);
         if (e.Ticks % 30 == 0)

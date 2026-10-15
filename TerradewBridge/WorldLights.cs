@@ -12,8 +12,8 @@ namespace TerradewBridge;
 /// <summary>
 /// Hooks the Terraria lighting so the light in the farmer's place reaches Stardew. Terraria adds nearly every dynamic
 /// light through Lighting.AddLight, so a torch held by a creature, a glowing creature, a dropped torch and a buff on
-/// another entity all light the Stardew map. Only the farmer's own light and the shots' light are left out, since
-/// Glow, Torches and ShotLights already send those.
+/// another entity all light the Stardew map. Only the farmer's own light (added while its player updates) and the
+/// shots' light are left out, since Glow, Torches and ShotLights already send those.
 /// </summary>
 /// <remarks>
 /// The hook is on the tile overload. The Vector2 overloads convert to tiles and call it, so hooking them too would
@@ -34,8 +34,12 @@ internal static class WorldLights
     /// <summary>A frame goes out every this many ticks while lights are on. Stardew holds the last one between frames.</summary>
     private const int SendEvery = 4;
 
-    /// <summary>Lights within this many tiles of the farmer's centre are left out. Glow and Torches light the farmer.</summary>
-    private const float FarmerSkipTiles = 3f;
+    /// <summary>
+    /// True while Terraria updates the farmer's own player (set by Puppet). Lights added then are the farmer's held
+    /// torch, buffs and gear, which Glow and Torches already send, so they are left out. A creature's torch right next
+    /// to the farmer still counts.
+    /// </summary>
+    internal static bool OwnUpdate;
 
     /// <summary>Lights within this many tiles of a glowing shot are left out. ShotLights lights the shot.</summary>
     private const float ShotSkipTiles = 2f;
@@ -52,8 +56,7 @@ internal static class WorldLights
     /// <summary>The place the collected lights are in. A light from another place is dropped.</summary>
     private static WorldStamp.PlaceState? capturing;
 
-    /// <summary>The farmer's centre and the glowing shots' centres as of the last tick. Lights near them are left out.</summary>
-    private static Vector2 farmerCentre;
+    /// <summary>The glowing shots' centres as of the last tick. Lights near them are left out.</summary>
     private static readonly List<Vector2> shotCentres = new();
 
     /// <summary>The light added to each tile since the last tick, summed as the Lighting engine sums it.</summary>
@@ -102,7 +105,6 @@ internal static class WorldLights
         capturing = place;
         if (collecting)
         {
-            farmerCentre = player.Center;
             Collect(place!);
         }
         else
@@ -166,12 +168,9 @@ internal static class WorldLights
 
     private static void Capture(int i, int j, float r, float g, float b)
     {
-        if (!collecting || capturing == null || r + g + b <= 0f || !capturing.ContainsTile(i, j))
+        if (!collecting || OwnUpdate || capturing == null || r + g + b <= 0f || !capturing.ContainsTile(i, j))
             return;
         Vector2 centre = new(i * 16f + 8f, j * 16f + 8f);
-        float farmerLimit = FarmerSkipTiles * 16f;
-        if (Vector2.DistanceSquared(centre, farmerCentre) < farmerLimit * farmerLimit)
-            return;
         float shotLimit = ShotSkipTiles * 16f;
         foreach (Vector2 shot in shotCentres)
         {
