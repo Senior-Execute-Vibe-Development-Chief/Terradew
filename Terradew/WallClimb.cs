@@ -156,7 +156,7 @@ internal sealed class WallClimb
                         continue;
                     // The same open-floor test Terraria's blocks are built from (see Maps), plus a floor tile under it.
                     if (location.Map.GetLayer("Back")?.Tiles[x, y] != null && !location.isWaterTile(x, y)
-                        && !location.IsTileBlockedBy(new Vector2(x, y), Maps.Mask, CollisionMask.None, false))
+                        && !location.IsTileBlockedBy(new Vector2(x, y), Maps.Mask, Maps.Mask, false))
                         return new Vector2(x, y);
                 }
             }

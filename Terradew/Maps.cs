@@ -66,7 +66,7 @@ internal sealed class Maps
                 bool wet = location.isWaterTile(x, y);
                 if (wet)
                     water++;
-                blocked[y * width + x] = wet || location.IsTileBlockedBy(new Vector2(x, y), Mask, CollisionMask.None, false);
+                blocked[y * width + x] = wet || location.IsTileBlockedBy(new Vector2(x, y), Mask, Mask, false);
             }
         }
         return new MapLayout

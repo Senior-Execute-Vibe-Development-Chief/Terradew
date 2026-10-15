@@ -193,7 +193,8 @@ public sealed class WorldStamp
 
     private static (ushort Block, int Wall) Blocks(Biome biome) => biome switch
     {
-        Biome.Forest => (TileID.Grass, -1),
+        // Dirt, not grass: grass sprouts vines and plants.
+        Biome.Forest => (TileID.Dirt, -1),
         Biome.Corruption => (WorldGen.crimson ? TileID.Crimstone : TileID.Ebonstone, -1),
         Biome.Hallow => (TileID.Pearlstone, -1),
         Biome.Desert => (TileID.Sandstone, -1),
@@ -226,6 +227,42 @@ public sealed class WorldStamp
                 }
                 if (wall >= 0)
                     tile.WallType = (ushort)wall;
+            }
+        }
+    }
+
+    /// <summary>How often the current place is put back to its stamp.</summary>
+    private const int TidyTicks = 60;
+
+    /// <summary>
+    /// Terraria grows things on the stamp: vines and plants off grass, and corruption or hallow spreading into
+    /// blocks. Anything on a walkable tile is cleared, and a blocked tile that changed goes back to the place's block.
+    /// </summary>
+    private static void Tidy(PlaceState place)
+    {
+        MapLayout map = place.Layout!;
+        (ushort block, _) = Blocks(BiomeNow(place));
+        Region rect = place.Rect;
+        int left = Math.Max(1, rect.X);
+        int top = Math.Max(1, rect.Y);
+        int right = Math.Min(Main.maxTilesX - 1, rect.X + rect.Width);
+        int bottom = Math.Min(Main.maxTilesY - 1, rect.Y + rect.Height);
+        for (int x = left; x < right; x++)
+        {
+            for (int y = top; y < bottom; y++)
+            {
+                Tile tile = Main.tile[x, y];
+                bool blocked = map.IsBlocked(x - place.OriginX, y - place.OriginY);
+                if (blocked && (!tile.HasTile || tile.TileType != block))
+                {
+                    tile.HasTile = true;
+                    tile.TileType = block;
+                }
+                else if (!blocked && tile.HasTile)
+                {
+                    tile.HasTile = false;
+                    tile.TileType = 0;
+                }
             }
         }
     }
@@ -416,6 +453,8 @@ public sealed class WorldStamp
         Current = place;
         if (place != null && TicksInPlace == FollowDelay)
             BringFollowers(place, player);
+        if (place != null && place.StampedThisVisit && tick % TidyTicks == 0)
+            Tidy(place);
         lastFeet = Puppet.FeetOf(player);
 
         var state = new WorldState
