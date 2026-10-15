@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 namespace TerradewBridge;
 
 /// <summary>
-/// Thrown explosives in the farmer's place keep no gravity: the plane has no down, so they slide to a stop on the
+/// Thrown explosives and other throws (glowsticks, spiky balls) in the farmer's place keep no gravity: the plane has no down, so they slide to a stop on the
 /// ground and still collide with tiles. The bombs and dynamite among them also tell Stardew, which breaks the Stardew
 /// breakables their blast reaches.
 /// </summary>
@@ -25,10 +25,16 @@ public sealed class Explosives : GlobalProjectile
     private static readonly HashSet<int> NoBlast = new() { ProjectileID.HappyBomb };
 
     /// <summary>
-    /// Thrown shots that are not explosives but still fall in Terraria: Beenade keeps aiStyle 14 and Molotov Cocktail 68,
-    /// so the explosive set does not cover them.
+    /// Thrown shots that are not explosives but still fall in Terraria: Molotov Cocktail keeps aiStyle 68, so neither
+    /// the explosive set nor <see cref="BouncingAiStyle"/> covers it.
     /// </summary>
     private static readonly HashSet<int> ThrownExtra = new() { ProjectileID.Beenade, ProjectileID.MolotovCocktail };
+
+    /// <summary>
+    /// Terraria's AI style for thrown things that fall and bounce: glowsticks of every kind, spiky balls, Beenade.
+    /// They slide to a stop like the bombs.
+    /// </summary>
+    private const int BouncingAiStyle = 14;
 
     public override bool InstancePerEntity => true;
 
@@ -89,14 +95,15 @@ public sealed class Explosives : GlobalProjectile
     }
 
     /// <summary>
-    /// A shot the farmer threw: an explosive that is not a rocket (rockets are ranged and fly straight), or Beenade or Molotov.
+    /// A shot the farmer threw: an explosive that is not a rocket (rockets are ranged and fly straight), a bouncing
+    /// throw (glowsticks, spiky balls, Beenade) or a Molotov.
     /// Terraria creatures' shots are never the farmer's.
     /// </summary>
     private static bool Thrown(Projectile projectile)
     {
         if (projectile.owner != Main.myPlayer)
             return false;
-        if (ThrownExtra.Contains(projectile.type))
+        if (ThrownExtra.Contains(projectile.type) || projectile.aiStyle == BouncingAiStyle)
             return true;
         bool explosive = projectile.aiStyle == ProjAIStyleID.Explosive || ProjectileID.Sets.Explosive[projectile.type];
         return explosive && projectile.DamageType != DamageClass.Ranged;

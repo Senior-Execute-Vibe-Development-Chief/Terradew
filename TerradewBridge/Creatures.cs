@@ -111,7 +111,12 @@ public sealed class Creatures : GlobalNPC
             // Their own AI keeps its speeds, but the body is drawn at half size, so it travels half as far.
             npc.position -= npc.velocity * (1f - SpriteLayout.BodyScale);
             if (npc.boss && flyer && place?.Layout != null)
-                ContainBoss(npc, place);
+            {
+                LogBoss(npc, place);
+                // A boss that is leaving (Terraria's Eye flees north at daybreak) is let go, so it does not hang at the map's edge.
+                if (npc.timeLeft > DespawnTicks)
+                    ContainBoss(npc, place);
+            }
             return;
         }
         npc.noTileCollide = true;
@@ -390,6 +395,28 @@ public sealed class Creatures : GlobalNPC
     /// A flying boss hovers over the farmer, and its own AI can carry it past the Stardew map's edge. Stardew draws only
     /// the map, so the boss is held inside the farmer's place over the map, and a push into the edge stops it there.
     /// </summary>
+    /// <summary>Terraria sets a leaving boss's time left to 10 ticks or less (EncourageDespawn).</summary>
+    private const int DespawnTicks = 10;
+
+    /// <summary>
+    /// Every two seconds, where a flying boss is in the place and what its AI is doing, so a boss that will not come
+    /// near the farmer can be traced in client.log.
+    /// </summary>
+    private static void LogBoss(NPC npc, WorldStamp.PlaceState place)
+    {
+        if (Main.GameUpdateCount % 120 != (uint)npc.whoAmI % 120)
+            return;
+        Player player = Main.player[npc.target < 0 || npc.target >= Main.maxPlayers ? Main.myPlayer : npc.target];
+        float tileX = npc.Center.X / 16f - place.OriginX;
+        float tileY = npc.Center.Y / 16f - place.OriginY;
+        float targetX = player.Center.X / 16f - place.OriginX;
+        float targetY = player.Center.Y / 16f - place.OriginY;
+        BridgeSystem.Instance.Mod.Logger.Info(
+            $"Terradew boss {npc.FullName} in {place.Key} at tile {tileX:0.0},{tileY:0.0} (map {place.Layout!.Width}x{place.Layout.Height}), " +
+            $"target at {targetX:0.0},{targetY:0.0}, velocity {npc.velocity.X:0.0},{npc.velocity.Y:0.0}, time left {npc.timeLeft}, " +
+            $"ai {npc.ai[0]:0},{npc.ai[1]:0},{npc.ai[2]:0}, day {Main.dayTime}.");
+    }
+
     private static void ContainBoss(NPC npc, WorldStamp.PlaceState place)
     {
         var map = place.Layout!;

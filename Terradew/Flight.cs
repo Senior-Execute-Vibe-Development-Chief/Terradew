@@ -38,8 +38,6 @@ internal sealed class Flight
     /// <summary>The leap moves forward until a little past the top of the arc; the rest is the drop.</summary>
     private const float JumpSpeed = 4.5f;
 
-    /// <summary>Ticks a leap keeps sliding forward after touching down over a wall or water, looking for ground.</summary>
-    private const int CarryTicks = 24;
     private const float FallSpeed = 9f;
     /// <summary>How far to look for open ground, in tiles.</summary>
     private const int SearchTiles = 30;
@@ -159,7 +157,8 @@ internal sealed class Flight
             case Mode.Jumping:
                 jumpTick++;
                 height = JumpHeight * MathF.Sin(MathF.PI * Math.Min(jumpTick, JumpTicks) / JumpTicks);
-                // The leap carries forward the whole way down, and on past its end while there is nowhere to stand.
+                // The leap carries forward the whole way down. One that ends over a wall does not slide on up it: the
+                // farmer drops to the nearest ground south, east or west (FindLanding).
                 Glide(player, location, jumpStep);
                 if (mode != Mode.Jumping || jumpTick < JumpTicks)
                     break;
@@ -168,7 +167,7 @@ internal sealed class Flight
                     Reset();
                     Game1.playSound("thudStep");
                 }
-                else if (jumpTick > JumpTicks + CarryTicks)
+                else
                     StartLanding(player, location);
                 break;
             case Mode.Landing:
