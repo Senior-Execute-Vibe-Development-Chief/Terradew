@@ -120,8 +120,39 @@ public static class Inventory
             Damage = item.damage,
             Equippable = item.headSlot >= 0 || item.bodySlot >= 0 || item.legSlot >= 0 || item.accessory || item.vanity,
             Consumable = item.consumable,
+            Station = IsStation(item),
         };
     }
+
+    private static HashSet<int>? stationTiles;
+
+    /// <summary>
+    /// Tiles that some recipe needs a crafting station for, plus the tiles that stand in for them. Built once
+    /// the recipes exist; before that it is empty and not kept.
+    /// </summary>
+    private static HashSet<int> StationTiles()
+    {
+        if (stationTiles != null)
+            return stationTiles;
+        if (Recipe.numRecipes <= 0)
+            return new HashSet<int>();
+        var tiles = new HashSet<int>();
+        for (int i = 0; i < Recipe.numRecipes; i++)
+        {
+            foreach (int tile in Main.recipe[i].requiredTile)
+            {
+                if (tile >= 0)
+                    tiles.Add(tile);
+            }
+        }
+        foreach (int tile in Crafting.Aliases.Keys)
+            tiles.Add(tile);
+        stationTiles = tiles;
+        return tiles;
+    }
+
+    /// <summary>Whether the item is a crafting station: a placeable tile that some recipe needs.</summary>
+    public static bool IsStation(Item item) => !item.IsAir && item.createTile >= 0 && StationTiles().Contains(item.createTile);
 
     private static long Hash(Player player)
     {
@@ -333,15 +364,6 @@ public static class Inventory
             else
                 player.selectedItem = slot;
             PendingUse = 3;
-        }
-    }
-
-    public static IEnumerable<Item> Stations(Player player)
-    {
-        foreach (Item item in player.inventory)
-        {
-            if (!item.IsAir && item.createTile >= 0)
-                yield return item;
         }
     }
 }

@@ -49,6 +49,7 @@ internal sealed class TerrariaMenu : IClickableMenu
 
     private readonly Bridge bridge;
     private readonly SpriteBook sprites;
+    private readonly Stations stations;
     private bool crafting;
     private int selected = -1;
     private int scroll;
@@ -57,10 +58,11 @@ internal sealed class TerrariaMenu : IClickableMenu
     private Rectangle craftingTab;
     private Rectangle trash;
 
-    public TerrariaMenu(Bridge bridge, SpriteBook sprites)
+    public TerrariaMenu(Bridge bridge, SpriteBook sprites, Stations stations)
         : base((Game1.uiViewport.Width - Width) / 2, (Game1.uiViewport.Height - Height) / 2, Width, Height, showUpperRightCloseButton: true)
     {
         this.bridge = bridge;
+        this.stations = stations;
         this.sprites = sprites;
         Layout();
     }
@@ -122,7 +124,7 @@ internal sealed class TerrariaMenu : IClickableMenu
         {
             crafting = true;
             scroll = 0;
-            bridge.Send(new RequestRecipes());
+            bridge.Send(new RequestRecipes { Near = stations.Near(Game1.currentLocation, Game1.player.Tile) });
             return;
         }
         if (crafting)
@@ -198,7 +200,7 @@ internal sealed class TerrariaMenu : IClickableMenu
         int index = scroll + (y - area.Y) / Row;
         if (index < 0 || index >= recipes.Recipes.Count)
             return;
-        bridge.Send(new Craft { RecipeIndex = recipes.Recipes[index].RecipeIndex, Times = 1 });
+        bridge.Send(new Craft { RecipeIndex = recipes.Recipes[index].RecipeIndex, Times = 1, Near = stations.Near(Game1.currentLocation, Game1.player.Tile) });
         Game1.playSound("crafting");
     }
 

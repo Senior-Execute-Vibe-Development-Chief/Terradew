@@ -16,11 +16,13 @@ internal sealed class Hand
     public const int OldManType = 37;
 
     private readonly IModHelper helper;
+    private readonly Stations stations;
     private int lockedTool = -1;
 
-    public Hand(IModHelper helper)
+    public Hand(IModHelper helper, Stations stations)
     {
         this.helper = helper;
+        this.stations = stations;
     }
 
     public bool Active { get; private set; }
@@ -67,9 +69,22 @@ internal sealed class Hand
         }
         if (e.Button.IsUseToolButton())
         {
-            UseHeld = true;
             helper.Input.Suppress(e.Button);
+            // A station is placed on the ground, never used in Terraria, so the use goes no further.
+            if (TryPlaceStation(bridge))
+                return;
+            UseHeld = true;
         }
+    }
+
+    /// <summary>The hotbar item in the current slot is a crafting station: place it instead of using it.</summary>
+    private bool TryPlaceStation(Bridge bridge)
+    {
+        InventoryState? inventory = bridge.Inventory;
+        if (inventory == null || Slot >= inventory.Items.Count)
+            return false;
+        ItemStack held = inventory.Items[Slot];
+        return !held.IsEmpty && held.Station && stations.TryPlace(bridge, Slot, held);
     }
 
     public void OnButtonReleased(ButtonReleasedEventArgs e)

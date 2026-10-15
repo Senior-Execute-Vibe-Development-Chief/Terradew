@@ -17,6 +17,7 @@ public sealed class ModEntry : Mod
     private ModConfig config = new();
     private Bridge bridge = null!;
     private SpriteBook sprites = null!;
+    private Stations stations = null!;
     private Hand hand = null!;
     private Maps maps = null!;
     private Money money = null!;
@@ -40,7 +41,8 @@ public sealed class ModEntry : Mod
         config = helper.ReadConfig<ModConfig>();
         bridge = new Bridge(config.Port);
         sprites = new SpriteBook();
-        hand = new Hand(helper);
+        stations = new Stations(sprites, bridge);
+        hand = new Hand(helper, stations);
         maps = new Maps();
         money = new Money(helper);
         vitals = new Vitals(Monitor);
@@ -58,6 +60,7 @@ public sealed class ModEntry : Mod
         mining.Install(harmony, Monitor);
         villagers.Install(harmony, Monitor);
         wallClimb.Install(harmony, Monitor);
+        stations.Install(harmony, Monitor);
         new Clock().Install(harmony, Monitor);
 
         bridge.Connected += OnConnected;
@@ -79,6 +82,7 @@ public sealed class ModEntry : Mod
         bridge.Died += died => vitals.OnDied(died, bridge);
         bridge.CoinAck += ack => money.Ack(ack);
         bridge.Notice += notice => hud.Notice(notice.Text, new Color(notice.R, notice.G, notice.B));
+        bridge.StationPlaced += placed => stations.OnStationPlaced(placed, bridge);
 
         helper.Events.GameLoop.SaveLoaded += (_, _) => StartFarm();
         helper.Events.GameLoop.ReturnedToTitle += (_, _) => StopFarm();
@@ -101,6 +105,7 @@ public sealed class ModEntry : Mod
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => bundles.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => villagers.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => stations.OnAssetRequested(e);
         helper.Events.World.ObjectListChanged += (_, e) => { if (Leading) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };
         helper.ConsoleCommands.Add("terradew", "terradew status | terradew <command for Terraria>, such as: summon, boss EyeofCthulhu, give CopperShortsword", OnCommand);
@@ -247,8 +252,8 @@ public sealed class ModEntry : Mod
         if (config.OpenMenu.JustPressed() && Context.IsPlayerFree)
         {
             Helper.Input.SuppressActiveKeybinds(config.OpenMenu);
-            bridge.Send(new RequestRecipes());
-            Game1.activeClickableMenu = new TerrariaMenu(bridge, sprites);
+            bridge.Send(new RequestRecipes { Near = stations.Near(Game1.currentLocation, Game1.player.Tile) });
+            Game1.activeClickableMenu = new TerrariaMenu(bridge, sprites, stations);
             return;
         }
         hand.OnButtonPressed(e, config, bridge);

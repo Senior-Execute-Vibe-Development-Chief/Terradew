@@ -110,7 +110,10 @@ saving, which is usually what you want while testing.
 
 Keys can be changed in `Mods/Terradew/config.json`.
 
-- **Crafting** uses stations you carry: craft a Work Bench, Furnace or Anvil and keep it in your inventory.
+- **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, hold it in the
+  Terraria hand and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
+  menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station
+  with the Stardew pickaxe or axe to take it back. Stardew's own furniture and decoration stay as they are.
 - **Terraria townsfolk replace the Stardew villagers.** The villagers are gone: no talking, gifts, friendship,
   marriage or heart events. Each Terraria town NPC moves into one villager's home instead, the morning after its
   Terraria conditions are met (the Guide first, the Merchant once you carry 50 silver, and so on): the Guide in

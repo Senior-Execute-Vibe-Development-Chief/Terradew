@@ -249,12 +249,16 @@ public sealed class BridgeSystem : ModSystem
             case Gathered gathered:
                 Gathering.Receive(player, gathered);
                 break;
-            case RequestRecipes:
-                link!.Send(Crafting.List(player));
+            case RequestRecipes ask:
+                link!.Send(Crafting.List(player, ask.Near));
                 break;
             case Craft craft:
                 Crafting.Make(player, craft);
-                link!.Send(Crafting.List(player));
+                link!.Send(Crafting.List(player, craft.Near));
+                break;
+            case PlaceStation place:
+                link!.Send(new StationPlaced { Seq = place.Seq, ItemType = place.ItemType, Ok = Crafting.Take(player, place) });
+                Inventory.ForceResend();
                 break;
             case NpcInteract interact:
                 Shops.Talk(link!, player, interact.NpcId);

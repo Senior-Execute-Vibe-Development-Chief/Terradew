@@ -31,6 +31,7 @@ internal sealed class Bridge : IDisposable
     public event Action<PlayerDied>? Died;
     public event Action<CoinAck>? CoinAck;
     public event Action<Notice>? Notice;
+    public event Action<StationPlaced>? StationPlaced;
 
     public bool IsConnected => link.Connected;
 
@@ -117,6 +118,10 @@ internal sealed class Bridge : IDisposable
             case WallFight fight:
                 wall = fight.Active ? fight : null;
                 wallAtMs = Link.NowMs();
+                break;
+            case Core.Protocol.StationPlaced placed:
+                // Always raised, even while transient messages are dropped: a station Terraria took must end up placed or refunded.
+                StationPlaced?.Invoke(placed);
                 break;
             case Core.Protocol.Notice notice:
                 if (raiseEvents)

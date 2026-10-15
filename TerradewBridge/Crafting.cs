@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using Terradew.Core.Protocol;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace TerradewBridge;
 
 /// <summary>
-/// Crafting with stations carried in the inventory: owning a Work Bench, Furnace or Anvil means
-/// you can craft at it, since there is nowhere to place one on the Stardew map.
+/// Crafting at stations placed on the Stardew map. The farmer puts a station down on a tile, Stardew reports
+/// which stations are near the farmer (and whether water is near), and Terraria marks those tiles on the
+/// player so Recipe.FindRecipes offers the matching recipes. Placing takes the station out of the inventory.
 /// </summary>
 public static class Crafting
 {
-    private static readonly Dictionary<int, int[]> Aliases = new()
+    internal static readonly Dictionary<int, int[]> Aliases = new()
     {
         { TileID.Hellforge, new int[] { TileID.Furnaces } },
         { TileID.AdamantiteForge, new int[] { TileID.Furnaces, TileID.Hellforge } },
@@ -23,21 +25,26 @@ public static class Crafting
         { TileID.HeavyWorkBench, new int[] { TileID.WorkBenches } },
     };
 
-    private static void Prepare(Player player)
+    private static void Prepare(Player player, StationsNearby near)
     {
-        Array.Clear(player.adjTile);
-        foreach (Item station in Inventory.Stations(player))
+        Array.Clear(player.adjTile, 0, player.adjTile.Length);
+        foreach (int type in near.ItemTypes)
         {
-            Mark(player, station.createTile);
-            if (Aliases.TryGetValue(station.createTile, out int[]? more))
+            if (!IsValidType(type))
+                continue;
+            int tile = ContentSamples.ItemsByType[type].createTile;
+            Mark(player, tile);
+            if (Aliases.TryGetValue(tile, out int[]? more))
             {
-                foreach (int tile in more)
-                    Mark(player, tile);
+                foreach (int alias in more)
+                    Mark(player, alias);
             }
         }
-        player.adjWater = true;
+        player.adjWater = near.Water;
         Recipe.FindRecipes();
     }
+
+    private static bool IsValidType(int type) => type > 0 && type < ItemLoader.ItemCount;
 
     private static void Mark(Player player, int tile)
     {
@@ -45,17 +52,22 @@ public static class Crafting
             player.adjTile[tile] = true;
     }
 
-    public static RecipeList List(Player player)
+    public static RecipeList List(Player player, StationsNearby near)
     {
-        Prepare(player);
+        Prepare(player, near);
         var list = new RecipeList();
         var stations = new List<string>();
-        foreach (Item station in Inventory.Stations(player))
+        foreach (int type in near.ItemTypes)
         {
-            if (!stations.Contains(station.Name))
-                stations.Add(station.Name);
+            if (!IsValidType(type))
+                continue;
+            string name = Lang.GetItemNameValue(type);
+            if (!stations.Contains(name))
+                stations.Add(name);
         }
-        list.Stations = stations.Count == 0 ? "No crafting stations. Craft a Work Bench from 10 Wood." : "Stations: " + string.Join(", ", stations);
+        list.Stations = stations.Count == 0
+            ? "No crafting station nearby. Craft a Work Bench from 10 Wood and place it."
+            : "Stations nearby: " + string.Join(", ", stations);
         for (int i = 0; i < Main.numAvailableRecipes && i < Main.availableRecipe.Length; i++)
         {
             int index = Main.availableRecipe[i];
@@ -81,7 +93,7 @@ public static class Crafting
 
     public static void Make(Player player, Craft craft)
     {
-        Prepare(player);
+        Prepare(player, craft.Near);
         for (int time = 0; time < Math.Clamp(craft.Times, 1, 99); time++)
         {
             bool available = false;
@@ -108,6 +120,40 @@ public static class Crafting
         }
         Recipe.FindRecipes();
         Inventory.ForceResend();
+    }
+
+    /// <summary>
+    /// Takes one station out of the inventory for placing it on the map. Uses the slot Stardew named when it still
+    /// holds that station, otherwise the first stack of that type that is a station.
+    /// </summary>
+    public static bool Take(Player player, PlaceStation place)
+    {
+        if (place.Slot >= 0 && place.Slot < player.inventory.Length)
+        {
+            Item named = player.inventory[place.Slot];
+            if (named.type == place.ItemType && Inventory.IsStation(named))
+            {
+                TakeOne(named);
+                return true;
+            }
+        }
+        for (int i = 0; i < player.inventory.Length; i++)
+        {
+            Item item = player.inventory[i];
+            if (item.type == place.ItemType && Inventory.IsStation(item))
+            {
+                TakeOne(item);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void TakeOne(Item item)
+    {
+        item.stack--;
+        if (item.stack <= 0)
+            item.TurnToAir();
     }
 
     /// <summary>Whether the inventory still holds every ingredient, since the recipe list is not rebuilt between crafts.</summary>

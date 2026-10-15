@@ -83,7 +83,14 @@ internal static class ProtocolTests
             var chat = (NpcChat)Roundtrip(new NpcChat { NpcId = 4, NpcType = 22, Name = "Guide", Text = "Hi", HasShop = true, HealCost = 75, HeadIndex = 7 });
             T.Assert(chat.NpcType == 22 && chat.Name == "Guide" && chat.HasShop && chat.HealCost == 75 && chat.HeadIndex == 7, "chat");
             T.Assert(((Routes)Roundtrip(new Routes { PlaceKey = "Farm", Steps = new List<RouteEntry> { new RouteEntry(1, 2, 3) } })).Steps[0].TileY == 3, "routes");
-            T.Assert(Roundtrip(new RequestRecipes()) is RequestRecipes, "empty message");
+            var ask = (RequestRecipes)Roundtrip(new RequestRecipes { Near = new StationsNearby { ItemTypes = new List<int> { 36, 35 }, Water = true } });
+            T.Assert(ask.Near.ItemTypes.Count == 2 && ask.Near.ItemTypes[1] == 35 && ask.Near.Water, "recipes request");
+            var craft = (Craft)Roundtrip(new Craft { RecipeIndex = 4, Times = 2, Near = new StationsNearby { ItemTypes = new List<int> { 36 } } });
+            T.Assert(craft.RecipeIndex == 4 && craft.Times == 2 && craft.Near.ItemTypes[0] == 36 && !craft.Near.Water, "craft");
+            var place = (PlaceStation)Roundtrip(new PlaceStation { Seq = 3, Slot = 5, ItemType = 36 });
+            T.Assert(place.Seq == 3 && place.Slot == 5 && place.ItemType == 36, "place station");
+            var placed = (StationPlaced)Roundtrip(new StationPlaced { Seq = 3, ItemType = 36, Ok = true });
+            T.Assert(placed.Seq == 3 && placed.ItemType == 36 && placed.Ok, "station placed");
         });
 
         failed += T.Check("the link carries messages both ways and reconnects", () =>

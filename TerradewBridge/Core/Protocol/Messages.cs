@@ -29,6 +29,7 @@ public enum MsgType : byte
     Homes = 18,
     RequestRecipes = 19,
     Gathered = 20,
+    PlaceStation = 21,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -41,6 +42,7 @@ public enum MsgType : byte
     PlayerDied = 47,
     WorldFacts = 48,
     WallFight = 49,
+    StationPlaced = 50,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -72,8 +74,10 @@ public abstract class Message
             MsgType.Command => Command.ReadFrom(r),
             MsgType.DayStarted => DayStarted.ReadFrom(r),
             MsgType.Homes => Homes.ReadFrom(r),
-            MsgType.RequestRecipes => new RequestRecipes(),
+            MsgType.RequestRecipes => RequestRecipes.ReadFrom(r),
             MsgType.Gathered => Gathered.ReadFrom(r),
+            MsgType.PlaceStation => PlaceStation.ReadFrom(r),
+            MsgType.StationPlaced => StationPlaced.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
             MsgType.InventoryState => InventoryState.ReadFrom(r),
             MsgType.CoinAck => CoinAck.ReadFrom(r),
@@ -97,7 +101,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 7;
+    public const int CurrentProtocol = 8;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -328,6 +332,8 @@ public sealed class Craft : Message
 {
     public int RecipeIndex;
     public int Times = 1;
+    /// <summary>The crafting stations placed near the farmer.</summary>
+    public StationsNearby Near = new();
 
     public override MsgType Type => MsgType.Craft;
 
@@ -335,9 +341,65 @@ public sealed class Craft : Message
     {
         w.Write(RecipeIndex);
         w.Write(Times);
+        Near.Write(w);
     }
 
-    public static Craft ReadFrom(BinaryReader r) => new() { RecipeIndex = r.ReadInt32(), Times = r.ReadInt32() };
+    public static Craft ReadFrom(BinaryReader r) => new() { RecipeIndex = r.ReadInt32(), Times = r.ReadInt32(), Near = StationsNearby.ReadFrom(r) };
+}
+
+/// <summary>What the farmer can craft at: the Terraria item types of the stations placed within reach, and nearby water.</summary>
+public sealed class StationsNearby
+{
+    public List<int> ItemTypes = new();
+    public bool Water;
+
+    public void Write(BinaryWriter w)
+    {
+        w.WriteList(ItemTypes, (x, t) => x.Write(t));
+        w.Write(Water);
+    }
+
+    public static StationsNearby ReadFrom(BinaryReader r) => new() { ItemTypes = r.ReadList(x => x.ReadInt32(), 256), Water = r.ReadBoolean() };
+}
+
+/// <summary>
+/// The farmer puts a Terraria crafting station down on a Stardew tile. Terraria takes one from the
+/// inventory slot and answers with <see cref="StationPlaced"/>; Stardew only places it on success.
+/// </summary>
+public sealed class PlaceStation : Message
+{
+    public int Seq;
+    public int Slot;
+    public int ItemType;
+
+    public override MsgType Type => MsgType.PlaceStation;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Seq);
+        w.Write(Slot);
+        w.Write(ItemType);
+    }
+
+    public static PlaceStation ReadFrom(BinaryReader r) => new() { Seq = r.ReadInt32(), Slot = r.ReadInt32(), ItemType = r.ReadInt32() };
+}
+
+public sealed class StationPlaced : Message
+{
+    public int Seq;
+    public int ItemType;
+    public bool Ok;
+
+    public override MsgType Type => MsgType.StationPlaced;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Seq);
+        w.Write(ItemType);
+        w.Write(Ok);
+    }
+
+    public static StationPlaced ReadFrom(BinaryReader r) => new() { Seq = r.ReadInt32(), ItemType = r.ReadInt32(), Ok = r.ReadBoolean() };
 }
 
 public sealed class NpcInteract : Message
@@ -501,11 +563,13 @@ public sealed class Homes : Message
 
 public sealed class RequestRecipes : Message
 {
+    public StationsNearby Near = new();
+
     public override MsgType Type => MsgType.RequestRecipes;
 
-    public override void Write(BinaryWriter w)
-    {
-    }
+    public override void Write(BinaryWriter w) => Near.Write(w);
+
+    public static RequestRecipes ReadFrom(BinaryReader r) => new() { Near = StationsNearby.ReadFrom(r) };
 }
 
 /// <summary>What the farmer broke or gathered in Stardew. Terraria rolls the Terraria materials it gives.</summary>
@@ -791,6 +855,8 @@ public struct ItemStack
     public int Damage;
     public bool Equippable;
     public bool Consumable;
+    /// <summary>A crafting station: it can be placed on a Stardew tile.</summary>
+    public bool Station;
 
     public bool IsEmpty => ItemType <= 0 || Stack <= 0;
 
@@ -803,6 +869,7 @@ public struct ItemStack
         w.Write(Damage);
         w.Write(Equippable);
         w.Write(Consumable);
+        w.Write(Station);
     }
 
     public static ItemStack ReadFrom(BinaryReader r) => new()
@@ -814,6 +881,7 @@ public struct ItemStack
         Damage = r.ReadInt32(),
         Equippable = r.ReadBoolean(),
         Consumable = r.ReadBoolean(),
+        Station = r.ReadBoolean(),
     };
 }
 
