@@ -40,6 +40,7 @@ public enum MsgType : byte
     Notice = 46,
     PlayerDied = 47,
     WorldFacts = 48,
+    WallFight = 49,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -80,6 +81,7 @@ public abstract class Message
             MsgType.NpcChat => NpcChat.ReadFrom(r),
             MsgType.ShopStock => ShopStock.ReadFrom(r),
             MsgType.Notice => Notice.ReadFrom(r),
+            MsgType.WallFight => WallFight.ReadFrom(r),
             MsgType.PlayerDied => PlayerDied.ReadFrom(r),
             MsgType.WorldFacts => WorldFacts.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
@@ -1046,5 +1048,45 @@ public sealed class WorldFacts : Message
         DownedQueenBee = r.ReadBoolean(),
         DownedWall = r.ReadBoolean(),
         Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString()), 200),
+    };
+}
+
+/// <summary>
+/// The vertical Wall of Flesh fight in the underworld mine floors. Sent about four times a second while the
+/// wall lives, and once with Active false when it dies or leaves. While Active, Stardew ladders lead one floor
+/// up to the south edge of that floor, and the elevator and exits are shut.
+/// </summary>
+public sealed class WallFight : Message
+{
+    public bool Active;
+    /// <summary>The Stardew place the wall is in.</summary>
+    public string PlaceKey = "";
+    /// <summary>The wall's north edge, in Stardew world pixels. Everything south of it is flesh.</summary>
+    public int WallY;
+    /// <summary>How far north the wall moves each tick, in Stardew pixels.</summary>
+    public float Speed;
+    public int Life;
+    public int LifeMax;
+
+    public override MsgType Type => MsgType.WallFight;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Active);
+        w.Write(PlaceKey);
+        w.Write(WallY);
+        w.Write(Speed);
+        w.Write(Life);
+        w.Write(LifeMax);
+    }
+
+    public static WallFight ReadFrom(BinaryReader r) => new()
+    {
+        Active = r.ReadBoolean(),
+        PlaceKey = r.ReadString(),
+        WallY = r.ReadInt32(),
+        Speed = r.ReadSingle(),
+        Life = r.ReadInt32(),
+        LifeMax = r.ReadInt32(),
     };
 }

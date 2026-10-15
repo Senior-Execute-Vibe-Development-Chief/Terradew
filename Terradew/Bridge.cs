@@ -21,6 +21,8 @@ internal sealed class Bridge : IDisposable
     public RecipeList? Recipes { get; private set; }
     public Dictionary<int, ShopStock> Shops { get; } = new();
     public Hello? TerrariaHello { get; private set; }
+    /// <summary>The Wall of Flesh fight, while it runs. Null when there is none.</summary>
+    public WallFight? Wall { get; private set; }
 
     public event Action? Connected;
     public event Action<NpcChat>? Chat;
@@ -48,6 +50,7 @@ internal sealed class Bridge : IDisposable
             World = null;
             Inventory = null;
             TerrariaHello = null;
+            Wall = null;
             Connected?.Invoke();
         }
         int budget = 400;
@@ -82,6 +85,9 @@ internal sealed class Bridge : IDisposable
                     break;
                 case Core.Protocol.CoinAck ack:
                     CoinAck?.Invoke(ack);
+                    break;
+                case WallFight wall:
+                    Wall = wall.Active ? wall : null;
                     break;
                 case Core.Protocol.Notice notice:
                     Notice?.Invoke(notice);
