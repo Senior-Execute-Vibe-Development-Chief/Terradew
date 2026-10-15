@@ -74,7 +74,7 @@ internal static class TownRulesTests
                 "Guide", "Merchant", "Nurse", "Demolitionist", "ArmsDealer", "Dryad",
                 "Angler", "Painter", "Clothier", "GoblinTinkerer", "Mechanic", "PartyGirl",
                 "DD2Bartender", "TaxCollector", "Stylist", "Steampunker", "WitchDoctor", "Cyborg",
-                "Pirate", "BestiaryGirl", "Golfer", "Princess", "DyeTrader", "Wizard",
+                "Pirate", "BestiaryGirl", "Golfer", "Princess", "DyeTrader", "Wizard", "Truffle",
             }), "order constant");
         });
 
@@ -112,6 +112,8 @@ internal static class TownRulesTests
             T.Assert(!TownRules.Eligible("DyeTrader", Fresh()), "dye trader before hardmode");
             T.Assert(TownRules.Eligible("DyeTrader", Fresh() with { Hardmode = true }), "dye trader in hardmode");
             T.Assert(TownRules.Eligible("BestiaryGirl", Fresh() with { Hardmode = true }), "zoologist in hardmode");
+            T.Assert(!TownRules.Eligible("Truffle", Fresh() with { DownedSkeletron = true }), "truffle before hardmode");
+            T.Assert(TownRules.Eligible("Truffle", Fresh() with { Hardmode = true }), "truffle in hardmode");
         });
 
         failed += T.Check("unknown and miscased names are not eligible", () =>

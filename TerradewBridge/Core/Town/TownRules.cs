@@ -43,6 +43,7 @@ namespace Terradew.Core.Town
             "Princess",
             "DyeTrader",
             "Wizard",
+            "Truffle",
         };
 
         private const long MerchantCoins = 5000; // 50 silver; coins are copper.
@@ -111,6 +112,9 @@ namespace Terradew.Core.Town
                     return facts.Hardmode;
                 case "Wizard":
                     return facts.SavedWizard || facts.Hardmode;
+                // No Stardew place is a glowing mushroom biome, so hardmode alone brings him.
+                case "Truffle":
+                    return facts.Hardmode;
                 default:
                     return false;
             }

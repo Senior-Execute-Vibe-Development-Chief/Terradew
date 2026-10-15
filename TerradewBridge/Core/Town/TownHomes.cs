@@ -36,6 +36,8 @@ namespace Terradew.Core.Town
             ("Princess", "Evelyn"),
             ("DyeTrader", "Sandy"),
             ("Wizard", "Wizard"),
+            // The basement under Robin's house is the nearest thing in town to a mushroom cave.
+            ("Truffle", "Sebastian"),
         };
 
         private static readonly Dictionary<string, string> ByNpc = Pairs.ToDictionary(p => p.Npc, p => p.Villager, StringComparer.Ordinal);

@@ -117,8 +117,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
   the museum, the Merchant at Pierre's, the Nurse at Harvey's clinic, the Arms Dealer at the Adventurer's Guild,
   the Angler at Willy's, the Goblin Tinkerer at Clint's, the Mechanic and Steampunker at Robin's, the
   Tavernkeep at the Saloon, the Tax Collector at the Mayor's manor, the Zoologist at Marnie's, the Dye Trader at
-  Sandy's, the Wizard in the tower, and the rest in the other villagers' houses. The Stardew shops stay open
-  where they always were. The full roster of vanilla town NPCs is in play, except Truffle and Santa Claus.
+  Sandy's, the Wizard in the tower, Truffle in Sebastian's basement room (in hardmode), and the rest in the other villagers' houses. The Stardew shops stay open
+  where they always were. The full roster of vanilla town NPCs is in play, except Santa Claus.
   Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
 - **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
   farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
