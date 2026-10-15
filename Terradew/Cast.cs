@@ -137,6 +137,13 @@ internal sealed class Cast
             }
             if (e.NameWithoutLocale.IsEquivalentTo($"Portraits/{villager}"))
             {
+                // Terraria 1.4.5's detailed portrait when the game has one, else a bust cut from the sprite.
+                Texture2D? detailed = sprites.Load(SpriteNames.NpcPortrait(resident.NpcType));
+                if (detailed != null)
+                {
+                    e.LoadFrom(() => Portraits.Build(detailed), AssetLoadPriority.High);
+                    return;
+                }
                 Texture2D? sheet = sprites.Load(SpriteNames.Npc(resident.NpcType));
                 if (sheet != null)
                     e.LoadFrom(() => Portrait(sheet, resident), AssetLoadPriority.High);

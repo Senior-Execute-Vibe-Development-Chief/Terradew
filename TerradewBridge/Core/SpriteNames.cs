@@ -12,6 +12,9 @@ public static class SpriteNames
     /// <summary>A town NPC's head portrait, as Terraria's NPC_Head sheets number them.</summary>
     public static string NpcHead(int headIndex) => $"npchead-{headIndex}.png";
 
+    /// <summary>A town NPC's detailed portrait, the 200 by 200 character art Terraria 1.4.5 shows while you talk.</summary>
+    public static string NpcPortrait(int type) => $"npcportrait-{type}.png";
+
     public static string Projectile(int type) => $"proj-{type}.png";
 
     public static string Item(int type) => $"item-{type}.png";

@@ -276,6 +276,7 @@ public sealed class Town
             SpriteDump.NpcHead(head);
             // Stardew draws the villager this NPC plays from its sprite sheet.
             SpriteDump.Npc(npc.type);
+            SpriteDump.NpcPortrait(npc.type);
             facts.Residents.Add(new TownResident(npc.type, npc.GivenOrTypeName, home ?? "", head, Main.npcFrameCount[npc.type], NPCID.Sets.ExtraFramesCount[npc.type]));
         }
         Latch();

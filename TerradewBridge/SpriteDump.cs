@@ -22,6 +22,7 @@ internal static class SpriteDump
 
     private static readonly HashSet<int> npcDone = new();
     private static readonly HashSet<int> npcHeadDone = new();
+    private static readonly HashSet<int> npcPortraitDone = new();
     private static readonly HashSet<int> projectileDone = new();
     private static readonly HashSet<int> itemDone = new();
     private static readonly HashSet<int> buffDone = new();
@@ -64,6 +65,17 @@ internal static class SpriteDump
         if (headIndex < 0 || !npcHeadDone.Add(headIndex))
             return;
         ExportNpcHead(headIndex);
+    }
+
+    /// <summary>
+    /// Exports a town NPC's detailed portrait. Only Terraria 1.4.5 and later has them, so a missing one is not an
+    /// error: it is not retried, and Stardew cuts a portrait from the NPC's sprite instead.
+    /// </summary>
+    public static void NpcPortrait(int type)
+    {
+        if (!npcPortraitDone.Add(type))
+            return;
+        ExportNpcPortrait(type);
     }
 
     public static void Projectile(int type)
@@ -171,6 +183,40 @@ internal static class SpriteDump
         string? error = Sheet(file, $"Images/NPC_Head_{headIndex}", () => TextureAssets.NpcHead[headIndex]);
         Failed(npcHeadDone, headIndex, file, error);
     }
+
+    private static void ExportNpcPortrait(int type)
+    {
+        string file = SpriteNames.NpcPortrait(type);
+        if (SpriteFiles.Exists(file))
+            return;
+        string name = NPCID.Search.GetName(type);
+        // Vanilla portraits are named after the NPC's internal name. Modded names hold a slash and have none here.
+        if (string.IsNullOrEmpty(name) || name.Contains('/'))
+            return;
+        string path = $"Images/TownNPCs/Portraits/Portrait_{name}";
+        Texture2D? texture = null;
+        try
+        {
+            texture = Main.Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad).Value;
+        }
+        catch (Exception)
+        {
+        }
+        if (texture == null || texture.Width <= 1 || texture.Height <= 1)
+        {
+            if (!portraitsMissingLogged)
+            {
+                portraitsMissingLogged = true;
+                BridgeSystem.Instance.Mod.Logger.Info($"Terradew found no detailed portrait at {path}, so Stardew portraits are cut from the Terraria sprites. Detailed portraits come with Terraria 1.4.5.");
+            }
+            return;
+        }
+        string? error = Export(texture, new Rectangle(0, 0, texture.Width, texture.Height), file);
+        if (error != null)
+            BridgeSystem.Instance.Mod.Logger.Warn($"Terradew could not export {file}: {error}");
+    }
+
+    private static bool portraitsMissingLogged;
 
     private static void ExportProjectile(int type)
     {

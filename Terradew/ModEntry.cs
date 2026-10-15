@@ -74,6 +74,7 @@ public sealed class ModEntry : Mod
         wallClimb.Install(harmony, Monitor);
         stations.Install(harmony, Monitor);
         potLook.Install(harmony, Monitor);
+        Portraits.Install(harmony, Monitor);
         new Clock().Install(harmony, Monitor);
         BackpackGuards.Install(harmony, Monitor, backpack, sprites);
 
