@@ -27,6 +27,13 @@ internal static class PlacesTests
             Place c = Places.Classify("UndergroundMine13", false, 13);
             T.Assert(a.IsMineSlot && a.Key != b.Key && a.Key == c.Key, "two slots");
         });
+        failed += T.Check("mine containers take their biome's pot look", () =>
+        {
+            T.Assert(Pots.StyleFor(Biome.Underworld, 0) == 13 && Pots.StyleFor(Biome.Underworld, 5) == 15, "underworld pots");
+            T.Assert(Pots.StyleFor(Biome.Cave, -1) is >= 0 and <= 3, "negative variants stay in range");
+            T.Assert(Pots.StyleFor(Biome.Dungeon, 4) is >= 10 and <= 12, "dungeon pots");
+            T.Assert(Pots.StyleFor(Biome.Temple, 0) == 28, "temple pots");
+        });
         return failed;
     }
 }

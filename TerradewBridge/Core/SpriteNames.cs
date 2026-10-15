@@ -16,6 +16,9 @@ public static class SpriteNames
 
     public static string Item(int type) => $"item-{type}.png";
 
+    /// <summary>A Terraria pot, by its Pots tile style (see Pots.StyleFor).</summary>
+    public static string Pot(int style) => $"pot-{style}.png";
+
     public static string Buff(int type) => $"buff-{type}.png";
 
     public static string Armor(string part, int slot, int variant = 0)

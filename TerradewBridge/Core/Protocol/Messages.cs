@@ -584,6 +584,8 @@ public enum GatherKind : byte
     MysticStone = 6,
     Wood = 20,
     Hardwood = 21,
+    /// <summary>A mine barrel or crate, drawn as a Terraria pot; Terraria rolls pot loot for the place.</summary>
+    Pot = 30,
 }
 
 public sealed class Gathered : Message
