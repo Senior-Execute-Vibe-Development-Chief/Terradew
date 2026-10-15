@@ -633,6 +633,9 @@ public sealed class WorldStamp
             Tint = npc.color == default ? 0u : npc.GetColor(Microsoft.Xna.Framework.Color.White).PackedValue,
             Hop = (byte)Math.Round(Creatures.HopArc(npc) * 255f),
             Look = npc.townNPC || NPCID.Sets.ActsLikeTownNPC[npc.type] ? SpriteDump.Look(npc) : "",
+            RealLife = npc.realLife,
+            // The plane is seen from above, so even a flyer's ground is under its own feet; Terraria's down is Stardew's south.
+            GroundY = npc.position.Y + npc.height,
         };
     }
 }

@@ -60,6 +60,7 @@ public enum MsgType : byte
     DustFrame = 58,
     CaveChests = 59,
     CaveTraps = 61,
+    WorldLightFrame = 64,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -121,6 +122,7 @@ public abstract class Message
             MsgType.DustFrame => DustFrame.ReadFrom(r),
             MsgType.CaveChests => CaveChests.ReadFrom(r),
             MsgType.CaveTraps => CaveTraps.ReadFrom(r),
+            MsgType.WorldLightFrame => WorldLightFrame.ReadFrom(r),
             MsgType.OpenCaveChest => OpenCaveChest.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
@@ -782,6 +784,45 @@ public sealed class DustFrame : Message
     };
 }
 
+/// <summary>One light in the farmer's place, at a Stardew map tile (x and y in tiles, centre of the tile) with its colour channels 0 to 255.</summary>
+public readonly record struct WorldLight(float X, float Y, byte R, byte G, byte B);
+
+/// <summary>
+/// Terraria lights in the farmer's place, merged to at most <see cref="MaxLights"/> tiles. Stardew lights each one, so a
+/// torch held by a creature, a glowing creature or a dropped torch lights the map as it does in Terraria. Sent every few
+/// ticks, and once empty when the lights go away.
+/// </summary>
+public sealed class WorldLightFrame : Message
+{
+    /// <summary>Most lights one frame may hold. Terraria keeps the strongest when there are more.</summary>
+    public const int MaxLights = 64;
+
+    /// <summary>The Stardew place the lights are in. Stardew shows them only while the farmer is in that place.</summary>
+    public string PlaceKey = "";
+    public List<WorldLight> Lights = new();
+
+    public override MsgType Type => MsgType.WorldLightFrame;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.WriteList(Lights, (x, light) =>
+        {
+            x.Write(Wire.Finite(light.X));
+            x.Write(Wire.Finite(light.Y));
+            x.Write(light.R);
+            x.Write(light.G);
+            x.Write(light.B);
+        });
+    }
+
+    public static WorldLightFrame ReadFrom(BinaryReader r) => new()
+    {
+        PlaceKey = r.ReadString(),
+        Lights = r.ReadList(x => new WorldLight(x.ReadSingle(), x.ReadSingle(), x.ReadByte(), x.ReadByte(), x.ReadByte()), MaxLights),
+    };
+}
+
 /// <summary>
 /// A chest on a Stardew mine floor: its tile on that floor's map, its CaveChestKind, and the Terraria item type whose sprite
 /// draws it.
@@ -1216,6 +1257,16 @@ public struct EntityState
     public byte Hop;
     /// <summary>The exported sheet a town NPC currently wears (its profile texture), or empty for the plain NPC sheet.</summary>
     public string Look;
+    /// <summary>
+    /// Terraria's npc.realLife: the head a boss part belongs to (an Eater of Worlds segment, a Skeletron hand), or -1
+    /// when the creature is its own body. Parts with the same head are one boss for the boss bar.
+    /// </summary>
+    public int RealLife;
+    /// <summary>
+    /// The Terraria y of the ground the creature's shadow sits on. Walkers stand on their feet. A flyer's is the top
+    /// of the first solid tile below it, or its feet when there is none within reach, so its height is GroundY minus Y.
+    /// </summary>
+    public float GroundY;
 
     public bool Has(EntityFlags flag) => (Flags & flag) == flag;
 
@@ -1243,6 +1294,8 @@ public struct EntityState
         w.Write(Tint);
         w.Write(Hop);
         w.Write(Look ?? "");
+        w.Write(RealLife);
+        w.Write(Wire.Finite(GroundY));
     }
 
     public static EntityState ReadFrom(BinaryReader r) => new()
@@ -1269,6 +1322,8 @@ public struct EntityState
         Tint = r.ReadUInt32(),
         Hop = r.ReadByte(),
         Look = r.ReadString(),
+        RealLife = r.ReadInt32(),
+        GroundY = r.ReadSingle(),
     };
 }
 

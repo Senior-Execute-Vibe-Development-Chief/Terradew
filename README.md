@@ -52,6 +52,7 @@ Decisions that shape play:
   count as better Stardew upgrades.
 - **Creatures are drawn at Stardew's size** (one Terraria sprite pixel is two Stardew pixels). Terraria shrinks every
   creature and projectile hitbox to half, and only hits on the farmer's own body count, so hits match the picture.
+- **Flyers cast shadows on the ground under them and sort by it.** The Eye of Cthulhu and other flyers get a shadow that shrinks and fades the higher they fly. They draw over rocks, weeds, crops, fences and you when they are just north, but under trees and buildings whose base is further south.
 - **Creatures that are chasing you follow you** through a door or warp if they are close behind, but never into
   houses and other places without spawns. Creatures you leave behind wait where they were while Terraria runs;
   hostile creatures are not kept when Terraria closes. Creatures find their way around rocks, fences and
@@ -136,7 +137,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **Terraria's numbers in Stardew's HUD.** Your Terraria life fills Stardew's health bar (which grows with your
   max life) and mana replaces the energy bar. Your coins show in Stardew's money box, counted in copper: a silver
   is 100, a gold 10,000, a platinum 1,000,000. Defense shows on the inventory tab. Hovering an item shows its
-  Terraria tooltip, and hurt creatures show a Terraria health bar under them.
+  Terraria tooltip, and hurt creatures show a Terraria health bar under them. Bosses in your place get a boss bar above
+  the toolbar with their name and life, one per boss (at most three), and multi-part bosses such as the Eater of Worlds are one bar.
 - **The trash slot** in the inventory tab holds the last item thrown away, as in Terraria; click it to take the
   item back before you trash another.
 - **Accessories and mounts move you.** Hermes Boots, Swiftness and the like raise your walking speed, and a mount

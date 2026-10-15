@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
 using Terradew.Core;
+using Terradew.Core.Bosses;
 using Terradew.Core.Economy;
 using Terradew.Core.Protocol;
 
@@ -104,6 +105,7 @@ internal sealed class Hud
         int y = BuffOrigin;
         y = DrawBuffs(b, world, x, y);
         DrawNotices(b, y + 8);
+        DrawBossBars(b, world);
         DrawHotbar(b);
     }
 
@@ -155,6 +157,48 @@ internal sealed class Hud
         Rectangle frame = new(x, top, 48, safe.Bottom - 16 - top);
         if (frame.Contains(Game1.getMouseX(), Game1.getMouseY()))
             IClickableMenu.drawHoverText(b, $"Life {life}/{lifeMax}", Game1.smallFont);
+    }
+
+    /// <summary>
+    /// Terraria's boss bars, one per boss in the farmer's place (at most three). They stack above the toolbar, or below it
+    /// when the toolbar is at the top. Each shows the boss's name above a bar filled with its life, with life over the bar.
+    /// </summary>
+    private static void DrawBossBars(SpriteBatch b, WorldState world)
+    {
+        List<BossBars.Bar> bars = BossBars.Group(world.Entities);
+        if (bars.Count == 0)
+            return;
+        Rectangle toolbar = BarArea();
+        bool below = toolbar.Y < Game1.uiViewport.Height / 2;
+        const int width = 480;
+        const int height = 20;
+        const int block = 60;
+        int left = (Game1.uiViewport.Width - width) / 2;
+        for (int i = 0; i < bars.Count; i++)
+        {
+            BossBars.Bar boss = bars[i];
+            int top = below ? toolbar.Bottom + 36 + i * block : toolbar.Y - 36 - i * block;
+
+            b.Draw(Game1.staminaRect, new Rectangle(left - 2, top - 2, width + 4, height + 4), Color.Black * 0.85f);
+            b.Draw(Game1.staminaRect, new Rectangle(left, top, width, height), new Color(60, 20, 20));
+            float part = boss.LifeMax <= 0 ? 0f : Math.Clamp(boss.Life / (float)boss.LifeMax, 0f, 1f);
+            int filled = (int)(width * part);
+            if (filled > 0)
+            {
+                b.Draw(Game1.staminaRect, new Rectangle(left, top, filled, height), new Color(200, 40, 60));
+                b.Draw(Game1.staminaRect, new Rectangle(left, top, filled, 4), new Color(240, 110, 120));
+            }
+            string life = $"{boss.Life}/{boss.LifeMax}";
+            Vector2 lifeSize = Game1.tinyFont.MeasureString(life);
+            Vector2 lifeAt = new(left + (width - lifeSize.X) / 2f, top + (height - lifeSize.Y) / 2f);
+            b.DrawString(Game1.tinyFont, life, lifeAt + Vector2.One, Color.Black * 0.6f);
+            b.DrawString(Game1.tinyFont, life, lifeAt, Color.White);
+
+            Vector2 nameSize = Game1.smallFont.MeasureString(boss.Name);
+            Vector2 nameAt = new(Game1.uiViewport.Width / 2f - nameSize.X / 2f, top - 30);
+            b.DrawString(Game1.smallFont, boss.Name, nameAt + new Vector2(2, 2), Color.Black * 0.6f);
+            b.DrawString(Game1.smallFont, boss.Name, nameAt, Color.White);
+        }
     }
 
     /// <summary>The square of the buff at an index. Eight icons fit a row, and each row leaves room under it for the time.</summary>

@@ -47,6 +47,15 @@ internal sealed class Bridge : IDisposable
     /// <summary>The Terraria dust in the farmer's place. Null when none is in it, or once Terraria stops sending.</summary>
     public DustFrame? Dust => dust != null && Link.NowMs() - dustAtMs < DustStaleMs ? dust : null;
 
+    private WorldLightFrame? worldLights;
+    private long worldLightsAtMs;
+
+    /// <summary>Terraria sends the lights every fourth tick, so a frame older than this has gone stale.</summary>
+    private const long WorldLightsStaleMs = 500;
+
+    /// <summary>The Terraria light in the farmer's place. Null once Terraria stops sending.</summary>
+    public WorldLightFrame? WorldLights => worldLights != null && Link.NowMs() - worldLightsAtMs < WorldLightsStaleMs ? worldLights : null;
+
     private PlayerGlow? glow;
     private long glowAtMs;
 
@@ -197,6 +206,11 @@ internal sealed class Bridge : IDisposable
                 // An empty frame clears the dust: Terraria sends one when the last mote in the place goes.
                 dust = motes.Dusts.Count == 0 ? null : motes;
                 dustAtMs = Link.NowMs();
+                break;
+            case WorldLightFrame lights:
+                // An empty frame clears the lights: Terraria sends one when the last light in the place goes.
+                worldLights = lights;
+                worldLightsAtMs = Link.NowMs();
                 break;
             case PlayerGlow playerGlow:
                 glow = playerGlow;

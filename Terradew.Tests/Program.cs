@@ -18,5 +18,6 @@ failed += CelestialTests.Run();
 failed += DyeTintTests.Run();
 failed += NpcContentTests.Run();
 failed += CaveTests.Run();
+failed += BossBarTests.Run();
 Console.WriteLine(failed == 0 ? "all passed" : $"{failed} failed");
 return failed == 0 ? 0 : 1;

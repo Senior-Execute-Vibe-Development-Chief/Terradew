@@ -210,6 +210,7 @@ public sealed class BridgeSystem : ModSystem
             Glow.Publish(link, player, worldTicks);
             Dusts.Publish(link, Stamp.Current, player);
         }
+        WorldLights.Publish(link, Linked ? Stamp.Current : null, player, worldTicks);
         Courage.Publish(link, worldTicks);
         if (worldTicks % 120 == 0)
             Town.SendFacts(link);

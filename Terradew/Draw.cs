@@ -27,6 +27,10 @@ internal sealed class Draw
 
     /// <summary>The least a slime's hop rises at its peak, in Stardew pixels. Larger slimes rise by half their body instead.</summary>
     private const float HopHeight = 16f;
+    /// <summary>A flyer sorts this far (two Stardew tiles) south of the ground under it. See DrawEntity.</summary>
+    private const float FlyerSortPixels = 2f * WorldProjection.StardewTilePixels;
+    /// <summary>How many Terraria tiles up a flyer is before its shadow is as small and faint as it gets.</summary>
+    private const float FlyerShadowTiles = 20f;
     /// <summary>The crystal leaf's laser, as Terraria pixels long and Stardew pixels thick.</summary>
     private const float LaserTerrariaLength = 12f;
     private const float LaserThickness = 6f;
@@ -147,11 +151,12 @@ internal sealed class Draw
             if (entity.Has(EntityFlags.Town) && Cast.Plays(entity.NpcType))
                 continue;
             (float x, float y) = WorldProjection.ToMap(world.RegionX, world.RegionY, entity.X, entity.Y);
+            (_, float groundY) = WorldProjection.ToMap(world.RegionX, world.RegionY, entity.X, entity.GroundY);
             // A big body reaches well past its feet point, so the cull margin grows with its hitbox.
             int reach = 64 * 6 + (int)(Math.Max(entity.Width, entity.Height) * WorldProjection.Scale);
             if (!Utility.isOnScreen(new Vector2(x, y), reach))
                 continue;
-            DrawEntity(b, entity, x, y, sorted, wall);
+            DrawEntity(b, entity, x, y, groundY, sorted, wall);
         }
         foreach (DropState drop in world.Drops)
         {
@@ -203,7 +208,17 @@ internal sealed class Draw
     /// </summary>
     private static bool IsComposite(int type) => type is >= 127 and <= 131 or >= 246 and <= 249 or >= 396 and <= 398;
 
-    private void DrawEntity(SpriteBatch b, EntityState entity, float x, float y, bool sorted, WallFight? wall)
+    /// <summary>How high a flyer is: 0 on the ground under it, 1 at <see cref="FlyerShadowTiles"/> tiles up. Zero for everything else.</summary>
+    private static float FlyerRise(EntityState entity)
+        => entity.Has(EntityFlags.Flyer) ? Math.Clamp((entity.GroundY - entity.Y) / (WorldProjection.TerrariaTilePixels * FlyerShadowTiles), 0f, 1f) : 0f;
+
+    /// <summary>
+    /// Draws one creature and its shadow. A walker sorts by its feet, so it draws over what stands north of them and under
+    /// what stands south. A flyer sorts by the ground under it plus <see cref="FlyerSortPixels"/>, so it draws over rocks,
+    /// weeds, crops, fences and the farmer just north of it, but under trees and buildings whose base is further south.
+    /// Its shadow sorts by the ground itself, so it lies under everything standing on that ground.
+    /// </summary>
+    private void DrawEntity(SpriteBatch b, EntityState entity, float x, float y, float groundY, bool sorted, WallFight? wall)
     {
         Texture2D? sheet = sprites.Load(SpriteNames.NpcSheet(entity.NpcType, entity.Look)) ?? sprites.Load(SpriteNames.Npc(entity.NpcType));
         // Vanilla draws the Moon Lord core as one large body texture with no NPC sprite. Draw nothing rather than a square.
@@ -232,17 +247,20 @@ internal sealed class Draw
             : null;
         // Once turned north, the sprite's width runs north to south, so its thickness is the band it covers.
         float thickness = source.HasValue ? source.Value.Width * scale : 96f;
-        float depth = onWall ? (sorted ? WallPartDepth : 0f) : Depth(y, sorted);
+        float depth = onWall ? (sorted ? WallPartDepth : 0f)
+            : Depth(entity.Has(EntityFlags.Flyer) ? groundY + FlyerSortPixels : y, sorted);
         var effects = entity.Direction == 1 && !onWall ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
         float drawnWidth = source.HasValue ? source.Value.Width * scale : entity.Width * WorldProjection.Scale;
-        if (!entity.Has(EntityFlags.Flyer) && !onWall)
+        if (!onWall)
         {
-            var shadow = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y)));
+            // A flyer's shadow lies on the ground under it, and shrinks and fades the higher it flies, as a hopping slime's does.
+            float rise = Math.Max(aloft, FlyerRise(entity));
+            var shadow = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, groundY)));
             // Stardew's shadow is 12 pixels across: as wide as the body is drawn, a little narrower for big ones.
-            float shadowScale = Math.Clamp(drawnWidth * 0.7f / Game1.shadowTexture.Width, 2f, 12f) * (1f - 0.35f * aloft);
-            b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.6f * alpha * (1f - 0.5f * aloft), 0f,
-                new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), shadowScale, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
+            float shadowScale = Math.Clamp(drawnWidth * 0.7f / Game1.shadowTexture.Width, 2f, 12f) * (1f - 0.35f * rise);
+            b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.6f * alpha * (1f - 0.5f * rise), 0f,
+                new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), shadowScale, SpriteEffects.None, Math.Max(0f, Depth(groundY, sorted) - 0.0001f));
         }
 
         // The middle of the body, in Stardew world pixels. Flyers, parts and worms are centred on it; grounded bodies stand on their feet.
