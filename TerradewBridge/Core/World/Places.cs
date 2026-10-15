@@ -15,6 +15,7 @@ public enum Biome : byte
     Temple = 7,
     Island = 8,
     Cave = 9,
+    Hallow = 10,
 }
 
 /// <summary>Which Terraria depth layer a Stardew place sits in.</summary>
@@ -35,6 +36,13 @@ public readonly record struct Place(string Key, Biome Biome, Band Band, bool Spa
 public static class Places
 {
     public const int QuarryMineLevel = 77377;
+
+    /// <summary>Places that turn Hallow when hardmode starts: the Quarry Mine underground, the Railroad on the surface.</summary>
+    public static bool HallowsInHardmode(string key) => key is "mine:quarry" or "Railroad";
+
+    /// <summary>The biome a place has right now. Hardmode spreads the Hallow into its places.</summary>
+    public static Biome Current(Place place, bool hardmode)
+        => hardmode && HallowsInHardmode(place.Key) ? Biome.Hallow : place.Biome;
 
     public static Place Classify(string locationName, bool isOutdoors, int mineLevel)
     {

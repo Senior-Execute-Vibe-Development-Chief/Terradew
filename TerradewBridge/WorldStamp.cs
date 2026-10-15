@@ -137,7 +137,7 @@ public sealed class WorldStamp
     private void StampPlace(PlaceState place, bool newFloor)
     {
         MapLayout map = place.Layout!;
-        (ushort block, int wall) = Blocks((Biome)map.Biome);
+        (ushort block, int wall) = Blocks(BiomeNow(place));
         Fill(place.Rect, block, wall, map, place.OriginX, place.OriginY);
         place.StampedVersion = map.Version;
         place.StampedThisVisit = true;
@@ -149,10 +149,15 @@ public sealed class WorldStamp
         }
     }
 
+    /// <summary>The place's biome, with hardmode's Hallow spread applied.</summary>
+    private static Biome BiomeNow(PlaceState place)
+        => Main.hardMode && Places.HallowsInHardmode(place.Key) ? Biome.Hallow : (Biome)place.Layout!.Biome;
+
     private static (ushort Block, int Wall) Blocks(Biome biome) => biome switch
     {
         Biome.Forest => (TileID.Grass, -1),
-        Biome.Corruption => (TileID.Ebonstone, -1),
+        Biome.Corruption => (WorldGen.crimson ? TileID.Crimstone : TileID.Ebonstone, -1),
+        Biome.Hallow => (TileID.Pearlstone, -1),
         Biome.Desert => (TileID.Sandstone, -1),
         Biome.Jungle => (TileID.JungleGrass, -1),
         Biome.Underworld => (TileID.Ash, -1),
@@ -273,6 +278,39 @@ public sealed class WorldStamp
             2 => (-along, r),
             _ => (-r, -along),
         };
+    }
+
+    /// <summary>A random open tile near the current map's edge, where its entrances are, at least <paramref name="minTiles"/> from the farmer.</summary>
+    public bool TryEdgeSpot(Vector2 farmerFeet, int minTiles, out Vector2 feet)
+    {
+        feet = default;
+        PlaceState? place = Current;
+        if (place?.Layout == null)
+            return false;
+        MapLayout map = place.Layout;
+        int farmerX = (int)(farmerFeet.X / 16f) - place.OriginX;
+        int farmerY = (int)(farmerFeet.Y / 16f) - place.OriginY;
+        const int Margin = 3;
+        for (int attempt = 0; attempt < 120; attempt++)
+        {
+            int x, y;
+            int side = Main.rand.Next(4);
+            if (side < 2)
+            {
+                x = side == 0 ? Main.rand.Next(Margin) : map.Width - 1 - Main.rand.Next(Margin);
+                y = Main.rand.Next(map.Height);
+            }
+            else
+            {
+                x = Main.rand.Next(map.Width);
+                y = side == 2 ? Main.rand.Next(Margin) : map.Height - 1 - Main.rand.Next(Margin);
+            }
+            if (map.IsBlocked(x, y) || Math.Max(Math.Abs(x - farmerX), Math.Abs(y - farmerY)) < minTiles)
+                continue;
+            feet = new Vector2((place.OriginX + x) * 16f + 8f, (place.OriginY + y + 1) * 16f - 2f);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>A random open tile in the current map at least <paramref name="minTiles"/> from the farmer, as feet in world pixels.</summary>

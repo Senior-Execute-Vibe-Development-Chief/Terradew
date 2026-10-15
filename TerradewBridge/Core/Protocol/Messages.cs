@@ -28,6 +28,7 @@ public enum MsgType : byte
     DayStarted = 17,
     Homes = 18,
     RequestRecipes = 19,
+    Gathered = 20,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -71,6 +72,7 @@ public abstract class Message
             MsgType.DayStarted => DayStarted.ReadFrom(r),
             MsgType.Homes => Homes.ReadFrom(r),
             MsgType.RequestRecipes => new RequestRecipes(),
+            MsgType.Gathered => Gathered.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
             MsgType.InventoryState => InventoryState.ReadFrom(r),
             MsgType.CoinAck => CoinAck.ReadFrom(r),
@@ -93,7 +95,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 1;
+    public const int CurrentProtocol = 2;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -138,6 +140,8 @@ public enum PulseFlags : byte
     UseHeld = 4,
     Swimming = 8,
     Sleeping = 16,
+    /// <summary>The Stardew window has focus, so Stardew drives the Terraria body.</summary>
+    Focused = 32,
 }
 
 /// <summary>Sent every Stardew tick. Positions are Stardew world pixels.</summary>
@@ -500,6 +504,46 @@ public sealed class RequestRecipes : Message
     public override void Write(BinaryWriter w)
     {
     }
+}
+
+/// <summary>What the farmer broke or gathered in Stardew. Terraria rolls the Terraria materials it gives.</summary>
+public enum GatherKind : byte
+{
+    Stone = 0,
+    CopperNode = 1,
+    IronNode = 2,
+    GoldNode = 3,
+    IridiumNode = 4,
+    GemNode = 5,
+    MysticStone = 6,
+    Wood = 20,
+    Hardwood = 21,
+}
+
+public sealed class Gathered : Message
+{
+    public GatherKind Kind;
+    public string PlaceKey = "";
+    public int MineLevel;
+    public int Count = 1;
+
+    public override MsgType Type => MsgType.Gathered;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write((byte)Kind);
+        w.Write(PlaceKey);
+        w.Write(MineLevel);
+        w.Write(Count);
+    }
+
+    public static Gathered ReadFrom(BinaryReader r) => new()
+    {
+        Kind = (GatherKind)r.ReadByte(),
+        PlaceKey = r.ReadString(),
+        MineLevel = r.ReadInt32(),
+        Count = r.ReadInt32(),
+    };
 }
 
 [Flags]

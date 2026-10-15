@@ -69,6 +69,8 @@ public sealed class Creatures : GlobalNPC
         if (PlaneMotion.UsesRealAltitude(flyer, worm))
         {
             npc.noTileCollide = true;
+            // Their own AI keeps its speeds, but the body is drawn at half size, so it travels half as far.
+            npc.position -= npc.velocity * (1f - SpriteLayout.BodyScale);
             return;
         }
         npc.noTileCollide = true;
@@ -222,7 +224,17 @@ public sealed class Creatures : GlobalNPC
             return;
         Player player = Main.LocalPlayer;
         Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
-        if (!BridgeSystem.Instance.Stamp.TryOpenSpot(farmer, 11, 45, out Vector2 feet))
+        WorldStamp stamp = BridgeSystem.Instance.Stamp;
+        if (!Invasions.Allowed(npc, stamp.Current))
+        {
+            npc.active = false;
+            return;
+        }
+        Vector2 feet;
+        bool found = Invasions.IsInvader(npc)
+            ? stamp.TryEdgeSpot(farmer, 11, out feet) || stamp.TryOpenSpot(farmer, 11, 45, out feet)
+            : stamp.TryOpenSpot(farmer, 11, 45, out feet);
+        if (!found)
         {
             npc.active = false;
             return;

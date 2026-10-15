@@ -61,14 +61,20 @@ public sealed class Puppet : ModPlayer
         Player.controlQuickMana = false;
         Player.controlThrow = false;
         Player.controlUseTile = false;
-        // The Terraria window keeps its own mouse and keys while it is focused, so Escape opens the
-        // inventory and Settings -> Save & Exit works. Stardew drives the body only from the background.
-        if (Main.hasFocus || Main.gameMenu)
+        // The Terraria window keeps its own mouse and keys unless the Stardew window is the focused one,
+        // so Escape opens the inventory and Settings -> Save & Exit works. Main.hasFocus is not trusted
+        // here: on some systems it stays true while the window is in the background.
+        if (Main.gameMenu || !Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place) || !pulse.Has(PulseFlags.Focused))
             return;
         Player.controlUseItem = false;
-        if (!Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place))
-            return;
         bool hand = pulse.Has(PulseFlags.HandActive) && pulse.Has(PulseFlags.Free);
+        if (hand && pulse.Has(PulseFlags.UseHeld))
+        {
+            // A Terraria inventory or chat left open would block the swing.
+            Main.playerInventory = false;
+            Main.npcChatText = "";
+            Player.SetTalkNPC(-1);
+        }
         if (hand && pulse.Slot < 10 && Player.itemAnimation == 0)
             Player.selectedItem = pulse.Slot;
         Vector2 aim = place.ToWorld(pulse.AimX, pulse.AimY);
@@ -214,7 +220,7 @@ public sealed class Puppet : ModPlayer
 public sealed class Melee : GlobalItem
 {
     public static bool UsesArc(Item item)
-        => item.damage > 0 && !item.noMelee && item.useStyle == ItemUseStyleID.Swing && item.pick == 0 && item.axe == 0 && item.hammer == 0;
+        => item.damage > 0 && !item.noMelee && (item.useStyle == ItemUseStyleID.Swing || item.useStyle == ItemUseStyleID.Thrust) && item.pick == 0 && item.axe == 0 && item.hammer == 0;
 
     public override bool? CanHitNPC(Item item, Player player, NPC target)
     {
@@ -263,6 +269,9 @@ public sealed class Flight : GlobalProjectile
             fitHeight = projectile.height;
             projectile.Center = center;
         }
+        // Hostile shots travel at the drawn scale, like flyers. The farmer's own shots keep Terraria's speed.
+        if (projectile.hostile && !projectile.friendly)
+            projectile.position -= projectile.velocity * (1f - SpriteLayout.BodyScale);
         // aiStyle 1 is arrows and bullets, 2 is thrown knives and shuriken.
         bool falls = projectile.aiStyle == 1 || projectile.aiStyle == 2;
         if (!falls)

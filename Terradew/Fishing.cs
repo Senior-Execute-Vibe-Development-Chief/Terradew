@@ -34,11 +34,12 @@ internal sealed class Fishing
         int rodTier = Math.Clamp(rod.UpgradeLevel - 1, 0, 3);
         bool bait = rod.attachments.Count > 0 && rod.attachments[0] != null;
         bool tackle = rod.attachments.Count > 1 && rod.attachments[1] != null;
+        bool hardmode = bridge.Facts?.Hardmode ?? false;
         var context = new FishContext(
-            place.Biome,
+            Places.Current(place, hardmode),
             place.Band,
             Game1.timeOfDay >= 1930 || Game1.timeOfDay < 430,
-            bridge.Facts?.Hardmode ?? false,
+            hardmode,
             FishTable.PowerFromStardew(rodTier, Game1.player.FishingLevel, bait, tackle),
             Math.Max(maps.Current?.WaterTiles ?? 0, 200));
         FishCatch fish = FishTable.Roll(context, random);

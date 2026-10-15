@@ -95,6 +95,7 @@ public sealed class BridgeSystem : ModSystem
         savedResidents = "";
         Stamp.Clear();
         Town.Clear();
+        Invasions.Reset();
     }
 
     public override void SaveWorldData(TagCompound tag)
@@ -186,6 +187,7 @@ public sealed class BridgeSystem : ModSystem
         Stamp.Publish(link, player, Pulse, worldTicks);
         Town.Watch(Stamp.Current);
         Town.KeepOldMan(Stamp);
+        Invasions.Watch(Stamp);
         Inventory.Publish(link, player, worldTicks);
         if (worldTicks % 120 == 0)
             Town.SendFacts(link);
@@ -232,6 +234,9 @@ public sealed class BridgeSystem : ModSystem
                 break;
             case InventoryAction action:
                 Inventory.Act(player, action);
+                break;
+            case Gathered gathered:
+                Gathering.Receive(player, gathered);
                 break;
             case RequestRecipes:
                 link!.Send(Crafting.List(player));

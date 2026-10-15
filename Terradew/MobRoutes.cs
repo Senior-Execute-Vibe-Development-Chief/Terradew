@@ -1,17 +1,19 @@
 using Microsoft.Xna.Framework;
 using StardewValley;
-using StardewValley.Pathfinding;
 using Terradew.Core;
 using Terradew.Core.Protocol;
 using Terradew.Core.Routing;
 
 namespace Terradew;
 
-/// <summary>Asks Stardew's villager path search for a walk to the farmer and sends each ground chaser its next open tile.</summary>
+/// <summary>
+/// Finds each ground chaser a walk to the farmer with A* over the same blocked tiles Terraria was stamped with
+/// (Stardew's villager search walks through rocks, trees and furniture), and sends it the next tile.
+/// </summary>
 internal sealed class MobRoutes
 {
-    public const int MapLimit = 200;
-    public const int SearchLimit = 10000;
+    public const int MapLimit = 256;
+    public const int SearchLimit = 8000;
 
     private readonly RoutePlanner planner = new(searchesPerTick: 2, retryTicks: 30);
     private string place = "";
@@ -25,20 +27,21 @@ internal sealed class MobRoutes
         lastSent = "";
     }
 
-    public void Update(Bridge bridge, Farmer player, string placeKey)
+    public void Update(Bridge bridge, Maps maps, Farmer player, string placeKey)
     {
         tick++;
         GameLocation? location = player.currentLocation;
         WorldState? world = bridge.World;
-        if (location?.Map == null || world == null || !bridge.WorldIsFor(placeKey))
+        MapLayout? layout = maps.Current;
+        if (location?.Map == null || world == null || layout == null || layout.PlaceKey != placeKey || !bridge.WorldIsFor(placeKey))
             return;
         if (placeKey != place)
         {
             place = placeKey;
             planner.Reset();
         }
-        int width = location.Map.Layers[0].LayerWidth;
-        int height = location.Map.Layers[0].LayerHeight;
+        int width = layout.Width;
+        int height = layout.Height;
         var message = new Routes { PlaceKey = placeKey };
         if (width <= MapLimit && height <= MapLimit)
         {
@@ -55,7 +58,7 @@ internal sealed class MobRoutes
                     continue;
                 chasers.Add(new Chaser(entity.Id, at));
             }
-            foreach (RouteStep step in planner.Plan(tick, goal, chasers, (from, to) => Find(location, from, to)))
+            foreach (RouteStep step in planner.Plan(tick, goal, chasers, (from, to) => GridPath.Find(width, height, layout.IsBlocked, from, to, SearchLimit, simplify: false)))
                 message.Steps.Add(new RouteEntry(step.NpcId, step.TileX, step.TileY));
         }
         string signature = placeKey + ":" + string.Join(";", message.Steps.Select(s => $"{s.NpcId},{s.TileX},{s.TileY}"));
@@ -63,28 +66,5 @@ internal sealed class MobRoutes
             return;
         lastSent = signature;
         bridge.Send(message);
-    }
-
-    private static IReadOnlyList<Tile>? Find(GameLocation location, Tile from, Tile to)
-    {
-        try
-        {
-            Stack<Point>? path = PathFindController.findPathForNPCSchedules(new Point(from.X, from.Y), new Point(to.X, to.Y), location, SearchLimit, null);
-            if (path == null || path.Count == 0)
-                return null;
-            var tiles = new List<Tile>(path.Count);
-            while (path.Count > 0)
-            {
-                Point point = path.Pop();
-                if (tiles.Count == 0 && point.X == from.X && point.Y == from.Y)
-                    continue;
-                tiles.Add(new Tile(point.X, point.Y));
-            }
-            return tiles.Count == 0 ? null : tiles;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
     }
 }

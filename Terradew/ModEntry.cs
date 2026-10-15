@@ -23,6 +23,7 @@ public sealed class ModEntry : Mod
     private Vitals vitals = null!;
     private MobRoutes routes = null!;
     private Fishing fishing = null!;
+    private Mining mining = null!;
     private Houses houses = null!;
     private Draw draw = null!;
     private Hud hud = null!;
@@ -40,6 +41,7 @@ public sealed class ModEntry : Mod
         vitals = new Vitals(Monitor);
         routes = new MobRoutes();
         fishing = new Fishing(helper);
+        mining = new Mining();
         houses = new Houses();
         draw = new Draw(bridge, sprites, hand, helper);
         hud = new Hud(bridge, sprites, hand, helper);
@@ -69,6 +71,7 @@ public sealed class ModEntry : Mod
         helper.Events.Input.MouseWheelScrolled += (_, e) => hand.OnWheel(e);
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
+        helper.Events.World.ObjectListChanged += (_, e) => { if (Context.IsWorldReady) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };
         helper.ConsoleCommands.Add("terradew", "terradew status | terradew <command for Terraria>, such as: summon, boss EyeofCthulhu, give CopperShortsword", OnCommand);
         Monitor.Log($"Terradew will connect to Terraria on 127.0.0.1:{config.Port}.", LogLevel.Info);
@@ -135,7 +138,7 @@ public sealed class ModEntry : Mod
         if (config.MirrorMoney)
             money.Update(bridge);
         vitals.Update(bridge, config);
-        routes.Update(bridge, player, Maps.PlaceOf(location).Key);
+        routes.Update(bridge, maps, player, Maps.PlaceOf(location).Key);
     }
 
     private void SendPulse(Farmer player, GameLocation location)
@@ -153,6 +156,8 @@ public sealed class ModEntry : Mod
             flags |= PulseFlags.UseHeld;
         if (player.swimming.Value)
             flags |= PulseFlags.Swimming;
+        if (Game1.game1.IsActive)
+            flags |= PulseFlags.Focused;
         bridge.Send(new FarmerPulse
         {
             Tick = tick,
@@ -206,6 +211,7 @@ public sealed class ModEntry : Mod
             return;
         fishing.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
         vitals.OnItemsAdded(e.Added);
+        mining.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
     }
 
     private void OnCommand(string name, string[] args)

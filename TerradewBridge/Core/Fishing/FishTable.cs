@@ -74,7 +74,7 @@ public static class FishTable
 
         // Very rare
         new Entry("FlarefinKoi", FishRarity.VeryRare, IsUnderworld),
-        new Entry("ChaosFish", FishRarity.VeryRare, c => c.Hardmode && c.Band == Band.Cavern),
+        new Entry("ChaosFish", FishRarity.VeryRare, c => c.Hardmode && (c.Band == Band.Cavern || (c.Biome == Biome.Hallow && IsUndergroundBand(c)))),
         new Entry("ReaverShark", FishRarity.VeryRare, c => c.Biome == Biome.Ocean),
         new Entry("SawtoothShark", FishRarity.VeryRare, c => c.Biome == Biome.Ocean),
         new Entry("PurpleClubberfish", FishRarity.VeryRare, c => c.Biome == Biome.Corruption),
