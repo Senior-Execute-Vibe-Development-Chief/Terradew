@@ -38,6 +38,8 @@ public sealed class Creatures : GlobalNPC
     {
         if (!BridgeSystem.Active || !npc.active || npc.life <= 0)
             return;
+        if (WallOfFlesh.Owns(npc))
+            return;
         Fit(npc);
         bool worm = npc.aiStyle == NPCAIStyleID.Worm;
         if (!ready || seenType != npc.type)

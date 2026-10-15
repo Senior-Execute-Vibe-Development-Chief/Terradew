@@ -185,6 +185,7 @@ public sealed class BridgeSystem : ModSystem
         SyncClock(Pulse);
         Player player = Main.LocalPlayer;
         Stamp.Publish(link, player, Pulse, worldTicks);
+        WallOfFlesh.Tick(Stamp, link);
         Town.Watch(Stamp.Current);
         Town.KeepOldMan(Stamp);
         Invasions.Watch(Stamp);
