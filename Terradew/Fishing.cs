@@ -19,7 +19,7 @@ internal sealed class Fishing
     private readonly IModHelper helper;
     private readonly Random random = new();
     private FishCatch? pending;
-    private uint pendingUntil;
+    private int pendingUntil;
 
     public Fishing(IModHelper helper)
     {

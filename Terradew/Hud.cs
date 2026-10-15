@@ -11,7 +11,7 @@ namespace Terradew;
 /// <summary>Terraria's life, mana, buffs and hotbar, drawn in Stardew's HUD style.</summary>
 internal sealed class Hud
 {
-    private sealed record Line(string Text, Color Color, uint Until);
+    private sealed record Line(string Text, Color Color, int Until);
 
     private readonly Bridge bridge;
     private readonly SpriteBook sprites;
