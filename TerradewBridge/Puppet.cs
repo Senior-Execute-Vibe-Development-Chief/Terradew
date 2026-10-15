@@ -60,8 +60,11 @@ public sealed class Puppet : ModPlayer
         Player.controlQuickHeal = false;
         Player.controlQuickMana = false;
         Player.controlThrow = false;
-        Player.controlInv = false;
         Player.controlUseTile = false;
+        // The Terraria window keeps its own mouse and keys while it is focused, so Escape opens the
+        // inventory and Settings -> Save & Exit works. Stardew drives the body only from the background.
+        if (Main.hasFocus || Main.gameMenu)
+            return;
         Player.controlUseItem = false;
         if (!Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place))
             return;
