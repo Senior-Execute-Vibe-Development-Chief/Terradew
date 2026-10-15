@@ -41,7 +41,7 @@ Decisions that shape play:
 - **Money is Terraria coins.** Stardew's money counter shows your coins, where one gold is one silver coin.
   Shipping crops pays coins; Pierre's seeds cost coins.
 - **Health is Terraria's.** Your life and mana are bars at the bottom right, where Stardew's energy bar was.
-  Defense and buffs are shown at the top left. Energy is gone: tools are free, and the day still ends at 2am.
+  Defense and buffs are shown at the top left. Energy is gone: tools are free, and you can stay up all night.
   Food heals Terraria life, restores a little mana, and gives Well Fed.
   Dying loses half your coins and wakes you at the Nurse's house, or at home if no Nurse lives on the farm.
 - **Only Terraria weapons fight.** Stardew weapons melt into coins when you pick them up, and Stardew's own
@@ -143,9 +143,9 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **After Golem**, the Lunatic Cultist waits at the Skull Cavern entrance. Beat it and the Lunar Pillars rise,
   one in each place: Solar on the Farm, Vortex in Town, Nebula on the Beach, Stardust on the Mountain. When all
   four fall, Moon Lord comes to the Farm. The Celestial Sigil works only on the Farm.
-- **No passing out.** At 2:00 AM the day simply ends, as if you had gone to bed, with no money lost.
+- **No passing out.** If you don't go to bed, the clock keeps running past 2:00 AM to 6:00 AM, so Terraria gets its whole night (dusk 7:30 PM, dawn 4:30 AM). At 6:00 AM the day changes (crops grow, shipping is paid, the save screen shows), and then you carry on from where you were standing. Going to bed early still ends the day as normal.
 - **Community Center bundles** ask for minerals instead of monster drops, since Stardew's monsters are gone.
-- **Saving:** Terraria saves its world and character whenever Stardew saves at bedtime.
+- **Saving:** Terraria saves its world and character whenever Stardew saves at the end of the day.
 
 Test helpers, in the SMAPI console: `terradew status`, `terradew summon`, `terradew summon BlueSlime`,
 `terradew boss EyeofCthulhu`, `terradew give CopperShortsword`, `terradew wear CopperHelmet CopperChainmail CopperGreaves`,

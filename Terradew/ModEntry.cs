@@ -141,7 +141,7 @@ public sealed class ModEntry : Mod
         wallClimb.Reset();
         pendingChats.Clear();
         mining.Reset();
-        Clock.OnDayStarted();
+        Clock.Reset();
         helloSent = false;
     }
 

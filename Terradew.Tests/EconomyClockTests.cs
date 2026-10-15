@@ -30,6 +30,22 @@ internal static class EconomyClockTests
             T.Assert(time == 23400, "expected 23400 but got " + time);
         });
 
+        failed += T.Check("clock: staying up runs the whole Terraria night to dawn", () =>
+        {
+            var (night, late) = ClockMap.ToTerraria(2700, 0f);
+            T.Assert(!night && late == 27000, "3am is night, 7.5 hours in, got " + late);
+            var (day, dawn) = ClockMap.ToTerraria(2830, 0f);
+            T.Assert(day && dawn == 0, "4:30am is Terraria's dawn");
+            T.Assert(ClockMap.ToTerraria(2950, 0f).DayTime, "5:50am is day");
+        });
+
+        failed += T.Check("clock: Stardew ten-minute step rolls the hour", () =>
+        {
+            T.Assert(ClockMap.StardewNext(2600) == 2610, "2600 to 2610");
+            T.Assert(ClockMap.StardewNext(2650) == 2700, "2650 to 2700");
+            T.Assert(ClockMap.StardewNext(2950) == ClockMap.StardewMorning, "5:50am to 6am");
+        });
+
         failed += T.Check("clock: fraction adds progress through the ten minutes", () =>
         {
             var (day, time) = ClockMap.ToTerraria(1200, 0.5f);

@@ -32,6 +32,18 @@ public static class ClockMap
         return (false, sinceNight * TerrariaTicksPerMinute);
     }
 
+    /// <summary>Stardew's 2:00 AM, when the farmer would pass out.</summary>
+    public const int StardewPassOut = 2600;
+    /// <summary>6:00 AM the next morning on Stardew's clock: a farmer who stayed up starts the new day here.</summary>
+    public const int StardewMorning = 3000;
+
+    /// <summary>Stardew's clock ten minutes on, rolling the minutes over into the next hour (2650 becomes 2700).</summary>
+    public static int StardewNext(int stardewTime)
+    {
+        int next = stardewTime + 10;
+        return next % 100 >= 60 ? next - next % 100 + 100 : next;
+    }
+
     public static double PhaseLength(bool dayTime) => dayTime ? DayLength : NightLength;
 
     public static (bool DayTime, double Time) Next(bool currentDay, double currentTime, bool targetDay, double targetTime)
