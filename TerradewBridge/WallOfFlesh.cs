@@ -51,14 +51,33 @@ public sealed class WallOfFlesh : GlobalNPC
             placeKey = "";
     }
 
+    /// <summary>Forgets the climb when the world unloads.</summary>
+    public static void Reset()
+    {
+        placeKey = "";
+        wallY = 0f;
+        announced = false;
+        announcedPlace = "";
+        sinceSent = 0;
+    }
+
     public override void PostAI(NPC npc)
     {
         if (!BridgeSystem.Active || !npc.active || npc.life <= 0)
             return;
-        if (!TryFight(BridgeSystem.Instance.Stamp, out WorldStamp.PlaceState? place) || place == null)
-            return;
-
+        // The custom touch below is the wall's only melee. Vanilla contact would hit from half a body north of the line.
+        npc.damage = 0;
         Player player = Main.LocalPlayer;
+        if (!BridgeSystem.Instance.Linked || !TryFight(BridgeSystem.Instance.Stamp, out WorldStamp.PlaceState? place) || place == null)
+        {
+            // Out of the underworld the wall waits where it is and cannot tie the farmer.
+            npc.velocity = Vector2.Zero;
+            npc.position = npc.oldPosition;
+            player.ClearBuff(BuffID.TheTongued);
+            player.tongued = false;
+            return;
+        }
+
         float farmerX = player.position.X + player.width / 2f;
         float farmerFeetY = player.position.Y + player.height;
 

@@ -97,6 +97,7 @@ public sealed class BridgeSystem : ModSystem
         Town.Clear();
         Invasions.Reset();
         Celestial.Reset();
+        WallOfFlesh.Reset();
     }
 
     public override void SaveWorldData(TagCompound tag)
@@ -190,8 +191,12 @@ public sealed class BridgeSystem : ModSystem
         WallOfFlesh.Tick(Stamp, link);
         Town.Watch(Stamp.Current);
         Town.KeepOldMan(Stamp);
-        Invasions.Watch(Stamp);
-        Celestial.Watch(Stamp);
+        // Events and bosses place things by the farmer's last pulse, which goes stale once Stardew drops.
+        if (Linked)
+        {
+            Invasions.Watch(Stamp);
+            Celestial.Watch(Stamp);
+        }
         Inventory.Publish(link, player, worldTicks);
         if (worldTicks % 120 == 0)
             Town.SendFacts(link);

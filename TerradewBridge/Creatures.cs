@@ -55,7 +55,9 @@ public sealed class Creatures : GlobalNPC
         BridgeSystem bridge = BridgeSystem.Instance;
         WorldStamp.PlaceState? place = bridge.Linked ? bridge.Stamp.Current : null;
         bool here = place != null && place.ContainsWorld(npc.Center);
-        away = !here && !npc.boss;
+        // Flying bosses keep chasing across places. A walking boss is laid out against the farmer's place,
+        // so away from it the boss holds still like everything else.
+        away = !here && !(npc.boss && PlaneMotion.UsesRealAltitude(flyer, worm));
         if (away)
         {
             // Creatures stay where the farmer left them.
