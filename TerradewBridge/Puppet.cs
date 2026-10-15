@@ -80,9 +80,23 @@ public sealed class Puppet : ModPlayer
         // The Terraria window keeps its own mouse and keys unless the Stardew window is the focused one,
         // so Escape opens the inventory and Settings -> Save & Exit works. Main.hasFocus is not trusted
         // here: on some systems it stays true while the window is in the background.
-        if (Main.gameMenu || !Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place) || !pulse.Has(PulseFlags.Focused))
+        if (Main.gameMenu || !Driving(out FarmerPulse pulse, out _) || !pulse.Has(PulseFlags.Focused))
             return;
+        // The hand itself is driven from PreItemCheck: this hook sits inside Terraria's input handling, which some
+        // systems skip while the Terraria window is in the background.
         Player.controlUseItem = false;
+    }
+
+    /// <summary>
+    /// Runs right before Terraria uses the held item, every tick, focused or not: selects Stardew's hotbar slot, aims
+    /// at Stardew's cursor and holds the use button while Stardew does.
+    /// </summary>
+    public override bool PreItemCheck()
+    {
+        if (!BridgeSystem.Active || Main.gameMenu || Player.whoAmI != Main.myPlayer)
+            return true;
+        if (!Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place) || !pulse.Has(PulseFlags.Focused))
+            return true;
         bool hand = pulse.Has(PulseFlags.HandActive) && pulse.Has(PulseFlags.Free);
         if (hand && pulse.Has(PulseFlags.UseHeld))
         {
@@ -103,6 +117,7 @@ public sealed class Puppet : ModPlayer
             Inventory.PendingUse--;
             Player.controlUseItem = true;
         }
+        return true;
     }
 
     public override void PostUpdate()
@@ -125,7 +140,8 @@ public sealed class Puppet : ModPlayer
     /// </summary>
     private void WatchForStuckUse()
     {
-        if (!Driving(out FarmerPulse pulse, out _) || !pulse.Has(PulseFlags.UseHeld) || Player.itemAnimation > 0)
+        FarmerPulse? pulse = BridgeSystem.Instance.Pulse;
+        if (pulse == null || !pulse.Has(PulseFlags.UseHeld) || Player.itemAnimation > 0)
         {
             stuckTicks = 0;
             return;
@@ -141,6 +157,8 @@ public sealed class Puppet : ModPlayer
     private string StuckReason(FarmerPulse pulse)
     {
         var reasons = new List<string>();
+        if (!Driving(out _, out _))
+            reasons.Add(BridgeSystem.Instance.Stamp.Current == null ? $"Terraria has no place for {pulse.PlaceKey}" : "the link to Stardew is stale");
         if (!pulse.Has(PulseFlags.Focused))
             reasons.Add("the Stardew window is not focused");
         if (!pulse.Has(PulseFlags.HandActive))

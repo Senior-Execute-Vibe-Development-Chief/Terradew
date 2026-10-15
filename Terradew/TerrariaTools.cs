@@ -92,8 +92,7 @@ internal sealed class TerrariaTools
         else
             why = $"Terraria holds item {world.Held.ItemType} and does not swing {inventory.Items[hand.Slot].Name}";
         monitor.Log($"Terradew: the use button is held but Terraria does not swing: {why}.", LogLevel.Info);
-        if (!bridge.Linked)
-            Game1.addHUDMessage(new HUDMessage(why, HUDMessage.error_type));
+        Game1.addHUDMessage(new HUDMessage($"No Terraria swing: {why}", HUDMessage.error_type));
     }
 
     private void Strike(Farmer player, ItemStack held)
