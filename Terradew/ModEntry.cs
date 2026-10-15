@@ -37,6 +37,7 @@ public sealed class ModEntry : Mod
     private Bravery bravery = null!;
     private Draw draw = null!;
     private Hud hud = null!;
+    private TerrariaBody body = null!;
     private bool helloSent;
     private int tick;
     private const int MaxPendingChats = 8;
@@ -67,6 +68,7 @@ public sealed class ModEntry : Mod
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper, backpack);
+        body = new TerrariaBody(bridge, Monitor);
         var harmony = new Harmony(ModManifest.UniqueID);
         draw.Install(harmony, Monitor);
         mining.Install(harmony, Monitor);
@@ -75,6 +77,7 @@ public sealed class ModEntry : Mod
         stations.Install(harmony, Monitor);
         potLook.Install(harmony, Monitor);
         Portraits.Install(harmony, Monitor);
+        body.Install(harmony);
         new Clock().Install(harmony, Monitor);
         BackpackGuards.Install(harmony, Monitor, backpack, sprites);
 
@@ -217,6 +220,7 @@ public sealed class ModEntry : Mod
             money.Update(bridge);
         vitals.Update(bridge, config);
         tools.Update(bridge);
+        body.Update(config);
         routes.Update(bridge, maps, player, Maps.PlaceOf(location).Key);
         if (e.Ticks % 30 == 0)
             cast.Update(bridge.Facts);

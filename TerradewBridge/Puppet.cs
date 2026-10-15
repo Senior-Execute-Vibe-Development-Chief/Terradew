@@ -24,6 +24,18 @@ public sealed class Puppet : ModPlayer
     private readonly HashSet<int> struckThisSwing = new();
     private int lastAnimation;
 
+    /// <summary>Terraria's walk cycle runs over leg frames 7 to 19 of 56 pixels each.</summary>
+    private const int FrameHeight = 56;
+    private const int FirstWalkFrame = 7;
+    private const int LastWalkFrame = 19;
+
+    private Vector2 lastFeet;
+    private float walkSpeed;
+    private int stillTicks;
+    private float walkCounter;
+    /// <summary>Kept here: Terraria resets the leg frame to standing every tick, as it sees no velocity.</summary>
+    private int walkFrame = FirstWalkFrame;
+
     private static bool Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place)
     {
         pulse = null!;
@@ -94,6 +106,7 @@ public sealed class Puppet : ModPlayer
         if (!BridgeSystem.Active)
             return;
         Place();
+        Walk();
         Player.breath = Player.breathMax;
         if (Player.dead)
         {
@@ -128,7 +141,62 @@ public sealed class Puppet : ModPlayer
                 Player.direction = -1;
             else if (east > 0.01f)
                 Player.direction = 1;
+            // Standing still, the player turns the way the farmer faces; facing north or south keeps the last side.
+            else if (pulse.Facing == 1)
+                Player.direction = 1;
+            else if (pulse.Facing == 3)
+                Player.direction = -1;
         }
+    }
+
+    /// <summary>
+    /// The player is placed on the farmer's feet rather than moved, so Terraria sees no velocity and never plays the
+    /// walk cycle. This plays it from how far the farmer walked, as Terraria does from walking speed. Stardew draws
+    /// this player in place of the farmer, so walking north or south moves the legs too.
+    /// </summary>
+    private void Walk()
+    {
+        if (!Driving(out FarmerPulse pulse, out WorldStamp.PlaceState place))
+            return;
+        Vector2 feet = place.ToWorld(pulse.FeetX, pulse.FeetY);
+        float moved = Vector2.Distance(feet, lastFeet);
+        lastFeet = feet;
+        if (moved > 0.05f && moved < 32f)
+        {
+            walkSpeed = moved;
+            stillTicks = 0;
+        }
+        else if (++stillTicks > 4)
+        {
+            walkSpeed = 0f;
+        }
+        if (walkSpeed <= 0f)
+        {
+            walkCounter = 0f;
+            Player.legFrame.Y = 0;
+            if (Player.itemAnimation == 0)
+                Player.bodyFrame.Y = 0;
+            return;
+        }
+        walkCounter += walkSpeed * 1.3f;
+        while (walkCounter > 8f)
+        {
+            walkCounter -= 8f;
+            walkFrame++;
+        }
+        if (walkFrame < FirstWalkFrame || walkFrame > LastWalkFrame)
+            walkFrame = FirstWalkFrame;
+        Player.legFrame.Y = walkFrame * FrameHeight;
+        // The body bobs with the legs, as in Terraria, unless an item swing holds it.
+        if (Player.itemAnimation == 0)
+            Player.bodyFrame.Y = Player.legFrame.Y;
+    }
+
+    /// <summary>The picture Stardew draws is fully lit: Stardew lights it, not Terraria's caves and nights.</summary>
+    public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
+    {
+        if (Body.Capturing)
+            fullBright = true;
     }
 
     /// <summary>

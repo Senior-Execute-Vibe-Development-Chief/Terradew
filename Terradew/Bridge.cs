@@ -29,6 +29,12 @@ internal sealed class Bridge : IDisposable
     private VillagerMoves? moves;
     private long movesAtMs;
 
+    private PlayerLook? look;
+    private long lookAtMs;
+
+    /// <summary>The Terraria player as Terraria draws it. Null once Terraria stops sending (it resends at least twice a second).</summary>
+    public PlayerLook? Look => look != null && Link.NowMs() - lookAtMs < 1500 ? look : null;
+
     /// <summary>What busy villagers are doing about enemies, and today's danger. Null once Terraria stops sending.</summary>
     public VillagerMoves? Moves => moves != null && Link.NowMs() - movesAtMs < 3000 ? moves : null;
 
@@ -137,6 +143,10 @@ internal sealed class Bridge : IDisposable
             case VillagerMoves moves:
                 this.moves = moves;
                 movesAtMs = Link.NowMs();
+                break;
+            case PlayerLook playerLook:
+                look = playerLook;
+                lookAtMs = Link.NowMs();
                 break;
             case Core.Protocol.Notice notice:
                 if (raiseEvents)

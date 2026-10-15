@@ -128,6 +128,19 @@ internal static class ProtocolTests
             again.Dispose();
         });
 
+        failed += T.Check("the player picture survives a roundtrip and a bad size is refused", () =>
+        {
+            var look = new PlayerLook { Width = 2, Height = 3, FeetX = 1, FeetY = 2, Rgba = new byte[2 * 3 * 4] };
+            look.Rgba[5] = 200;
+            var copy = (PlayerLook)Roundtrip(look);
+            T.Assert(copy.Width == 2 && copy.Height == 3 && copy.FeetX == 1 && copy.FeetY == 2, "placement");
+            T.Assert(copy.Rgba.Length == 24 && copy.Rgba[5] == 200, "pixels");
+            bool refused = false;
+            try { Roundtrip(new PlayerLook { Width = 2, Height = 2, Rgba = new byte[3] }); }
+            catch (Exception) { refused = true; }
+            T.Assert(refused, "mismatched pixels");
+        });
+
         failed += T.Check("a disconnected link drops sends instead of blocking", () =>
         {
             using var lonely = Link.Connect(1);

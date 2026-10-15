@@ -49,6 +49,7 @@ public enum MsgType : byte
     StationPlaced = 50,
     GiftTaken = 51,
     VillagerMoves = 52,
+    PlayerLook = 53,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -100,6 +101,7 @@ public abstract class Message
             MsgType.Friendships => Friendships.ReadFrom(r),
             MsgType.GiftTaken => GiftTaken.ReadFrom(r),
             MsgType.VillagerMoves => VillagerMoves.ReadFrom(r),
+            MsgType.PlayerLook => PlayerLook.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
     }
@@ -113,7 +115,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 13;
+    public const int CurrentProtocol = 14;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -518,6 +520,48 @@ public sealed class Friendships : Message
 /// </summary>
 public readonly record struct VillagerMove(int NpcType, byte Mode, string PlaceKey, float TileX, float TileY, byte Facing,
     short Frame, int SwingItem, float Swing, float ThreatX, float ThreatY);
+
+/// <summary>
+/// The Terraria player as Terraria draws it this tick, fully lit: hair, clothes, armor, dyes, wings and the item in use.
+/// Stardew draws it in place of the farmer. The picture is cropped to what is drawn; FeetX and FeetY are where the
+/// middle of the player's feet falls in it. Pixels are RGBA with premultiplied alpha. An empty picture means nothing
+/// is drawn (Stardew then shows the farmer).
+/// </summary>
+public sealed class PlayerLook : Message
+{
+    /// <summary>Largest picture accepted, in pixels per side.</summary>
+    public const int MaxSide = 512;
+
+    public short Width;
+    public short Height;
+    public short FeetX;
+    public short FeetY;
+    public byte[] Rgba = Array.Empty<byte>();
+
+    public override MsgType Type => MsgType.PlayerLook;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Width);
+        w.Write(Height);
+        w.Write(FeetX);
+        w.Write(FeetY);
+        w.Write(Rgba.Length);
+        w.Write(Rgba);
+    }
+
+    public static PlayerLook ReadFrom(BinaryReader r)
+    {
+        var look = new PlayerLook { Width = r.ReadInt16(), Height = r.ReadInt16(), FeetX = r.ReadInt16(), FeetY = r.ReadInt16() };
+        int length = r.ReadInt32();
+        if (look.Width < 0 || look.Height < 0 || look.Width > MaxSide || look.Height > MaxSide || length != look.Width * look.Height * 4)
+            throw new InvalidDataException("Bad Terradew player picture.");
+        look.Rgba = r.ReadBytes(length);
+        if (look.Rgba.Length != length)
+            throw new EndOfStreamException();
+        return look;
+    }
+}
 
 /// <summary>
 /// Sent several times a second while any followed town NPC is busy with an enemy, and about once a second otherwise.

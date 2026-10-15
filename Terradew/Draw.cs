@@ -102,6 +102,7 @@ internal sealed class Draw
         // The band goes first so that, when the world is drawn unsorted, the creatures and gear draw over it.
         if (wall != null)
             DrawWallBand(b, player.currentLocation, wall, sorted);
+        TerrariaBody.DrawOver(b, Depth(player.GetBoundingBox().Bottom, sorted, 1f));
         WorldState? world = bridge.World;
         if (world == null || !bridge.WorldIsFor(key))
             return;
@@ -130,8 +131,11 @@ internal sealed class Draw
             if (Utility.isOnScreen(new Vector2(x, y), 64 * 4))
                 DrawProjectile(b, projectile, x, y, sorted);
         }
-        DrawHeld(b, world, sorted);
         DrawSwings(b, key, sorted);
+        // The Terraria character already wears its armor and holds its item.
+        if (TerrariaBody.Showing)
+            return;
+        DrawHeld(b, world, sorted);
         DrawGear(b, sorted);
     }
 

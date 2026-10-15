@@ -17,4 +17,10 @@ public sealed class ModConfig
 
     /// <summary>Removes Stardew's own monsters so only Terraria creatures fight.</summary>
     public bool RemoveStardewMonsters { get; set; } = true;
+
+    /// <summary>
+    /// Shows your Terraria character in place of the Stardew farmer, as Terraria draws it: armor, dyes, wings and
+    /// the item in use. Stardew-only actions (tools, fishing, eating, sitting, riding, cutscenes) still show the farmer.
+    /// </summary>
+    public bool TerrariaBody { get; set; } = true;
 }

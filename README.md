@@ -150,9 +150,13 @@ Keys can be changed in `Mods/Terradew/config.json`.
   next morning. During a boss, an invasion, a pumpkin or frost moon, an eclipse or a blood moon, heroes wait
   outside their front door and everyone else stays home, and each has a line about it. Attacks show their
   Terraria frames, and the Dye Trader swings a scimitar.
-- **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
-  farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show a portrait cut
-  from their Terraria sprite when you talk to them.
+- **You are your Terraria character.** While tModLoader runs, Terraria draws your player (hair, clothes, armor,
+  vanity, wings, every dye and shader, and the item in use) and Stardew shows that picture in place of the farmer,
+  walking and swinging with Terraria's own animations. It is seen side-on, facing left or right. Stardew-only
+  moments keep the farmer: tools and the fishing rod, eating, sitting, riding, swimming, harvesting animations and
+  cutscenes. Set `TerrariaBody` to `false` in `config.json` to keep the farmer, who then wears the Terraria armor
+  and accessories instead (basic dyes tint them; shader dyes show undyed). Townspeople show their Terraria
+  portrait when you talk to them.
 - **Fishing** is Stardew's minigame with a Terraria catch, from the place's biome and depth.
 - **Bosses** come from their normal Terraria summons, used from the hotbar with the Terraria item selected: the Suspicious Looking Eye at
   night, Worm Food in the Secret Woods, the Abeemination in the jungle mine floors. Talk to the Old Man at the
