@@ -220,6 +220,7 @@ public sealed class Creatures : GlobalNPC
     /// <summary>Natural spawns land on an open, off-screen Stardew tile instead of on top of a block.</summary>
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
+        ready = false;
         if (!BridgeSystem.Active || npc.townNPC || npc.boss || source is not EntitySource_SpawnNPC)
             return;
         Player player = Main.LocalPlayer;

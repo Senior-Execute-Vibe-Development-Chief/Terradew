@@ -20,10 +20,14 @@ public static class Inventory
     /// <summary>Ticks to hold the use button for an item used from the menu.</summary>
     public static int PendingUse;
 
-    public static void ForceResend() => lastHash = long.MinValue;
+    public static void ForceResend()
+    {
+        lastHash = long.MinValue;
+        lastSent = -10_000;
+    }
 
     /// <summary>Stardew said hello: carry on from the last coin change it saw confirmed.</summary>
-    public static void ResumeCoins(int seq) => lastCoinSeq = Math.Max(0, seq);
+    public static void ResumeCoins(int seq) => lastCoinSeq = Math.Max(lastCoinSeq, seq);
 
     public static long Coins(Player player)
     {

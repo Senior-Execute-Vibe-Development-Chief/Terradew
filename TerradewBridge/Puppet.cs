@@ -224,7 +224,10 @@ public sealed class Melee : GlobalItem
 
     public override bool? CanHitNPC(Item item, Player player, NPC target)
     {
-        if (BridgeSystem.Active && UsesArc(item))
+        if (!BridgeSystem.Active || !UsesArc(item))
+            return null;
+        BridgeSystem bridge = BridgeSystem.Instance;
+        if (bridge.Linked && bridge.Stamp.Current != null)
             return false;
         return null;
     }

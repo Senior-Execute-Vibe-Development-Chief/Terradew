@@ -29,6 +29,7 @@ public sealed class ModEntry : Mod
     private Hud hud = null!;
     private bool helloSent;
     private int tick;
+    private NpcChat? pendingChat;
 
     public override void Entry(IModHelper helper)
     {
@@ -50,8 +51,12 @@ public sealed class ModEntry : Mod
         bridge.Connected += OnConnected;
         bridge.Chat += chat =>
         {
-            if (Context.IsWorldReady && (Game1.activeClickableMenu == null || Game1.activeClickableMenu is ChatMenu))
+            if (!Context.IsWorldReady)
+                return;
+            if (Context.IsPlayerFree || Game1.activeClickableMenu is ChatMenu)
                 Game1.activeClickableMenu = new ChatMenu(bridge, sprites, chat);
+            else
+                pendingChat = chat;
         };
         bridge.Died += died => vitals.OnDied(died, bridge);
         bridge.CoinAck += ack => money.Ack(ack);
@@ -94,6 +99,8 @@ public sealed class ModEntry : Mod
         maps.Reset();
         routes.Reset();
         hand.Reset();
+        fishing.Reset();
+        pendingChat = null;
         helloSent = false;
     }
 
@@ -122,9 +129,20 @@ public sealed class ModEntry : Mod
     private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
         if (!Leading)
+        {
+            // Off the farm (title screen, loading), stale chat, deaths and acks are dropped. Other
+            // split-screen players must not drain the queue meant for the main screen.
+            if (!Context.IsWorldReady)
+                bridge.DropTransient();
             return;
+        }
         tick++;
         bridge.Pump();
+        if (pendingChat != null && Context.IsPlayerFree)
+        {
+            Game1.activeClickableMenu = new ChatMenu(bridge, sprites, pendingChat);
+            pendingChat = null;
+        }
         if (bridge.IsConnected && !helloSent)
             SendHello();
         Farmer player = Game1.player;
@@ -179,6 +197,8 @@ public sealed class ModEntry : Mod
     {
         if (!Context.IsMainPlayer)
             return;
+        if (config.MirrorMoney)
+            money.Update(bridge);
         money.Save();
         bridge.Send(new SaveWorld { FarmId = Game1.uniqueIDForThisGame.ToString(), TotalDays = Game1.Date.TotalDays });
     }

@@ -48,7 +48,7 @@ internal sealed class Vitals
         }
         wasEating = player.isEating;
 
-        if (config.RemoveStardewMonsters)
+        if (config.RemoveStardewMonsters && bridge.Linked)
             RemoveMonsters(player.currentLocation);
     }
 

@@ -81,9 +81,9 @@ public static class Crafting
 
     public static void Make(Player player, Craft craft)
     {
+        Prepare(player);
         for (int time = 0; time < Math.Clamp(craft.Times, 1, 99); time++)
         {
-            Prepare(player);
             bool available = false;
             for (int i = 0; i < Main.numAvailableRecipes; i++)
             {
@@ -94,8 +94,10 @@ public static class Crafting
                 }
             }
             if (!available || craft.RecipeIndex < 0 || craft.RecipeIndex >= Recipe.numRecipes)
-                return;
+                break;
             Recipe recipe = Main.recipe[craft.RecipeIndex];
+            if (!Holds(player, recipe))
+                break;
             foreach (Item ingredient in recipe.requiredItem)
             {
                 if (ingredient == null || ingredient.IsAir)
@@ -104,7 +106,28 @@ public static class Crafting
             }
             Inventory.Give(player, recipe.createItem.type, recipe.createItem.stack, recipe.createItem.prefix);
         }
+        Recipe.FindRecipes();
         Inventory.ForceResend();
+    }
+
+    /// <summary>Whether the inventory still holds every ingredient, since the recipe list is not rebuilt between crafts.</summary>
+    private static bool Holds(Player player, Recipe recipe)
+    {
+        foreach (Item ingredient in recipe.requiredItem)
+        {
+            if (ingredient == null || ingredient.IsAir)
+                continue;
+            int need = ingredient.stack;
+            for (int i = 0; i < 58 && need > 0; i++)
+            {
+                Item item = player.inventory[i];
+                if (!item.IsAir && Accepts(recipe, ingredient.type, item.type))
+                    need -= item.stack;
+            }
+            if (need > 0)
+                return false;
+        }
+        return true;
     }
 
     private static void Consume(Player player, Recipe recipe, int type, int need)

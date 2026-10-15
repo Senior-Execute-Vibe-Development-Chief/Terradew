@@ -91,6 +91,9 @@ internal sealed class Hand
 
     public void Update()
     {
+        // The release of the use button is lost while the game is in the background; never hold it past that.
+        if (!Game1.game1.IsActive)
+            UseHeld = false;
         if (!Active)
             return;
         if (lockedTool >= 0 && Game1.player.CurrentToolIndex != lockedTool)
@@ -103,7 +106,7 @@ internal sealed class Hand
     {
         WorldState? world = bridge.World;
         Farmer player = Game1.player;
-        if (world == null || !bridge.WorldIsFor(Maps.PlaceOf(player.currentLocation).Key))
+        if (world == null || player.currentLocation == null || !bridge.WorldIsFor(Maps.PlaceOf(player.currentLocation).Key))
             return false;
         Rectangle feet = player.GetBoundingBox();
         foreach (EntityState entity in world.Entities)

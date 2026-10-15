@@ -195,6 +195,8 @@ public sealed class BridgeSystem : ModSystem
 
     private void Handle(Message message)
     {
+        if (WrongFarm && message is not Hello)
+            return;
         Player player = Main.LocalPlayer;
         switch (message)
         {
@@ -273,7 +275,8 @@ public sealed class BridgeSystem : ModSystem
                 }
                 break;
             case SaveWorld save:
-                worldFarmId = save.FarmId;
+                if (WrongFarm)
+                    break;
                 worldDay = save.TotalDays;
                 SaveNow();
                 break;

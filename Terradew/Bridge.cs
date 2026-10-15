@@ -44,55 +44,81 @@ internal sealed class Bridge : IDisposable
 
     public void Pump()
     {
+        CheckConnection();
+        int budget = 400;
+        while (budget-- > 0 && link.TryReceive(out Message message))
+            Apply(message, raiseEvents: true);
+    }
+
+    /// <summary>
+    /// Drains Terraria's messages without raising events. Used while the farmer is not in play, so stale
+    /// chat, deaths, coin acks and notices never show up later. State messages still update.
+    /// </summary>
+    public void DropTransient()
+    {
+        CheckConnection();
+        while (link.TryReceive(out Message message))
+            Apply(message, raiseEvents: false);
+    }
+
+    private void CheckConnection()
+    {
         if (link.ConnectionCount != seenConnection)
         {
             seenConnection = link.ConnectionCount;
             World = null;
             Inventory = null;
+            Facts = null;
+            Recipes = null;
+            Shops.Clear();
             TerrariaHello = null;
             Wall = null;
             Connected?.Invoke();
         }
-        int budget = 400;
-        while (budget-- > 0 && link.TryReceive(out Message message))
+    }
+
+    private void Apply(Message message, bool raiseEvents)
+    {
+        switch (message)
         {
-            switch (message)
-            {
-                case Hello hello:
-                    TerrariaHello = hello;
-                    break;
-                case WorldState state:
-                    World = state;
-                    worldAtMs = Link.NowMs();
-                    break;
-                case InventoryState inventory:
-                    Inventory = inventory;
-                    break;
-                case WorldFacts facts:
-                    Facts = facts;
-                    break;
-                case RecipeList recipes:
-                    Recipes = recipes;
-                    break;
-                case ShopStock shop:
-                    Shops[shop.NpcId] = shop;
-                    break;
-                case NpcChat chat:
+            case Hello hello:
+                TerrariaHello = hello;
+                break;
+            case WorldState state:
+                World = state;
+                worldAtMs = Link.NowMs();
+                break;
+            case InventoryState inventory:
+                Inventory = inventory;
+                break;
+            case WorldFacts facts:
+                Facts = facts;
+                break;
+            case RecipeList recipes:
+                Recipes = recipes;
+                break;
+            case ShopStock shop:
+                Shops[shop.NpcId] = shop;
+                break;
+            case NpcChat chat:
+                if (raiseEvents)
                     Chat?.Invoke(chat);
-                    break;
-                case PlayerDied died:
+                break;
+            case PlayerDied died:
+                if (raiseEvents)
                     Died?.Invoke(died);
-                    break;
-                case Core.Protocol.CoinAck ack:
+                break;
+            case Core.Protocol.CoinAck ack:
+                if (raiseEvents)
                     CoinAck?.Invoke(ack);
-                    break;
-                case WallFight wall:
-                    Wall = wall.Active ? wall : null;
-                    break;
-                case Core.Protocol.Notice notice:
+                break;
+            case WallFight wall:
+                Wall = wall.Active ? wall : null;
+                break;
+            case Core.Protocol.Notice notice:
+                if (raiseEvents)
                     Notice?.Invoke(notice);
-                    break;
-            }
+                break;
         }
     }
 

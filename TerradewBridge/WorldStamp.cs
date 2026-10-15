@@ -26,6 +26,7 @@ public sealed class WorldStamp
         public int StampedVersion = int.MinValue;
         public int StampedFloor = -1;
         public bool StampedThisVisit;
+        public bool StampedHardmode;
 
         public int OriginX => Rect.X + Pad;
         public int OriginY => Rect.Y + Pad;
@@ -51,7 +52,7 @@ public sealed class WorldStamp
     private WorldLayout? layout;
     private string lastPlace = "";
     private Vector2 lastFeet;
-    private readonly List<int> followers = new();
+    private readonly List<(int Index, int Type)> followers = new();
 
     /// <summary>Chasers this close to the farmer when the farmer leaves a place come along.</summary>
     private const int FollowTiles = 8;
@@ -111,7 +112,7 @@ public sealed class WorldStamp
         place.Rect = region;
         place.Layout = map;
         bool newFloor = map.IsMineSlot && map.Floor != place.StampedFloor;
-        if (moved || newFloor || map.Version != place.StampedVersion || !place.StampedThisVisit)
+        if (moved || newFloor || map.Version != place.StampedVersion || !place.StampedThisVisit || Main.hardMode != place.StampedHardmode)
             StampPlace(place, newFloor);
     }
 
@@ -140,6 +141,7 @@ public sealed class WorldStamp
         (ushort block, int wall) = Blocks(BiomeNow(place));
         Fill(place.Rect, block, wall, map, place.OriginX, place.OriginY);
         place.StampedVersion = map.Version;
+        place.StampedHardmode = Main.hardMode;
         place.StampedThisVisit = true;
         if (newFloor)
         {
@@ -219,7 +221,7 @@ public sealed class WorldStamp
             NPC npc = Main.npc[i];
             if (npc.active && !npc.boss && !npc.townNPC && Creatures.IsChasing(npc) && left.ContainsWorld(npc.Center)
                 && Vector2.Distance(npc.Bottom, lastFeet) <= FollowTiles * 16f)
-                followers.Add(i);
+                followers.Add((i, npc.type));
         }
     }
 
@@ -232,10 +234,10 @@ public sealed class WorldStamp
             return;
         }
         Vector2 farmer = new(player.position.X + player.width / 2f, player.position.Y + player.height);
-        foreach (int i in followers)
+        foreach (var (i, type) in followers)
         {
             NPC npc = Main.npc[i];
-            if (!npc.active || place.ContainsWorld(npc.Center) || !TryOpenNear(place, farmer, 2, 5, out Vector2 feet))
+            if (!npc.active || npc.type != type || npc.townNPC || npc.boss || place.ContainsWorld(npc.Center) || !TryOpenNear(place, farmer, 2, 5, out Vector2 feet))
                 continue;
             (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y, npc.width, npc.height);
             npc.position = new Vector2(x, y);

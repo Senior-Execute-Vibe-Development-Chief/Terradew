@@ -145,6 +145,11 @@ public static class Shops
             return;
         long value = (long)(item.value / 5) * item.stack;
         string name = item.Name;
+        if (value <= 0)
+        {
+            BridgeSystem.Instance.Notice($"{name} can't be sold.", 255, 200, 80);
+            return;
+        }
         item.TurnToAir();
         if (value > 0)
             Inventory.AddCoins(player, value);

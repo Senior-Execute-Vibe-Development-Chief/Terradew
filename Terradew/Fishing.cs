@@ -26,9 +26,14 @@ internal sealed class Fishing
         this.helper = helper;
     }
 
+    public void Reset()
+    {
+        pending = null;
+    }
+
     public void OnMenuChanged(IClickableMenu? menu, Bridge bridge, Maps maps)
     {
-        if (menu is not BobberBar bar || Game1.player.CurrentTool is not FishingRod rod)
+        if (!bridge.Linked || menu is not BobberBar bar || Game1.player.CurrentTool is not FishingRod rod || Game1.player.currentLocation == null)
             return;
         Place place = Maps.PlaceOf(Game1.player.currentLocation);
         int rodTier = Math.Clamp(rod.UpgradeLevel - 1, 0, 3);
@@ -52,7 +57,7 @@ internal sealed class Fishing
     /// <summary>Swaps the Stardew catch for the Terraria one.</summary>
     public void OnInventoryChanged(IEnumerable<Item> added, IEnumerable<ItemStackSizeChange> changed, Bridge bridge)
     {
-        if (pending == null)
+        if (pending == null || !bridge.Linked)
             return;
         if (Game1.ticks > pendingUntil)
         {
