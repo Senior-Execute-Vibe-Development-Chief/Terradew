@@ -18,6 +18,7 @@ public sealed class ModEntry : Mod
     private Bridge bridge = null!;
     private SpriteBook sprites = null!;
     private Stations stations = null!;
+    private PotLook potLook = null!;
     private Hand hand = null!;
     private Maps maps = null!;
     private Money money = null!;
@@ -42,6 +43,7 @@ public sealed class ModEntry : Mod
         bridge = new Bridge(config.Port);
         sprites = new SpriteBook();
         stations = new Stations(sprites, bridge);
+        potLook = new PotLook(sprites, bridge, () => Leading);
         hand = new Hand(helper, stations);
         maps = new Maps();
         money = new Money(helper);
@@ -61,6 +63,7 @@ public sealed class ModEntry : Mod
         villagers.Install(harmony, Monitor);
         wallClimb.Install(harmony, Monitor);
         stations.Install(harmony, Monitor);
+        potLook.Install(harmony, Monitor);
         new Clock().Install(harmony, Monitor);
 
         bridge.Connected += OnConnected;
