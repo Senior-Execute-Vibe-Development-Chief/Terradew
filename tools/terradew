@@ -52,7 +52,7 @@ start_tmod() {
     return
   fi
   if [[ -n "${TERRADEW_PLAYER:-}" ]]; then
-    say "Starting tModLoader as $TERRADEW_PLAYER in \"$WORLD\"…"
+    say "Starting tModLoader as $TERRADEW_PLAYER in \"$WORLD\"..."
     steam_run "$TMOD_APP" "-skipselect \"$TERRADEW_PLAYER:$WORLD\""
   else
     say "Starting tModLoader. Pick your character and the world \"$WORLD\"."
@@ -65,12 +65,12 @@ start_stardew() {
     say "Stardew Valley is already running."
     return
   fi
-  say "Starting Stardew Valley (SMAPI must be set as its Steam launcher)…"
+  say "Starting Stardew Valley (SMAPI must be set as its Steam launcher)..."
   steam_run "$STARDEW_APP"
 }
 
 wait_for_bridge() {
-  say "Waiting up to ${WAIT}s for the Terraria bridge on port $PORT…"
+  say "Waiting up to ${WAIT}s for the Terraria bridge on port ${PORT}..."
   for ((i = 0; i < WAIT; i++)); do
     if bridge_up; then
       say "Bridge is listening."
@@ -87,7 +87,7 @@ stop_one() {
     say "$name is not running."
     return
   fi
-  say "Closing $name…"
+  say "Closing ${name}..."
   pkill -TERM -if "$match" || true
   for _ in {1..10}; do
     running "$match" || { say "$name closed."; return; }
@@ -107,7 +107,7 @@ status() {
 }
 
 build() {
-  say "Building the Stardew mod…"
+  say "Building the Stardew mod..."
   dotnet build "$ROOT/Terradew/Terradew.csproj" -c Debug
   say "Rebuild Terradew Bridge inside tModLoader: Workshop → Develop Mods → Build."
 }
