@@ -25,6 +25,7 @@ public sealed class ModEntry : Mod
     private Fishing fishing = null!;
     private Mining mining = null!;
     private WallClimb wallClimb = null!;
+    private Bundles bundles = null!;
     private Houses houses = null!;
     private Draw draw = null!;
     private Hud hud = null!;
@@ -46,11 +47,13 @@ public sealed class ModEntry : Mod
         mining = new Mining();
         wallClimb = new WallClimb(bridge);
         houses = new Houses();
+        bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper);
         hud = new Hud(bridge, sprites, hand, helper);
         var harmony = new Harmony(ModManifest.UniqueID);
         draw.Install(harmony, Monitor);
         wallClimb.Install(harmony, Monitor);
+        new Clock().Install(harmony, Monitor);
 
         bridge.Connected += OnConnected;
         bridge.Chat += chat =>
@@ -82,6 +85,7 @@ public sealed class ModEntry : Mod
         helper.Events.Input.MouseWheelScrolled += (_, e) => hand.OnWheel(e);
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => bundles.OnAssetRequested(e);
         helper.Events.World.ObjectListChanged += (_, e) => { if (Context.IsWorldReady) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };
         helper.ConsoleCommands.Add("terradew", "terradew status | terradew <command for Terraria>, such as: summon, boss EyeofCthulhu, give CopperShortsword", OnCommand);
