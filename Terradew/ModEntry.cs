@@ -110,7 +110,7 @@ public sealed class ModEntry : Mod
         bridge.Notice += notice => hud.Notice(notice.Text, new Color(notice.R, notice.G, notice.B));
         bridge.StationPlaced += placed => stations.OnStationPlaced(placed, bridge);
         bridge.GiftTaken += taken => stories.OnGiftTaken(taken);
-        bridge.Exploded += blast => explosions.OnExplosion(blast);
+        bridge.Exploded += blast => explosions.OnExplosion(blast, Monitor);
         bridge.Recalled += recall => HomeRecall.OnRecall(recall, Monitor);
 
         helper.Events.GameLoop.SaveLoaded += (_, _) => StartFarm();

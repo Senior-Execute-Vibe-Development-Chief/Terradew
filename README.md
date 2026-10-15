@@ -130,18 +130,21 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **The trash slot** in the inventory tab holds the last item thrown away, as in Terraria; click it to take the
   item back before you trash another.
 - **Accessories and mounts move you.** Hermes Boots, Swiftness and the like raise your walking speed, and a mount
-  carries you faster. With wings or rocket boots, hold `Space` to fly over anything in the way, with Terraria's
-  drift, until the flight time runs out; then you come down on the nearest open ground that is level with you or
+  carries you faster. With wings or rocket boots, hold `Space` to fly over anything in the way, a little slower than
+  walking (faster wings fly faster), with Terraria's drift, until the flight time runs out; then you come down on the nearest open ground that is level with you or
   south of you, east or west if that is closer, never north. Flying works outdoors and in the mines, not indoors,
   and you can still take exits while airborne. In the air you play Terraria's flying animation, are drawn above
-  everything in the world (not the HUD), and are out of reach of walking enemies but not of flyers or shots. A
+  everything in the world (not the HUD), with the wings flapping, and are out of reach of walking enemies but not of flyers or shots. A
   jumping mount hops in a short arc with the same strength everywhere and carries its speed until it lands on open
   ground. You ride a mount with its own animation, sitting on it rather than walking.
 - **Recall Potions and Magic Mirrors** send you home to your bed.
-- **Bombs and dynamite** don't fall south: the world is seen from above, so they slide to a stop. When they go off
-  they break what a Stardew bomb would (stones, weeds, twigs and the like), never Stardew's unbreakable things.
-- **Light comes from what you wear.** Light pets, Shine, mining helmets, Fairy Wings and jellyfish gear glow around
-  you as in Terraria, and a shot's light stays in the place it was fired in.
+- **Thrown explosives** (every bomb, dynamite, grenade, the Beenade and the Molotov) don't fall south: the world is
+  seen from above, so they slide to a stop, and bouncy ones still bounce. When a bomb or dynamite goes off it breaks
+  what a Stardew bomb would (stones, weeds, twigs and the like), never Stardew's unbreakable things.
+- **Drills, chainsaws and jackhammers** mine and chop for as long as you hold the button, like pickaxes and axes.
+- **Light comes from what you wear.** Light pets, Shine, mining helmets and jellyfish gear light the ground around
+  you as in Terraria, and a shot's light stays in the place it was fired in. Fairy Wings and the Chlorophyte
+  crystal light nothing, but they are drawn bright, even at night.
 - **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, select the
   hotbar slot it is in and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station
@@ -176,7 +179,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
   outside their front door and everyone else stays home, and each has a line about it. Attacks show their
   Terraria frames, and the Dye Trader swings a scimitar. Off their schedule (running, chasing, heading back) they
   find their way like the creatures do, around rocks, trees, furniture and blocks, never through them.
-- **Slimes hop.** Slimes move in Terraria's hops, rising off the ground with their shadow shrinking under them, and
+- **Slimes hop.** Slimes sit still, then hop toward you, rising off the ground with their shadow shrinking under them,
+  and
   the Chlorophyte crystal's lasers are drawn as green beams.
 - **You are your Terraria character.** While tModLoader runs, Terraria draws your player (hair, clothes, armor,
   vanity, wings, every dye and shader, and the item in use) and Stardew shows that picture in place of the farmer,
@@ -186,7 +190,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
   and accessories instead (basic dyes tint them; shader dyes show undyed). Townspeople show their Terraria
   portrait when you talk to them.
 - **Fishing** is Stardew's minigame with a Terraria catch, from the place's biome and depth.
-- **Bosses** come from their normal Terraria summons, used from the hotbar with the Terraria item selected: the Suspicious Looking Eye at
+- **Bosses** come from their normal Terraria summons, used from the hotbar with the Terraria item selected, and
+  arrive a short way from you on the map you are on, where flying bosses stay: the Suspicious Looking Eye at
   night, Worm Food in the Secret Woods, the Abeemination in the jungle mine floors. Talk to the Old Man at the
   Skull Cavern entrance at night for Skeletron. Use the Guide Voodoo Doll on an underworld mine floor for the
   Wall of Flesh. Plantera can wake on a jungle mine floor once the three mechanical bosses are beaten, and a

@@ -39,7 +39,7 @@ public sealed class Explosives : GlobalProjectile
     public override bool PreAI(Projectile projectile)
     {
         // Terraria moves a shot after its AI, so a pull applied there is still on the velocity now. Take it back first.
-        if (hasKept && projectile.velocity.Y > kept.Y && InFarmersPlace(projectile))
+        if (hasKept && IsPull(projectile.velocity.Y - kept.Y) && InFarmersPlace(projectile))
             projectile.velocity.Y = kept.Y;
         before = projectile.velocity;
         return true;
@@ -52,8 +52,8 @@ public sealed class Explosives : GlobalProjectile
             hasKept = false;
             return;
         }
-        // Vanilla pulls a thrown explosive down during its AI. Undo any rise in its fall speed, then let both axes slow to a stop.
-        if (projectile.velocity.Y > before.Y)
+        // Vanilla pulls a thrown explosive down during its AI. Undo that pull, then let both axes slow to a stop.
+        if (IsPull(projectile.velocity.Y - before.Y))
             projectile.velocity.Y = before.Y;
         projectile.velocity *= Slide;
         kept = projectile.velocity;
@@ -118,6 +118,12 @@ public sealed class Explosives : GlobalProjectile
         }
         return 0;
     }
+
+    /// <summary>
+    /// A small rise in the southward speed over one tick is Terraria's gravity. A bigger change is a bounce off a wall
+    /// or a sticky bomb stopping, and is kept.
+    /// </summary>
+    private static bool IsPull(float rise) => rise > 0f && rise <= 0.5f;
 
     private static string NameOf(int type) => ProjectileID.Search.TryGetName(type, out string name) ? name : $"projectile {type}";
 
