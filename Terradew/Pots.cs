@@ -87,10 +87,11 @@ internal sealed class PotLook
         Texture2D? sprite = sprites.Load(SpriteNames.Pot(StyleAt(x, y)));
         if (sprite == null)
             return true;
-        // Bottom-centred on its tile, at the size of a Terraria pot, capped at two tiles across.
+        // Bottom-centred on its tile, at one Stardew tile across: the breakable is hit on that tile alone, so the
+        // picture is no wider than it. A 32 Terraria pixel pot is drawn at the body scale, 2 Stardew pixels each.
         Vector2 foot = new(x * 64 + 32, y * 64 + 64);
         Vector2 position = Game1.GlobalToLocal(Game1.viewport, foot) + new Vector2(Shake(container), 0f);
-        float scale = 4f * Math.Min(1f, 32f / Math.Max(sprite.Width, sprite.Height));
+        float scale = SpriteLayout.DrawScale;
         float depth = Math.Max(0f, ((y + 1) * 64 - 24) / 10000f) + x * 1E-05f;
         spriteBatch.Draw(sprite, position, null, Color.White * alpha, 0f, new Vector2(sprite.Width / 2f, sprite.Height), scale, SpriteEffects.None, depth);
         return false;

@@ -35,8 +35,8 @@ public static class SpriteNames
 
     public static string Item(int type) => $"item-{type}.png";
 
-    /// <summary>A Terraria pot, by its Pots tile style (see Pots.StyleFor).</summary>
-    public static string Pot(int style) => $"pot-{style}.png";
+    /// <summary>A Terraria pot, by its Pots tile style (see Pots.StyleFor). The 2 by 2 cells are joined, so the name is new.</summary>
+    public static string Pot(int style) => $"pot-2x2-{style}.png";
 
     public static string Buff(int type) => $"buff-{type}.png";
 

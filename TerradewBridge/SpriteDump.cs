@@ -330,8 +330,53 @@ internal static class SpriteDump
     private static void ExportPot(int style)
     {
         string file = SpriteNames.Pot(style);
-        string? error = Frame(file, $"Images/Tiles_{TileID.Pots}", () => { Main.instance.LoadTiles(TileID.Pots); return TextureAssets.Tile[TileID.Pots]; }, _ => new Rectangle(0, style * 36, 34, 34));
+        if (SpriteFiles.Exists(file))
+            return;
+        Texture2D? texture = Load($"Images/Tiles_{TileID.Pots}", () => { Main.instance.LoadTiles(TileID.Pots); return TextureAssets.Tile[TileID.Pots]; });
+        string? error = texture == null ? $"no texture at Images/Tiles_{TileID.Pots}" : ExportPotCells(texture, style, file);
         Failed(potDone, style, file, error);
+    }
+
+    /// <summary>
+    /// Joins a pot's four 16 by 16 cells into one 32 by 32 sprite. The sheet puts a 2 pixel gap between the cells of a
+    /// 2 by 2 tile, and a frame that spans the gap would show the four parts apart, so each cell is copied on its own.
+    /// </summary>
+    private static string? ExportPotCells(Texture2D texture, int style, string file)
+    {
+        try
+        {
+            const int cell = 16;
+            const int pitch = 18;
+            const int size = cell * 2;
+            var rgba = new byte[size * size * 4];
+            var colors = new Color[cell * cell];
+            for (int row = 0; row < 2; row++)
+            {
+                for (int column = 0; column < 2; column++)
+                {
+                    var source = new Rectangle(column * pitch, style * pitch * 2 + row * pitch, cell, cell);
+                    texture.GetData(0, source, colors, 0, colors.Length);
+                    for (int y = 0; y < cell; y++)
+                    {
+                        for (int x = 0; x < cell; x++)
+                        {
+                            Color color = colors[y * cell + x];
+                            int at = (((row * cell + y) * size) + column * cell + x) * 4;
+                            rgba[at] = color.R;
+                            rgba[at + 1] = color.G;
+                            rgba[at + 2] = color.B;
+                            rgba[at + 3] = color.A;
+                        }
+                    }
+                }
+            }
+            SpriteFiles.Publish(file, size, size, rgba);
+            return null;
+        }
+        catch (Exception error)
+        {
+            return error.Message;
+        }
     }
 
     /// <summary>Lets failed sheets whose wait is over be requested again. Call once per bridge tick.</summary>

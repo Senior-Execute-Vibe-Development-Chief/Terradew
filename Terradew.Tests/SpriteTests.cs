@@ -49,6 +49,12 @@ internal static class SpriteTests
             T.Assert(box.Contains(100f, 170f) && !box.Contains(100f, 201f), "contains");
         });
 
+        failed += T.Check("a pot is one stardew tile across", () =>
+        {
+            // A Terraria pot is 2 by 2 tiles, 32 pixels; drawn at the body scale it fills the one tile it is hit on.
+            T.Assert(32 * SpriteLayout.DrawScale == WorldProjection.StardewTilePixels, "32 terraria pixels at the body scale is 64 stardew pixels");
+        });
+
         failed += T.Check("map and world coordinates invert", () =>
         {
             var world = WorldProjection.ToWorld(10, 20, 64f, 128f);
