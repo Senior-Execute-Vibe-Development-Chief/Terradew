@@ -49,6 +49,7 @@ public sealed class WorldStamp
     private readonly Dictionary<string, PlaceState> places = new();
     private readonly Dictionary<string, Dictionary<int, RouteEntry>> routes = new();
     private readonly HashSet<string> unplaced = new();
+    private readonly Dictionary<int, string> typeNames = new();
     private WorldLayout? layout;
     private string lastPlace = "";
     private Vector2 lastFeet;
@@ -412,7 +413,7 @@ public sealed class WorldStamp
                 NPC npc = Main.npc[i];
                 if (!npc.active || npc.life <= 0 || !place.ContainsWorld(npc.Center))
                     continue;
-                state.Entities.Add(Describe(npc));
+                state.Entities.Add(Describe(npc, NameOf(npc)));
                 SpriteDump.Npc(npc.type);
             }
             for (int i = 0; i < Main.maxProjectiles; i++)
@@ -448,7 +449,23 @@ public sealed class WorldStamp
         link.Send(state);
     }
 
-    private static EntityState Describe(NPC npc)
+    /// <summary>
+    /// Town NPCs have their own given names. Every other NPC's full name depends only on its type, so it is
+    /// looked up once per type rather than rebuilt for each NPC each tick.
+    /// </summary>
+    private string NameOf(NPC npc)
+    {
+        if (npc.townNPC)
+            return npc.GivenOrTypeName;
+        if (!typeNames.TryGetValue(npc.type, out string? name))
+        {
+            name = npc.FullName;
+            typeNames[npc.type] = name;
+        }
+        return name;
+    }
+
+    private static EntityState Describe(NPC npc, string name)
     {
         var flags = EntityFlags.None;
         bool worm = npc.aiStyle == NPCAIStyleID.Worm;
@@ -489,7 +506,7 @@ public sealed class WorldStamp
             Rotation = npc.rotation,
             Scale = npc.scale <= 0f ? 1f : npc.scale,
             Alpha = (byte)Math.Clamp(npc.alpha, 0, 255),
-            Name = npc.townNPC ? npc.GivenOrTypeName : npc.FullName,
+            Name = name,
         };
     }
 }
