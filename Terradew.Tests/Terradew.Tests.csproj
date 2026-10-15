@@ -6,6 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Terradew.Core\Terradew.Core.csproj" />
+    <ProjectReference Include="..\TerradewBridge\Core\Terradew.Core.csproj" />
   </ItemGroup>
 </Project>

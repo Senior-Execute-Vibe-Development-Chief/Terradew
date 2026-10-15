@@ -9,7 +9,7 @@ two mods connect them over a local socket.
 |---|---|
 | `Terradew/` | SMAPI mod for Stardew Valley 1.6 |
 | `TerradewBridge/` | tModLoader mod for Terraria 1.4.4 |
-| `Terradew.Core/` | Shared code compiled into both: the socket protocol and the game rules |
+| `TerradewBridge/Core/` | Shared code compiled into both: the socket protocol and the game rules |
 | `Terradew.Tests/` | Tests for the shared code (`dotnet run --project Terradew.Tests`) |
 
 ## How the two games split the work

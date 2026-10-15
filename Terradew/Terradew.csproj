@@ -21,6 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Terradew.Core\**\*.cs" Exclude="..\Terradew.Core\bin\**;..\Terradew.Core\obj\**" LinkBase="Core" />
+    <Compile Include="..\TerradewBridge\Core\**\*.cs" Exclude="..\TerradewBridge\Core\bin\**;..\TerradewBridge\Core\obj\**" LinkBase="Core" />
   </ItemGroup>
 </Project>
