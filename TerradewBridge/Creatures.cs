@@ -1,6 +1,8 @@
 using System;
 using Microsoft.Xna.Framework;
 using Terradew.Core;
+using Terradew.Core.Protocol;
+using Terradew.Core.Town;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -34,6 +36,11 @@ public sealed class Creatures : GlobalNPC
     private int restTicks;
     /// <summary>How high a slime is in its hop this tick: 0 on the ground, 1 at the top.</summary>
     private float hopArc;
+    /// <summary>Ticks until this creature can hurt a town NPC by touching it again.</summary>
+    private int bumpCooldown;
+
+    /// <summary>A creature that touched a town NPC waits this many ticks before it can hurt it again.</summary>
+    private const int BumpTicks = 30;
 
     /// <summary>A slime rests this many ticks between hops, and each hop lasts <see cref="SlimeHopTicks"/>.</summary>
     private const int SlimeHopTicks = 24;
@@ -105,6 +112,8 @@ public sealed class Creatures : GlobalNPC
         npc.noGravity = true;
         Player player = Main.LocalPlayer;
         chasing = here && !npc.townNPC && !npc.friendly && npc.damage > 0 && npc.target == player.whoAmI && !player.dead;
+        if (here && place != null)
+            Bump(npc, place);
         if (PlaneMotion.UsesRealAltitude(flyer, worm))
         {
             npc.noTileCollide = true;
@@ -138,7 +147,15 @@ public sealed class Creatures : GlobalNPC
         Vector2 feet = new(npc.position.X + npc.width / 2f, npc.position.Y + npc.height);
         Vector2 goal;
         float arrive;
-        if (chasing)
+        // A creature walks straight at a town NPC close enough to see. The route only leads to the farmer.
+        Vector2 quarry = default;
+        bool straight = place != null && StraightAtTown(npc, feet, chasing, player, place, out quarry);
+        if (straight)
+        {
+            goal = quarry;
+            arrive = 3f;
+        }
+        else if (chasing)
         {
             goal = bridge.Stamp.TryRoute(npc.whoAmI, out Vector2 step)
                 ? step
@@ -175,7 +192,7 @@ public sealed class Creatures : GlobalNPC
         }
         PlaneMotion.PlaneStep aim = PlaneMotion.Aim(feet.X, feet.Y, goal.X, goal.Y, speed, arrive);
         Vector2 move = new(aim.X, aim.Y);
-        if (chasing)
+        if (chasing || straight)
             move += Spread(npc, feet);
         Collide(npc, move);
         if (MathF.Abs(aim.X) > 0.05f)
@@ -241,6 +258,52 @@ public sealed class Creatures : GlobalNPC
         }
         float length = push.Length();
         return length > 0.6f ? push * (0.6f / length) : push;
+    }
+
+    /// <summary>
+    /// True when a walking creature should go straight at a standing town NPC: the town NPC is in reach, nearer than
+    /// the farmer by the bias, within straight-walking distance, and in sight. Sets <paramref name="at"/> to its feet.
+    /// </summary>
+    private static bool StraightAtTown(NPC npc, Vector2 feet, bool chasing, Player player, WorldStamp.PlaceState place, out Vector2 at)
+    {
+        at = default;
+        if (npc.townNPC || npc.friendly || npc.damage <= 0 || NPCID.Sets.CountsAsCritter[npc.type])
+            return false;
+        int town = Courage.NearestStanding(feet, Quarry.ReachTiles * 16f, place);
+        if (town < 0)
+            return false;
+        at = Courage.Feet(Main.npc[town]);
+        float townTiles = Vector2.Distance(feet, at) / 16f;
+        float farmerTiles = chasing ? Vector2.Distance(feet, Puppet.FeetOf(player)) / 16f : float.PositiveInfinity;
+        return Quarry.PickTown(farmerTiles, townTiles) && Quarry.Straight(townTiles)
+            && Quarry.Sight(feet.X, feet.Y, at.X, at.Y, place.IsOpen);
+    }
+
+    /// <summary>
+    /// A hostile creature that touches a standing town NPC of its place hurts it, as it would hurt the farmer.
+    /// The townsperson faints at zero, the same as when the farmer beats them, through <see cref="Courage.CheckDead"/>.
+    /// </summary>
+    private void Bump(NPC npc, WorldStamp.PlaceState place)
+    {
+        if (bumpCooldown > 0)
+        {
+            bumpCooldown--;
+            return;
+        }
+        if (npc.townNPC || npc.friendly || npc.damage <= 0 || npc.life <= 0 || npc.dontTakeDamage || NPCID.Sets.CountsAsCritter[npc.type] || IsBuried(npc))
+            return;
+        Rectangle hitbox = npc.Hitbox;
+        for (int i = 0; i < Main.maxNPCs; i++)
+        {
+            NPC town = Main.npc[i];
+            if (!Courage.Standing(town) || !Followers.TrySpot(town, out VillagerSpot spot, out _, out _) || spot.PlaceKey != place.Key)
+                continue;
+            if (!hitbox.Intersects(town.Hitbox))
+                continue;
+            town.SimpleStrikeNPC(npc.damage, npc.Center.X < town.Center.X ? 1 : -1, false, 4f, null, false, 0f, true);
+            bumpCooldown = BumpTicks;
+            return;
+        }
     }
 
     private void Collide(NPC npc, Vector2 step)

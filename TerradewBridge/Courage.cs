@@ -108,8 +108,9 @@ public sealed class Courage : GlobalNPC
             anchor = home;
             feet = home;
         }
-        float watch = TownCourage.Watch(role, Danger().Length > 0) * 16f;
-        int seen = Nearest(feet, watch, place);
+        float reach = TownCourage.Engage(role, Danger().Length > 0, DangerTiles(npc));
+        int seen = Nearest(feet, reach * 16f, place);
+        bool swinging = Attacking(npc);
 
         switch (role)
         {
@@ -119,7 +120,8 @@ public sealed class Courage : GlobalNPC
                 int target = Valid(threat, place) ? threat : cooldown == 0 ? seen : -1;
                 if (target < 0 && Valid(answering, place))
                     target = answering;
-                if (target >= 0 && Vector2.Distance(anchor, Feet(Main.npc[target])) > leash)
+                // A swing in progress is finished, so the leash does not turn the hero around mid-attack.
+                if (target >= 0 && !swinging && Vector2.Distance(anchor, Feet(Main.npc[target])) > leash)
                 {
                     // Too far from where the fight started: walk back and let it go for a while.
                     target = -1;
@@ -136,9 +138,13 @@ public sealed class Courage : GlobalNPC
                 return;
             }
             case Role.Guard:
-                threat = seen;
-                mode = seen >= 0 ? VillagerMode.Defending : VillagerMode.Following;
+            {
+                // A guard keeps its ground while swinging, even if the enemy has just stepped out of reach.
+                int hold = seen >= 0 ? seen : swinging && Valid(threat, place) ? threat : -1;
+                threat = hold;
+                mode = hold >= 0 ? VillagerMode.Defending : VillagerMode.Following;
                 return;
+            }
             default:
                 if (seen >= 0)
                 {
@@ -186,7 +192,37 @@ public sealed class Courage : GlobalNPC
             best.answering = enemy.whoAmI;
     }
 
-    private static Vector2 Feet(NPC npc) => new(npc.position.X + npc.width / 2f, npc.position.Y + npc.height);
+    internal static Vector2 Feet(NPC npc) => new(npc.position.X + npc.width / 2f, npc.position.Y + npc.height);
+
+    /// <summary>Terraria's own danger range for a town NPC, in tiles. Zero when it has none.</summary>
+    private static float DangerTiles(NPC npc) => Math.Max(0, NPCID.Sets.DangerDetectRange[npc.type]) / 16f;
+
+    /// <summary>True while Terraria's town NPC is in an attack (throw, shoot, heal, magic or swing).</summary>
+    private static bool Attacking(NPC npc) => npc.ai[0] >= 10f && npc.ai[0] <= 15f;
+
+    /// <summary>A town NPC that is up and about: not knocked out, and not a fainted one waiting for morning.</summary>
+    public static bool Standing(NPC npc)
+        => npc.active && npc.townNPC && npc.life > 0 && !npc.dontTakeDamage && !Knocked.Contains(npc.type);
+
+    /// <summary>The nearest standing town NPC of the current place within a range, or -1. Hostile creatures go for these.</summary>
+    public static int NearestStanding(Vector2 feet, float range, WorldStamp.PlaceState place)
+    {
+        int best = -1;
+        float bestDistance = range;
+        for (int i = 0; i < Main.maxNPCs; i++)
+        {
+            NPC npc = Main.npc[i];
+            if (!Standing(npc) || !Followers.TrySpot(npc, out VillagerSpot spot, out _, out _) || spot.PlaceKey != place.Key)
+                continue;
+            float distance = Vector2.Distance(feet, Feet(npc));
+            if (distance <= bestDistance)
+            {
+                bestDistance = distance;
+                best = i;
+            }
+        }
+        return best;
+    }
 
     private static bool Hostile(NPC npc)
         => npc.active && npc.life > 0 && !npc.friendly && !npc.townNPC && npc.damage > 0 && npc.lifeMax > 5 && !npc.dontTakeDamage
@@ -277,8 +313,37 @@ public sealed class Courage : GlobalNPC
         return false;
     }
 
-    /// <summary>A fainted NPC does nothing at all: no wandering, no attacks.</summary>
-    public override bool PreAI(NPC npc) => !(BridgeSystem.Active && npc.townNPC && Knocked.Contains(npc.type));
+    /// <summary>A fainted NPC does nothing at all: no wandering, no attacks. Others turn to face the enemy first.</summary>
+    public override bool PreAI(NPC npc)
+    {
+        if (!BridgeSystem.Active || !npc.townNPC)
+            return true;
+        if (Knocked.Contains(npc.type))
+            return false;
+        if (npc.TryGetGlobalNPC(out Courage self))
+            self.Face(npc);
+        return true;
+    }
+
+    /// <summary>
+    /// Terraria's town NPCs only attack what they face, and Stardew's facing would otherwise keep them turned away
+    /// from it. Heroes and guards turn to the nearest enemy in Terraria's danger range before their AI decides.
+    /// Stardew's facing is put back after the AI each tick, so this is what the AI sees.
+    /// </summary>
+    private void Face(NPC npc)
+    {
+        if (RoleOf(npc) == Role.Coward || !Followers.TrySpot(npc, out _, out _, out _))
+            return;
+        WorldStamp.PlaceState? place = BridgeSystem.Instance.Stamp.Current;
+        float range = Math.Max(0, NPCID.Sets.DangerDetectRange[npc.type]);
+        if (place == null || range <= 0f)
+            return;
+        int enemy = Nearest(Feet(npc), range, place);
+        if (enemy < 0)
+            return;
+        npc.direction = Main.npc[enemy].Center.X < npc.Center.X ? -1 : 1;
+        npc.spriteDirection = npc.direction;
+    }
 
     public override void TownNPCAttackStrength(NPC npc, ref int damage, ref float knockback)
     {

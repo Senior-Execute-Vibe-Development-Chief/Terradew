@@ -107,6 +107,16 @@ namespace Terradew.Core.Town
             _ => 8f,
         };
 
+        /// <summary>The furthest, in tiles, a hero or guard engages an enemy from Terraria's own danger range.</summary>
+        public const float EngageCap = 20f;
+
+        /// <summary>
+        /// How far, in tiles, a hero or guard engages a hostile creature: Terraria's own danger range for them (capped),
+        /// or their watch range when that is further. Cowards keep their watch range, so they run early.
+        /// </summary>
+        public static float Engage(Role role, bool danger, float dangerTiles)
+            => role == Role.Coward ? Watch(role, danger) : Math.Max(Watch(role, danger), Math.Min(dangerTiles, EngageCap));
+
         /// <summary>How far, in tiles, a hero chases from where the fight started before giving up.</summary>
         public const float Leash = 20f;
 

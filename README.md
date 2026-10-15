@@ -196,6 +196,9 @@ Keys can be changed in `Mods/Terradew/config.json`.
   outside their front door and everyone else stays home, and each has a line about it. Attacks show their
   Terraria frames, and the Dye Trader swings a scimitar. Off their schedule (running, chasing, heading back) they
   find their way like the creatures do, around rocks, trees, furniture and blocks, never through them.
+  Creatures go for a townsperson within 10 tiles when it is at least 3 tiles nearer than the farmer, walk straight at it
+  within 6 tiles in sight, and hurt any townsperson they touch. Heroes and guards engage what is in Terraria's own danger
+  range (up to 20 tiles), face it before they attack, and finish a swing even if the enemy steps back.
 - **Slimes hop.** Slimes sit still, then hop toward you, rising off the ground with their shadow shrinking under them,
   and
   the Chlorophyte crystal's lasers are drawn as green beams.
