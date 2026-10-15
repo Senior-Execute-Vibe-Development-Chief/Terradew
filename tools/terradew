@@ -23,7 +23,8 @@ WAIT="${TERRADEW_WAIT:-20}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 SMAPI_LOG="$HOME/.config/StardewValley/ErrorLogs/SMAPI-latest.txt"
-TMOD_LOG="$HOME/Library/Application Support/Terraria/tModLoader/Logs/client.log"
+# tModLoader 1.4 writes its logs next to the install, not in the save folder.
+TMOD_LOG="$HOME/Library/Application Support/Steam/steamapps/common/tModLoader/tModLoader-Logs/client.log"
 
 # Process patterns: SMAPI runs as StardewModdingAPI; tModLoader runs as dotnet tModLoader.dll.
 STARDEW_MATCH='StardewModdingAPI|Stardew Valley.app/Contents/MacOS/StardewValley'
