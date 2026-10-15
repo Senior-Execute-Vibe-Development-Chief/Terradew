@@ -119,7 +119,16 @@ public sealed class Town
             Main.hardMode,
             NPC.downedGoblins,
             visitedOcean,
-            present);
+            present,
+            NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3,
+            NPC.downedGolemBoss,
+            NPC.downedPlantBoss,
+            NPC.downedPirates,
+            NPC.savedBartender,
+            NPC.savedTaxCollector,
+            NPC.savedStylist,
+            NPC.savedGolfer,
+            NPC.savedWizard);
     }
 
     private void Respawn()

@@ -113,7 +113,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **Crafting** uses stations you carry: craft a Work Bench, Furnace or Anvil and keep it in your inventory.
 - **Town NPCs** live in **Terraria Houses**, which Robin builds on the farm. The morning after a house is
   finished, a townsperson whose Terraria conditions are met moves in (the Guide first, the Merchant once you
-  carry 50 silver, and so on).
+  carry 50 silver, and so on). The full roster of vanilla town NPCs is in play, except Truffle and Santa Claus.
+  Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
 - **Fishing** is Stardew's minigame with a Terraria catch, from the place's biome and depth.
 - **Bosses** come from their normal Terraria summons, used with the Terraria hand: the Suspicious Looking Eye at
   night, Worm Food in the Secret Woods, the Abeemination in the jungle mine floors. Talk to the Old Man at the

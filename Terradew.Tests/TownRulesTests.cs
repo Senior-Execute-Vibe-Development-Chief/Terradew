@@ -65,7 +65,7 @@ internal static class TownRulesTests
             string[] expected =
             {
                 "Guide", "Nurse", "Demolitionist", "ArmsDealer", "Dryad", "Angler",
-                "Clothier", "GoblinTinkerer", "Mechanic",
+                "Clothier", "GoblinTinkerer", "Mechanic", "Stylist", "Golfer",
             };
             T.Assert(TownRules.Waiting(facts).SequenceEqual(expected), "waiting: " + string.Join(",", TownRules.Waiting(facts)));
             T.Assert(TownRules.NextArrival(facts, 1) == "Guide", "guide leads");
@@ -73,7 +73,45 @@ internal static class TownRulesTests
             {
                 "Guide", "Merchant", "Nurse", "Demolitionist", "ArmsDealer", "Dryad",
                 "Angler", "Painter", "Clothier", "GoblinTinkerer", "Mechanic", "PartyGirl",
+                "DD2Bartender", "TaxCollector", "Stylist", "Steampunker", "WitchDoctor", "Cyborg",
+                "Pirate", "BestiaryGirl", "Golfer", "Princess", "DyeTrader", "Wizard",
             }), "order constant");
+        });
+
+        failed += T.Check("bound residents move in once rescued", () =>
+        {
+            T.Assert(!TownRules.Eligible("DD2Bartender", Fresh()), "tavernkeep still bound");
+            T.Assert(TownRules.Eligible("DD2Bartender", Fresh() with { SavedBartender = true }), "tavernkeep rescued");
+            T.Assert(TownRules.Eligible("Wizard", Fresh() with { SavedWizard = true }), "wizard rescued");
+            T.Assert(!TownRules.Eligible("Wizard", Fresh() with { SavedGolfer = true }), "golfer rescue is not wizard");
+            T.Assert(TownRules.Eligible("Stylist", Fresh() with { SavedStylist = true }), "stylist rescued");
+            T.Assert(TownRules.Eligible("TaxCollector", Fresh() with { SavedTaxCollector = true }), "tax collector rescued");
+            T.Assert(TownRules.Eligible("Golfer", Fresh() with { SavedGolfer = true }), "golfer rescued");
+        });
+
+        failed += T.Check("mechanical and plantera gates for the hardmode residents", () =>
+        {
+            T.Assert(!TownRules.Eligible("Steampunker", Fresh() with { Hardmode = true }), "no mech boss");
+            T.Assert(TownRules.Eligible("Steampunker", Fresh() with { DownedMechAny = true }), "any mech boss");
+            T.Assert(!TownRules.Eligible("Cyborg", Fresh() with { DownedMechAny = true }), "mech bosses are not plantera");
+            T.Assert(TownRules.Eligible("Cyborg", Fresh() with { DownedPlantera = true }), "plantera");
+            T.Assert(TownRules.Eligible("WitchDoctor", Fresh() with { DownedPlantera = true }), "plantera for witch doctor");
+        });
+
+        failed += T.Check("pirate and princess need their bosses or invasion", () =>
+        {
+            T.Assert(!TownRules.Eligible("Pirate", Fresh() with { DownedEvilBoss = true }), "no pirate fleet");
+            T.Assert(TownRules.Eligible("Pirate", Fresh() with { DownedPirates = true }), "pirate fleet beaten");
+            T.Assert(!TownRules.Eligible("Princess", Fresh() with { DownedPlantera = true }), "plantera is not golem");
+            T.Assert(TownRules.Eligible("Princess", Fresh() with { DownedGolem = true }), "golem");
+        });
+
+        failed += T.Check("hardmode residents wait for hardmode", () =>
+        {
+            T.Assert(!TownRules.Eligible("BestiaryGirl", Fresh()), "zoologist before hardmode");
+            T.Assert(!TownRules.Eligible("DyeTrader", Fresh()), "dye trader before hardmode");
+            T.Assert(TownRules.Eligible("DyeTrader", Fresh() with { Hardmode = true }), "dye trader in hardmode");
+            T.Assert(TownRules.Eligible("BestiaryGirl", Fresh() with { Hardmode = true }), "zoologist in hardmode");
         });
 
         failed += T.Check("unknown and miscased names are not eligible", () =>

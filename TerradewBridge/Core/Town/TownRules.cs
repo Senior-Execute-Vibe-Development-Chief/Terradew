@@ -9,7 +9,10 @@ namespace Terradew.Core.Town
         int MaxLife, long Coins, bool HasGun, bool HasExplosive,
         bool DownedEye, bool DownedEvilBoss, bool DownedSkeletron, bool DownedQueenBee,
         bool Hardmode, bool DownedGoblins, bool VisitedOcean,
-        IReadOnlyCollection<string> Present);
+        IReadOnlyCollection<string> Present,
+        bool DownedMechAny = false, bool DownedGolem = false, bool DownedPlantera = false, bool DownedPirates = false,
+        bool SavedBartender = false, bool SavedTaxCollector = false, bool SavedStylist = false,
+        bool SavedGolfer = false, bool SavedWizard = false);
 
     /// <summary>Move-in rules for town NPCs. Names are Terraria internal NPC names.</summary>
     public static class TownRules
@@ -28,6 +31,18 @@ namespace Terradew.Core.Town
             "GoblinTinkerer",
             "Mechanic",
             "PartyGirl",
+            "DD2Bartender",
+            "TaxCollector",
+            "Stylist",
+            "Steampunker",
+            "WitchDoctor",
+            "Cyborg",
+            "Pirate",
+            "BestiaryGirl",
+            "Golfer",
+            "Princess",
+            "DyeTrader",
+            "Wizard",
         };
 
         private const long MerchantCoins = 5000; // 50 silver; coins are copper.
@@ -70,6 +85,32 @@ namespace Terradew.Core.Town
                     return facts.DownedSkeletron;
                 case "PartyGirl":
                     return facts.Present.Count >= PartyGirlMinPresent;
+                // Bound residents are rarely found on stamped places, so like the Goblin and the Mechanic they
+                // also come at the point in progression where vanilla would first leave them to be found.
+                case "DD2Bartender":
+                    return facts.SavedBartender || facts.DownedEvilBoss;
+                case "TaxCollector":
+                    return facts.SavedTaxCollector || facts.Hardmode;
+                case "Stylist":
+                    return facts.SavedStylist || facts.DownedEye;
+                case "Steampunker":
+                    return facts.DownedMechAny;
+                case "WitchDoctor":
+                    return facts.DownedPlantera;
+                case "Cyborg":
+                    return facts.DownedPlantera;
+                case "Pirate":
+                    return facts.DownedPirates;
+                case "BestiaryGirl":
+                    return facts.Hardmode;
+                case "Golfer":
+                    return facts.SavedGolfer || facts.DownedEye;
+                case "Princess":
+                    return facts.DownedGolem;
+                case "DyeTrader":
+                    return facts.Hardmode;
+                case "Wizard":
+                    return facts.SavedWizard || facts.Hardmode;
                 default:
                     return false;
             }
