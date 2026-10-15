@@ -54,6 +54,7 @@ public sealed class Puppet : ModPlayer
     private const int LastWalkFrame = 19;
 
     private Vector2 lastFeet;
+    private float lastPlacedX;
     private float walkSpeed;
     private int stillTicks;
     private float walkCounter;
@@ -187,6 +188,7 @@ public sealed class Puppet : ModPlayer
             return;
         Place();
         Walk();
+        Flap();
         Melee.PoseArm(Player);
         WatchForStuckUse();
         Player.breath = Player.breathMax;
@@ -270,15 +272,18 @@ public sealed class Puppet : ModPlayer
         }
         Vector2 feet = place.ToWorld(pulse.FeetX, pulse.FeetY);
         (float x, float y) = WorldProjection.FromFeet(feet.X, feet.Y + BodyDrop, Player.width, Player.height);
-        float east = x - Player.position.X;
+        // Turned by how far the farmer's feet moved since the last placing, not by where Terraria left the player:
+        // Animate's velocity moves it between PreUpdate and PostUpdate, which would read as a step back.
+        float east = x - lastPlacedX;
+        lastPlacedX = x;
         Player.position = new Vector2(x, y);
         Player.velocity = Vector2.Zero;
         Player.fallStart = (int)(Player.position.Y / 16f);
         if (Player.itemAnimation == 0)
         {
-            if (east < -0.01f)
+            if (east < -0.25f)
                 Player.direction = -1;
-            else if (east > 0.01f)
+            else if (east > 0.25f)
                 Player.direction = 1;
             // Standing still, the player turns the way the farmer faces; facing north or south keeps the last side.
             else if (pulse.Facing == 1)
@@ -335,6 +340,22 @@ public sealed class Puppet : ModPlayer
         if (Player.itemAnimation == 0)
             Player.bodyFrame.Y = Player.legFrame.Y;
     }
+
+    /// <summary>
+    /// Flaps the wings while the farmer flies. Terraria only flaps them while it moves the player up under its own
+    /// flight, which never happens on Stardew's feet, so the frames are stepped here with Terraria's own wing timing.
+    /// The counter is kept here, as Terraria's gliding pose resets it between ticks.
+    /// </summary>
+    private void Flap()
+    {
+        if (Player.wings <= 0 || Player.mount.Active || !Airborne)
+            return;
+        Player.wingFrameCounter = wingCounter;
+        Player.WingFrame(true);
+        wingCounter = Player.wingFrameCounter;
+    }
+
+    private int wingCounter;
 
     /// <summary>The picture Stardew draws is fully lit: Stardew lights it, not Terraria's caves and nights.</summary>
     public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)

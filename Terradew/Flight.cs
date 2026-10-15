@@ -24,9 +24,13 @@ internal sealed class Flight
         Landing,
     }
 
-    /// <summary>Stardew pixels a tick for each Terraria pixel a tick: Terraria's walk (3) is Stardew's walk (5).</summary>
-    private const float SpeedScale = 5f / 3f;
-    private const float MostFlySpeed = 12f;
+    /// <summary>
+    /// Stardew pixels a tick of flight for each Terraria pixel a tick of wing speed. Most wings fly at about 6.25 in
+    /// Terraria, which comes out a little slower than Stardew's walk (5); faster wings fly faster.
+    /// </summary>
+    private const float SpeedScale = 4.5f / 6.25f;
+    private const float LeastFlySpeed = 3.5f;
+    private const float MostFlySpeed = 8f;
     /// <summary>How high the farmer flies, in screen pixels.</summary>
     private const float FlyHeight = 36f;
     private const float JumpHeight = 52f;
@@ -202,7 +206,7 @@ internal sealed class Flight
     /// <summary>Terraria's wing drift: the keys push, and with no keys the farmer slows gently.</summary>
     private void Steer(Farmer player, Movement movement)
     {
-        float most = Math.Clamp(movement.FlySpeed * SpeedScale, 4f, MostFlySpeed);
+        float most = Math.Clamp(movement.FlySpeed * SpeedScale, LeastFlySpeed, MostFlySpeed);
         Vector2 push = Held();
         if (push != Vector2.Zero)
         {
@@ -319,24 +323,41 @@ internal sealed class Flight
         return best;
     }
 
-    /// <summary>Whether the farmer could stand with their position at a spot: on the map, and touching no wall or water.</summary>
+    /// <summary>
+    /// Whether the farmer could stand with their position at a spot: on the map, with every tile under them one a
+    /// creature could walk on, and touching nothing solid.
+    /// </summary>
     private static bool Open(GameLocation location, Farmer player, Vector2 position)
     {
         Rectangle box = player.GetBoundingBox();
         box.Offset((int)(position.X - player.Position.X), (int)(position.Y - player.Position.Y));
         if (box.Left < 0 || box.Top < 0 || box.Right > location.Map.DisplayWidth || box.Bottom > location.Map.DisplayHeight)
             return false;
-        if (location.isCollidingPosition(box, Game1.viewport, true, 0, false, player))
-            return false;
-        // Stardew lets nothing walk into water, but nothing stops a farmer dropping into a lake from above.
         for (int y = box.Top / 64; y <= (box.Bottom - 1) / 64; y++)
         {
             for (int x = box.Left / 64; x <= (box.Right - 1) / 64; x++)
             {
-                if (location.isWaterTile(x, y))
+                if (!Standable(location, x, y))
                     return false;
             }
         }
-        return true;
+        // Stardew's own walking check catches what the tiles miss, such as a building's or a fence's edge.
+        return !location.isCollidingPosition(box, Game1.viewport, true, 0, false, player);
+    }
+
+    /// <summary>
+    /// A tile the farmer can stand on, by the same rules the creatures path with (Maps), plus the ground itself:
+    /// no water, a floor tile to stand on, and nothing the map marks impassable. Walking never needs these, as
+    /// Stardew's walls keep the farmer off such tiles; dropping from the air does.
+    /// </summary>
+    private static bool Standable(GameLocation location, int x, int y)
+    {
+        if (!location.isTileOnMap(new Vector2(x, y)) || location.isWaterTile(x, y))
+            return false;
+        if (location.Map.GetLayer("Back")?.Tiles[x, y] == null)
+            return false;
+        if (!location.isTilePassable(new xTile.Dimensions.Location(x, y), Game1.viewport))
+            return false;
+        return !location.IsTileBlockedBy(new Vector2(x, y), Maps.Mask, Maps.Mask, false);
     }
 }
