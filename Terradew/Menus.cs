@@ -343,84 +343,57 @@ internal sealed class TerrariaMenu : IClickableMenu
     }
 }
 
-/// <summary>A Terraria townsperson's chat, with their shop and the Nurse's healing.</summary>
-internal sealed class ChatMenu : IClickableMenu
+/// <summary>
+/// A Terraria townsperson's shop and the Nurse's healing, asked in Stardew's own dialogue box. A villager who
+/// plays the townsperson has already spoken in Stardew style, so only the choices show; anyone else says their
+/// Terraria line above them.
+/// </summary>
+internal static class TownTalk
 {
-    private const int Width = 760;
-    private const int Height = 320;
-    private const int PortraitSize = 160;
-    private const int PortraitPad = 12;
+    private const string Shop = "Shop";
+    private const string Heal = "Heal";
+    private const string Leave = "Leave";
 
-    private readonly Bridge bridge;
-    private readonly SpriteBook sprites;
-    private readonly NpcChat chat;
-    private readonly List<(Rectangle Area, string Label, Action Act)> buttons = new();
-
-    public ChatMenu(Bridge bridge, SpriteBook sprites, NpcChat chat)
-        : base((Game1.uiViewport.Width - Width) / 2, Game1.uiViewport.Height - Height - 64, Width, Height, showUpperRightCloseButton: true)
+    public static void Show(Bridge bridge, SpriteBook sprites, NpcChat chat)
     {
-        this.bridge = bridge;
-        this.sprites = sprites;
-        this.chat = chat;
-        int x = xPositionOnScreen + 32;
-        int y = yPositionOnScreen + Height - 88;
+        var choices = new List<Response>();
         if (chat.HasShop)
-            Add(ref x, y, "Shop", () => Game1.activeClickableMenu = new TerrariaShopMenu(bridge, sprites, chat.NpcId, chat.Name));
+            choices.Add(new Response(Shop, "Shop"));
         if (chat.IsNurse)
-            Add(ref x, y, chat.HealCost > 0 ? $"Heal ({Coins.Format(chat.HealCost)})" : "Heal", () => { bridge.Send(new NurseHeal { NpcId = chat.NpcId }); exitThisMenu(); });
-        Add(ref x, y, "Close", () => exitThisMenu());
-    }
-
-    private void Add(ref int x, int y, string label, Action act)
-    {
-        int width = (int)Game1.smallFont.MeasureString(label).X + 48;
-        buttons.Add((new Rectangle(x, y, width, 60), label, act));
-        x += width + 16;
-    }
-
-    public override void receiveLeftClick(int x, int y, bool playSound = true)
-    {
-        base.receiveLeftClick(x, y, playSound);
-        foreach ((Rectangle area, _, Action act) in buttons)
+            choices.Add(new Response(Heal, chat.HealCost > 0 ? $"Heal ({Coins.Format(chat.HealCost)})" : "Heal"));
+        string? villager = Cast.Plays(chat.NpcType) ? Bravery.VillagerFor(chat.NpcType) : null;
+        if (villager != null)
         {
-            if (area.Contains(x, y))
-            {
-                Game1.playSound("smallSelect");
-                act();
+            // The villager's own lines were the talk; with nothing to offer there is nothing to ask.
+            if (choices.Count == 0)
                 return;
-            }
+            NPC? speaker = Game1.getCharacterFromName(villager);
+            choices.Add(new Response(Leave, "Leave"));
+            Game1.currentLocation.createQuestionDialogue(speaker?.displayName ?? chat.Name, choices.ToArray(), (_, answer) => Answer(bridge, sprites, chat, answer), speaker);
+            return;
         }
+        string text = string.IsNullOrWhiteSpace(chat.Text) ? chat.Name : $"{chat.Name}: {chat.Text}";
+        if (choices.Count == 0)
+        {
+            Game1.drawObjectDialogue(text);
+            return;
+        }
+        choices.Add(new Response(Leave, "Leave"));
+        Game1.currentLocation.createQuestionDialogue(text, choices.ToArray(), (_, answer) => Answer(bridge, sprites, chat, answer));
     }
 
-    public override void draw(SpriteBatch b)
+    private static void Answer(Bridge bridge, SpriteBook sprites, NpcChat chat, string answer)
     {
-        MenuArt.Box(b, xPositionOnScreen, yPositionOnScreen, width, height);
-        int textX = xPositionOnScreen + 32;
-        int textWidth = Width - 72;
-        Texture2D? head = chat.HeadIndex >= 0 ? sprites.Load(SpriteNames.NpcHead(chat.HeadIndex)) : null;
-        // A portrait needs a real image and must leave the text a usable width.
-        if (head != null && head.Width > 0 && head.Height > 0 && Width - 72 - Math.Min(PortraitSize, Math.Max(head.Width, head.Height) * 4) - PortraitPad * 2 - 24 >= 160)
+        switch (answer)
         {
-            // The portrait sits in its own frame on the left, like Stardew's, at the largest whole scale up to 4 that keeps it inside the menu.
-            int scale = Math.Clamp(PortraitSize / Math.Max(head.Width, head.Height), 1, 4);
-            int frameWidth = head.Width * scale + PortraitPad * 2;
-            int frameHeight = head.Height * scale + PortraitPad * 2;
-            int frameX = xPositionOnScreen + 24;
-            int frameY = yPositionOnScreen + 24;
-            MenuArt.Box(b, frameX, frameY, frameWidth, frameHeight);
-            b.Draw(head, new Rectangle(frameX + PortraitPad, frameY + PortraitPad, head.Width * scale, head.Height * scale), Color.White);
-            textX = frameX + frameWidth + 24;
-            textWidth = xPositionOnScreen + Width - 32 - textX;
+            case Shop:
+                // Like Stardew's own shopkeepers: the dialogue box only closes itself while it is still the open menu.
+                Game1.activeClickableMenu = new TerrariaShopMenu(bridge, sprites, chat.NpcId, chat.Name);
+                break;
+            case Heal:
+                bridge.Send(new NurseHeal { NpcId = chat.NpcId });
+                break;
         }
-        b.DrawString(Game1.dialogueFont, chat.Name, new Vector2(textX, yPositionOnScreen + 24), Game1.textColor);
-        string text = Game1.parseText(chat.Text, Game1.smallFont, textWidth);
-        b.DrawString(Game1.smallFont, text, new Vector2(textX, yPositionOnScreen + 84), Game1.textColor);
-        int mouseX = Game1.getMouseX();
-        int mouseY = Game1.getMouseY();
-        foreach ((Rectangle area, string label, _) in buttons)
-            MenuArt.Button(b, area, label, area.Contains(mouseX, mouseY));
-        base.draw(b);
-        drawMouse(b);
     }
 }
 

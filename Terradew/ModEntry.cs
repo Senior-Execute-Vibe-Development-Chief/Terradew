@@ -86,10 +86,10 @@ public sealed class ModEntry : Mod
         {
             if (!Context.IsWorldReady)
                 return;
-            // A reply to the open chat box replaces it; otherwise the chat waits its turn.
-            if ((Context.IsPlayerFree && pendingChats.Count == 0) || Game1.activeClickableMenu is ChatMenu)
+            // The chat opens now if the farmer is free; otherwise it waits its turn.
+            if (Context.IsPlayerFree && pendingChats.Count == 0)
             {
-                Game1.activeClickableMenu = new ChatMenu(bridge, sprites, chat);
+                TownTalk.Show(bridge, sprites, chat);
                 return;
             }
             // A few chats are kept for when the farmer is free; older ones give way past that.
@@ -204,7 +204,7 @@ public sealed class ModEntry : Mod
         hud.HideVanillaToolbar();
         bridge.Pump();
         if (pendingChats.Count > 0 && Context.IsPlayerFree)
-            Game1.activeClickableMenu = new ChatMenu(bridge, sprites, pendingChats.Dequeue());
+            TownTalk.Show(bridge, sprites, pendingChats.Dequeue());
         if (bridge.IsConnected && !helloSent)
             SendHello();
         Farmer player = Game1.player;
