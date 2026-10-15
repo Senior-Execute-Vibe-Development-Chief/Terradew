@@ -95,8 +95,8 @@ internal sealed class TerrariaBody
         Rectangle box = player.GetBoundingBox();
         Vector2 feet = Game1.GlobalToLocal(Game1.viewport, new Vector2(box.Center.X, box.Bottom));
         feet = new Vector2(MathF.Round(feet.X), MathF.Round(feet.Y));
-        b.Draw(Game1.shadowTexture, feet, Game1.shadowTexture.Bounds, Color.White * 0.5f, 0f,
-            new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), 3f, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
+        b.Draw(Game1.shadowTexture, feet, Game1.shadowTexture.Bounds, Color.Black * 0.6f, 0f,
+            new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), 4f, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
         b.Draw(body.texture, feet, null, Color.White, 0f, new Vector2(body.shown.FeetX, body.shown.FeetY), SpriteLayout.DrawScale, SpriteEffects.None, depth);
     }
 }

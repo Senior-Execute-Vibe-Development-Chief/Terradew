@@ -149,6 +149,8 @@ internal sealed class Draw
         return wall != null && wall.Active && wall.PlaceKey == placeKey ? wall : null;
     }
 
+    private static Vector2 Snap(Vector2 point) => new(MathF.Round(point.X), MathF.Round(point.Y));
+
     private static bool IsWallPart(int type) => type == WallOfFleshType || type == WallOfFleshEyeType;
 
     /// <summary>
@@ -189,9 +191,11 @@ internal sealed class Draw
 
         if (!entity.Has(EntityFlags.Flyer) && !onWall)
         {
-            var shadow = Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y));
-            float shadowScale = Math.Clamp(entity.Width / 10f, 1.5f, 8f);
-            b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.35f * alpha, 0f,
+            var shadow = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y)));
+            // Stardew's shadow is 12 pixels across: as wide as the body is drawn, a little narrower for big ones.
+            float drawnWidth = source.HasValue ? source.Value.Width * scale : entity.Width * WorldProjection.Scale;
+            float shadowScale = Math.Clamp(drawnWidth * 0.7f / Game1.shadowTexture.Width, 2f, 12f);
+            b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.6f * alpha, 0f,
                 new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), shadowScale, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
         }
 
@@ -200,14 +204,15 @@ internal sealed class Draw
         Vector2 centre = onWall
             ? new Vector2(x, (wall?.WallY ?? 0) + thickness / 2f)
             : airborne ? new Vector2(x, y - bodyHeight / 2f) : new Vector2(x, y);
-        Vector2 local = Game1.GlobalToLocal(Game1.viewport, centre);
+        // Whole screen pixels, so each art pixel covers the same number of them and nothing shimmers as it moves.
+        Vector2 local = Snap(Game1.GlobalToLocal(Game1.viewport, centre));
 
         if (sheet != null && source.HasValue)
         {
             Rectangle frame = source.Value;
             Vector2 origin = centred
-                ? new Vector2(frame.Width / 2f, frame.Height / 2f)
-                : new Vector2(frame.Width / 2f, frame.Height);
+                ? new Vector2(frame.Width / 2, frame.Height / 2)
+                : new Vector2(frame.Width / 2, frame.Height);
             if (body.A > 0)
                 b.Draw(sheet, local, frame, body * fade, rotation, origin, scale, effects, depth);
             if (tint.A > 0)
@@ -281,9 +286,13 @@ internal sealed class Draw
         if (icon == null)
             return;
         float bob = (float)Math.Sin((Game1.ticks + drop.Id * 13) / 12.0) * 4f;
-        var position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y + bob));
-        float scale = 3f * Math.Min(1f, 32f / Math.Max(icon.Width, icon.Height));
-        b.Draw(icon, position, null, Color.White, 0f, new Vector2(icon.Width / 2f, icon.Height / 2f), scale, SpriteEffects.None, Depth(y, sorted));
+        var position = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y + bob)));
+        var ground = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y + 12f)));
+        // Terraria's own size, one icon pixel to two screen pixels, but never more than about half a tile.
+        float scale = SpriteLayout.DrawScale * Math.Min(1f, 16f / Math.Max(icon.Width, icon.Height));
+        b.Draw(Game1.shadowTexture, ground, Game1.shadowTexture.Bounds, Color.Black * 0.45f, 0f,
+            new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), 2f, SpriteEffects.None, Math.Max(0f, Depth(y, sorted) - 0.0001f));
+        b.Draw(icon, position, null, Color.White, 0f, new Vector2(icon.Width / 2, icon.Height / 2), scale, SpriteEffects.None, Depth(y, sorted));
         if (drop.Stack > 1)
             b.DrawString(Game1.tinyFont, drop.Stack.ToString(), position + new Vector2(10f, 4f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Math.Min(1f, Depth(y, sorted) + 0.0001f));
     }
