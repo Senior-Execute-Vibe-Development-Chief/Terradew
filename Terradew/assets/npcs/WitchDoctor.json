@@ -1,0 +1,191 @@
+{
+  "npc": "WitchDoctor",
+  "villager": "Leo",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Greetings, @. I am the Witch Doctor, and this treehouse is my home now.#$b#The jungle spirits whispered that a farmer would come to the island. They were right, as spirits usually are.$u",
+    "Mon": "Good morning, @. The jungle spirits are quiet today, which means they are thinking. Let them think.$h",
+    "Tue": "The Merchant sells bottled bug juice in town, I hear. I told him it tastes of sorrow. He laughed, so he does not know sorrow yet.$h",
+    "Wed": "The moon was full last night. The spirits sang all through it and I did not sleep a wink. Do not ask how I feel.$s",
+    "Thu": "A little bird landed on my treehouse this morning and told me the Nurse is out of healing potions again. Something must be done.$u",
+    "Fri": "I have been drying herbs for my tonic. Sit, watch, and breathe in the smell. The smell is half the medicine.$h",
+    "Sat": "The Steampunker sent me a gear for my drum. It is a strange gift, but the drum is grateful.$h",
+    "Sun": "Sunday is for wandering the jungle to find roots. Care to come along?$h",
+    "Mon2": "Welcome to the treehouse. Please do not touch the drum. It is older than your farm and it does not like strangers.$u",
+    "Tue2": "Shall I tell you what the roots say today? They say the rain will come soon. Carry a coat.$h",
+    "Wed2": "The Guide says I should share my mushrooms with the valley. I say the mushrooms should decide that for themselves.$h",
+    "Fri2": "You walk the island paths very quietly for a farmer. Good. The jungle likes quiet folk.$h",
+    "Sun2": "The sun is high and I always feel hot this time of year. Could you bring me some cool water, or is that asking too much?$s",
+    "Sat2": "The Pirate was here yesterday with his parrot. The parrot is cleverer than the Pirate, and I told him so.$h",
+    "Mon4": "@, you are becoming a friend to the island spirits. They laughed when you passed the big fern, and the fern never laughs.$h",
+    "Tue4": "Sometimes I think the roots of the valley speak to each other, and the farmer hears them most. I have seen you talking to the crops.$h",
+    "Wed4": "The Dryad would call this a good sign. She has lived in the forest longer than the village has had a name. I think she likes you.$h",
+    "Thu4": "My grandmother taught me to read the roots. She said a good healer listens first and speaks second. You listen well, @.$h",
+    "Fri4": "I am glad you visit when the herbs are ripe. Visitors who come at the right time bring the right luck.$h",
+    "Sat4": "The Angler keeps telling me about giant fish. He is only a child, so I nod and say the spirits told me too. He believes it.$h",
+    "Sun4": "Rest with me a while, @. The sea wind is soft today and the treehouse sways a little. It reminds me of home.$h",
+    "Mon6": "Sometimes I dream of the valley from above, the farm roofs like little toys. In the dream you are always walking toward the mountain.$h",
+    "Tue6": "The Clothier came by asking about my spare drum. I explained that drums are for spirits, and he looked disappointed. He has a sad past, I think.$s",
+    "Thu6": "The Stylist keeps sending me fancy hats. I wear them while I drum, and the spirits laugh at my hat every time. Good for the spirits, I suppose.$h",
+    "Fri6": "Here is a secret for the wise. Leave a few herbs at the base of the old tree and it grows stronger. I learned that from the tree on the beach.$h",
+    "Sat6": "Sometimes I walk to the beach to watch the Pirate arrive. He tells tall tales about sea monsters. I ask him to stop, and then I listen anyway.$h",
+    "Mon8": "Sometimes the spirits show me the valley through their eyes. In their vision I saw you planting seeds in the rain. You did not stop, even when the sky cried.$l",
+    "Tue8": "Before the island, I lived far from people. I was afraid they would fear my drums. You did not fear them, and that is why I trust you.$s",
+    "Wed8": "There is a secret in the roots of Ginger Island. I was going to keep it for myself, but I think you should know it first. Come closer.$l",
+    "Thu8": "I dreamed of you, @, and in the dream you carried a lantern through the jungle. You were not lost. You were guiding others.$h",
+    "Fri8": "I wonder if I will one day leave this island and see the mines and the saloon. The spirits say yes. I hope they are right.$s",
+    "Sat8": "When you come up the ladder, the ferns bend toward you. I used to think that was only the wind. Now I am not sure.$l",
+    "Sun8": "If the valley ever needs a healer, I hope you will call on me. I will come with my drum and my herbs, and I will keep you safe.$h",
+    "Mon10": "@, you have walked the jungle with me and held my hand over the old roots. I have no words for how much that meant. Only the drum knows, and it is playing softly now.$l",
+    "Wed10": "I have decided you are my friend, and friends should know the sound of my drum by heart. Listen now. Boom, boom, quiet. That is me saying hello when I cannot say it.$l",
+    "summer_Wed": "Summer Wednesdays are my favorite. The heat makes the herbs bloom and the spirits drowsy.$h",
+    "fall_Fri": "The autumn leaves fall on my drum and the spirits cannot decide if they like it. Neither can I.$u",
+    "winter_Sun": "Winter on the island is strange, @. Snow does not fall here, but the spirits still shiver.$s",
+    "spring_Mon": "Spring is when the seeds wake up. I put my ear to the earth and it sounds like a thousand tiny drums.$h",
+    "spring_12": "Spring twelfth. The spirits asked me to sing for the sprouts today. I sang badly, and the sprouts grew anyway.$h",
+    "winter_9": "Winter ninth. A cold wind came down from the mountain, and I wore three coats and two hats. The spirits called me a pile of fur.$h"
+  },
+  "rainy": "The rain drums on the treehouse roof and the spirits drum along with it. Come in, @, and listen to the storm. It is the best music on the island.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The great eye is gone from the sky, @. The spirits danced all night and I danced with them. I hope you rested too.$h",
+    "evilBoss": "The worm and the brain have both fallen. The island spirits went quiet with relief. Your deeds are sung about in the jungle now.$h",
+    "skeletron": "Skeletron is defeated, and the old man is free in the dungeon. A sad old soul is at peace again. Visit him when you can.$h",
+    "queenBee": "The Queen Bee is gone. Her hive is empty and the jungle buzzes less. Honey is in short supply, but my heart is light.$h",
+    "hardmode": "The Wall of Flesh has fallen and the Hallow is spreading. The spirits sing louder now, but some of the songs are sharp and dangerous. Be careful, @.$s",
+    "mechs": "One of the mechanical bosses is destroyed. The Steampunker is rushing about in her goggles. I think she is very happy, and I think she wants to be left alone.$h",
+    "plantera": "Plantera is defeated and the jungle temple is open. The temple walls remember the old songs, and I hope you will listen to them before you go in.$u",
+    "golem": "The Golem has fallen and the temple spirits are finally resting. I felt the stone stop humming. It is a strange quiet, but a kind one.$h",
+    "cultist": "The Lunatic Cultist is gone and the celestial pillars shine in the sky. The spirits sang their names so loudly that I heard them from my treehouse.$u",
+    "moonLord": "The Moon Lord has been defeated. Even the old spirits look up at the sky with new eyes. The sky has been quiet since, and I am grateful.$h",
+    "goblins": "The goblin army was driven off last night. The Goblin Tinkerer swears he was never one of them, and I believe him. Good work, @.$h",
+    "pirates": "The pirates were sent packing from the beach. The Pirate himself stood on the sand and cheered, while his parrot screamed the whole time.$h",
+    "frostLegion": "The Frost Legion is repelled. The cold wind has calmed in the valley. The spirits say you fought with courage, and I agree.$h",
+    "martians": "The Martian Madness is over and the strange lights have left the sky. The spirits did not like them at all. I hope no more come.$s",
+    "bloodMoon": "There was a blood moon last night, and the spirits howled all through it. I stayed inside, drumming softly to calm them. Please be careful after dark.$s",
+    "eclipse": "The sun went dark for a while yesterday. The spirits were frightened and the birds stopped singing. It is over now, but I still feel the chill.$u",
+    "party": "The Party Girl is throwing a party today, and the drums are already sounding in the distance. Dance with the spirits if you can, @. I will be there.$h"
+  },
+  "festivals": {
+    "spring13": "The Egg Festival is here, and I hid an egg somewhere in the jungle for someone to find. I hope it is you, @.$h",
+    "spring24": "At the Flower Dance the spirits love the flower garlands. I will not dance, but I will watch you and drum softly.$h",
+    "summer11": "The Luau! I brought a jungle root for the community soup. It is bitter, but bitter things make the best medicine.$h",
+    "summer28": "The Dance of the Moonlight Jellies is tonight. The jellies glow in the water and the spirits come to see them. Do not miss it, @.$h",
+    "fall16": "The Stardew Valley Fair. I entered my drum in the contest and the judges look nervous. Wish me luck.$h",
+    "fall27": "Spirit's Eve! The spirits of the island walk tonight, and they are very happy about it. Do not get lost in the maze, @.$u",
+    "winter8": "The Festival of Ice. I am no good at ice fishing, but the spirits pull fish out of the cold water with their own hands. Watch out for me.$h",
+    "winter25": "The Feast of the Winter Star. I wrapped a gift for you. The paper is made of jungle leaves and it is a little bit crooked.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Ah, the spirit-touched things. You have a good eye, @. I can feel the jungle in this one.$h",
+      "stardew": ["767", "769"],
+      "terraria": ["JungleSpores", "Bezoar"]
+    },
+    "liked": {
+      "text": "This is pleasing. The island likes it too.$h",
+      "stardew": ["420", "422", "257"],
+      "terraria": ["GlowingMushroom", "Blinkroot", "#seed"]
+    },
+    "neutral": {
+      "text": "Thank you, @. I will take it up the ladder and think on it.",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Hmm. This does not sit well with the spirits. I will keep it, I suppose, but I will not wear it.$s",
+      "stardew": ["-27", "-7"],
+      "terraria": ["Torch", "#gem"]
+    },
+    "hated": {
+      "text": "No! Take this away from me. Metal sings sour songs and the spirits hate them. Please remove it from my sight.$a",
+      "stardew": ["336", "-15"],
+      "terraria": ["#bar", "#ore"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",
+      "after": "Do not touch the drum when I am not looking, alright?",
+      "reward": "GlowingMushroom", "rewardCount": 2,
+      "steps": [
+        { "say": "Ah, @. Come up the ladder quickly, before the spirits notice the door is open.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Are the spirits real?", "answers": [
+            { "text": "Maybe they are real.", "friendship": 30, "reply": "Real enough to keep me company, @.$h" },
+            { "text": "I think it is just the wind.", "friendship": -10, "reply": "The wind is only a spirit that has not found its voice yet.$a" } ] },
+        { "pause": 600 },
+        { "say": "Sit by the drum. I will play one soft beat so you can feel the island under your feet.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4", "hearts": 4, "where": "Forest", "time": "day", "weather": "sunny", "music": "sweet",
+      "after": "The forest was kind to you today. Remember that.",
+      "steps": [
+        { "say": "Walk with me into the trees. These roots are older than your farm, and they remember every footstep.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "pause": 500 },
+        { "say": "Look at this root. It glows faintly. A spirit root only glows for people the forest trusts.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you ever hear the trees talk?", "answers": [
+            { "text": "Only when the wind is loud.", "friendship": 20, "reply": "Ha. The wind does the talking, but the trees do the listening.$h" },
+            { "text": "No, never.", "friendship": -5, "reply": "Then you have not been listening hard enough. They speak softly to those who wait.$s" } ] },
+        { "sound": "croak" },
+        { "say": "Keep your ears open, @. The forest will tell you its secrets if you let it.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6", "hearts": 6, "where": "home", "time": "night", "weather": "any", "music": "echos", "with": ["Dryad"],
+      "steps": [
+        { "say": "Tonight the drums are slow and the spirits are gentle. Sit close, @, and listen.$h" },
+        { "move": "Dryad", "dx": 1, "dy": 0 },
+        { "say": "The old ones of the forest have sent a guest. I have promised her the warmest spot by the fire.$h", "who": "Dryad" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Dryad, this is @. The spirits hummed their name all afternoon, so I think you will get along.$h" },
+        { "question": "Shall we share a drum beat?", "answers": [
+            { "text": "Yes, let us drum together.", "friendship": 30, "reply": "Then sit, and let the rhythm find you. Boom, boom, quiet.$h" },
+            { "text": "Not tonight, I am tired.", "friendship": -5, "reply": "Rest, then. The spirits will wait for you.$s" } ] },
+        { "pause": 400 },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8", "hearts": 8, "where": "Beach", "time": "night", "weather": "any", "music": "echos",
+      "after": "The sea spirits still hum your name. I can hear them from here.",
+      "reward": "Bezoar", "rewardCount": 1,
+      "steps": [
+        { "say": "The waves are loud tonight. I came to the beach to think, and you found me. Do not look so surprised.$u" },
+        { "pause": 500 },
+        { "say": "The sea spirits sing to me when the moon is high. Tonight they sang your name, @. I am not sure what it means yet.$l" },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "heart", "who": "farmer" },
+        { "question": "What do the sea spirits sing?", "answers": [
+            { "text": "Tales of the deep and of brave friends.", "friendship": 40, "reply": "Brave friends. Yes. That is what they always sing about.$h" },
+            { "text": "I think they sing badly.", "friendship": -10, "reply": "You are cruel to the ocean, but I forgive you.$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Sit beside me on the sand. Let us listen together, @, until the moon goes down.$h" },
+        { "pause": 800 },
+        { "emote": "happy" }
+      ]
+    },
+    {
+      "id": "h10", "hearts": 10, "where": "home", "time": "night", "weather": "any", "music": "sweet",
+      "after": "The charm is warm in my hand, @. It is warm because you hold it too.",
+      "steps": [
+        { "say": "Come in, @. You have walked the island with me for many days, and now the spirits want to see us properly together.$l" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 400 },
+        { "say": "I want to give you something. It is no treasure, only a small charm carved from jungle wood. Keep it close to your heart.$l" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "Thank you for always coming back up the ladder. I think I was waiting for someone like you for a very long time.$s" },
+        { "pause": 600 },
+        { "say": "Now play one beat with me. Boom, boom, quiet. That is what I mean when I cannot say it.$h" }
+      ]
+    }
+  ]
+}

@@ -31,6 +31,9 @@ public enum MsgType : byte
     Gathered = 20,
     PlaceStation = 21,
     SlotMask = 22,
+    VillagerSpots = 23,
+    GiftItem = 24,
+    Friendships = 25,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -44,6 +47,7 @@ public enum MsgType : byte
     WorldFacts = 48,
     WallFight = 49,
     StationPlaced = 50,
+    GiftTaken = 51,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -90,6 +94,10 @@ public abstract class Message
             MsgType.WallFight => WallFight.ReadFrom(r),
             MsgType.PlayerDied => PlayerDied.ReadFrom(r),
             MsgType.WorldFacts => WorldFacts.ReadFrom(r),
+            MsgType.VillagerSpots => VillagerSpots.ReadFrom(r),
+            MsgType.GiftItem => GiftItem.ReadFrom(r),
+            MsgType.Friendships => Friendships.ReadFrom(r),
+            MsgType.GiftTaken => GiftTaken.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
     }
@@ -103,7 +111,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 9;
+    public const int CurrentProtocol = 10;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -430,13 +438,109 @@ public sealed class StationPlaced : Message
 
 public sealed class NpcInteract : Message
 {
-    public int NpcId;
+    /// <summary>The Terraria NPC's whoAmI, or -1 to talk to the first town NPC of <see cref="NpcType"/>.</summary>
+    public int NpcId = -1;
+    public int NpcType;
 
     public override MsgType Type => MsgType.NpcInteract;
 
-    public override void Write(BinaryWriter w) => w.Write(NpcId);
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(NpcId);
+        w.Write(NpcType);
+    }
 
-    public static NpcInteract ReadFrom(BinaryReader r) => new() { NpcId = r.ReadInt32() };
+    public static NpcInteract ReadFrom(BinaryReader r) => new() { NpcId = r.ReadInt32(), NpcType = r.ReadInt32() };
+}
+
+/// <summary>Where a villager played by a Terraria town NPC is standing, so the Terraria NPC can stand there too.</summary>
+public readonly record struct VillagerSpot(int NpcType, string PlaceKey, float TileX, float TileY, byte Facing);
+
+/// <summary>Sent about twice a second while a farm is loaded: every visible villager played by a town NPC.</summary>
+public sealed class VillagerSpots : Message
+{
+    public List<VillagerSpot> Spots = new();
+
+    public override MsgType Type => MsgType.VillagerSpots;
+
+    public override void Write(BinaryWriter w)
+        => w.WriteList(Spots, (x, e) => { x.Write(e.NpcType); x.Write(e.PlaceKey); x.Write(Wire.Finite(e.TileX)); x.Write(Wire.Finite(e.TileY)); x.Write(e.Facing); });
+
+    public static VillagerSpots ReadFrom(BinaryReader r) => new()
+    {
+        Spots = r.ReadList(x => new VillagerSpot(x.ReadInt32(), x.ReadString(), x.ReadSingle(), x.ReadSingle(), x.ReadByte()), 200),
+    };
+}
+
+/// <summary>The farmer gives one of the Terraria item in a backpack slot to a town NPC. Terraria answers with GiftTaken.</summary>
+public sealed class GiftItem : Message
+{
+    public int Seq;
+    public int Slot;
+    public int NpcType;
+
+    public override MsgType Type => MsgType.GiftItem;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Seq);
+        w.Write(Slot);
+        w.Write(NpcType);
+    }
+
+    public static GiftItem ReadFrom(BinaryReader r) => new() { Seq = r.ReadInt32(), Slot = r.ReadInt32(), NpcType = r.ReadInt32() };
+}
+
+/// <summary>Friendship points with each town NPC, for shop discounts. Sent each morning and after a gift.</summary>
+public readonly record struct FriendshipEntry(int NpcType, int Points);
+
+public sealed class Friendships : Message
+{
+    public List<FriendshipEntry> Entries = new();
+
+    public override MsgType Type => MsgType.Friendships;
+
+    public override void Write(BinaryWriter w) => w.WriteList(Entries, (x, e) => { x.Write(e.NpcType); x.Write(e.Points); });
+
+    public static Friendships ReadFrom(BinaryReader r) => new()
+    {
+        Entries = r.ReadList(x => new FriendshipEntry(x.ReadInt32(), x.ReadInt32()), 200),
+    };
+}
+
+/// <summary>Terraria took one item for a gift (Ok), or could not (the slot was empty or not Terraria's).</summary>
+public sealed class GiftTaken : Message
+{
+    public int Seq;
+    public int NpcType;
+    public bool Ok;
+    /// <summary>Internal item name, like "Dynamite".</summary>
+    public string ItemName = "";
+    public string DisplayName = "";
+    /// <summary>Gift tags (see GiftTags) that fit the item.</summary>
+    public List<string> Tags = new();
+
+    public override MsgType Type => MsgType.GiftTaken;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Seq);
+        w.Write(NpcType);
+        w.Write(Ok);
+        w.Write(ItemName);
+        w.Write(DisplayName);
+        w.WriteList(Tags, (x, t) => x.Write(t));
+    }
+
+    public static GiftTaken ReadFrom(BinaryReader r) => new()
+    {
+        Seq = r.ReadInt32(),
+        NpcType = r.ReadInt32(),
+        Ok = r.ReadBoolean(),
+        ItemName = r.ReadString(),
+        DisplayName = r.ReadString(),
+        Tags = r.ReadList(x => x.ReadString(), 64),
+    };
 }
 
 public sealed class Buy : Message
@@ -1161,7 +1265,11 @@ public sealed class PlayerDied : Message
     public static PlayerDied ReadFrom(BinaryReader r) => new() { CoinsLost = r.ReadInt64(), Reason = r.ReadString() };
 }
 
-public readonly record struct TownResident(int NpcType, string Name, string HomePlaceKey, int HeadIndex);
+/// <summary>
+/// A town NPC in the Terraria world. FrameCount and ExtraFrames describe its body sheet (SpriteNames.Npc):
+/// frame 0 stands, frames 2 up to FrameCount - ExtraFrames walk.
+/// </summary>
+public readonly record struct TownResident(int NpcType, string Name, string HomePlaceKey, int HeadIndex, int FrameCount = 0, int ExtraFrames = 0);
 
 /// <summary>Progress Stardew needs to know about: hardmode, bosses beaten, who lives where.</summary>
 public sealed class WorldFacts : Message
@@ -1173,6 +1281,8 @@ public sealed class WorldFacts : Message
     public bool DownedQueenBee;
     public bool DownedWall;
     public List<TownResident> Residents = new();
+    /// <summary>Happenings ids that are true now (see Terradew.Core.Town.Happenings).</summary>
+    public List<string> Happenings = new();
 
     public override MsgType Type => MsgType.WorldFacts;
 
@@ -1184,7 +1294,8 @@ public sealed class WorldFacts : Message
         w.Write(DownedSkeletron);
         w.Write(DownedQueenBee);
         w.Write(DownedWall);
-        w.WriteList(Residents, (x, e) => { x.Write(e.NpcType); x.Write(e.Name); x.Write(e.HomePlaceKey); x.Write(e.HeadIndex); });
+        w.WriteList(Residents, (x, e) => { x.Write(e.NpcType); x.Write(e.Name); x.Write(e.HomePlaceKey); x.Write(e.HeadIndex); x.Write(e.FrameCount); x.Write(e.ExtraFrames); });
+        w.WriteList(Happenings, (x, h) => x.Write(h));
     }
 
     public static WorldFacts ReadFrom(BinaryReader r) => new()
@@ -1195,7 +1306,8 @@ public sealed class WorldFacts : Message
         DownedSkeletron = r.ReadBoolean(),
         DownedQueenBee = r.ReadBoolean(),
         DownedWall = r.ReadBoolean(),
-        Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString(), x.ReadInt32()), 200),
+        Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString(), x.ReadInt32(), x.ReadInt32(), x.ReadInt32()), 200),
+        Happenings = r.ReadList(x => x.ReadString(), 64),
     };
 }
 

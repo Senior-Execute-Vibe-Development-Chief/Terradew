@@ -1,0 +1,183 @@
+{
+  "npc": "DD2Bartender",
+  "villager": "Gus",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Eh? A new face in the saloon. I'm the Tavernkeep, and this is the only bar between the desert and the mountains that still has a roof.#$b#Sit where you like, but the stool by the piano is cursed. Don't ask.$h",
+    "Mon": "Monday. Every Monday is the same. The Merchant haggles my prices and the Nurse orders a stiff drink, then yells at me for pouring it.$h",
+    "Tue": "Another day, another keg of cider that tastes like the cellar. Could you carry a crate for me, @? You look like you would drop it.$a",
+    "Wed": "Wednesday. Half the valley is out in the fields and the other half is in here complaining about the fields.$h",
+    "Thu": "The Painter came in yesterday and tried to pay in sketches. I took the sketches. They are wrapped around my bottles now.$u",
+    "Fri": "Friday night is the busiest night. You would think the mines would give everyone a rest, but the miners just get thirstier.$h",
+    "Sat": "Saturday, and I have not had a moment to sit down. The Demolitionist wants to know if I have spare gunpowder. The answer is no.$a",
+    "Sun": "Sundays are slow. The valley takes a breath, the Dryad goes off to talk to her trees, and I get to wipe the same counter again.$s",
+    "Mon2": "Eh. You again, @? Fine, pull up a stool. The stool does not care who sits on it.$h",
+    "Tue2": "Tuesday already. The Angler spilled her drink on my floor again, so mind the sticky patch by the door.$h",
+    "Wed2": "I keep a bottle of Ale for everyone who gets through a Wednesday in this town. You are still standing, so you qualify.$h",
+    "Thu2": "The Mechanic fixed the tap line again. It works now, mostly. Try not to lean on it.$h",
+    "Fri2": "Friday again, and the piano is still floating in the corner. Nobody has asked me to explain it, so I am not going to.$u",
+    "Sat2": "Saturday is the day the regulars tell their tallest stories. Keep your ears open, @, some of them are even true.$h",
+    "Sun2": "Fancy seeing you on a slow Sunday. Careful, the floor sticks. I am still trying to figure out why.$h",
+    "Mon4": "Ah, @, Mondays are better with you in them. Don't tell the Merchant I said so, he will raise the price of my company.$h",
+    "Tue4": "Tuesday and you are still here. I would call you a regular now, though I won't let you sit where the Angler spills her drinks.$h",
+    "Wed4": "The Stylist asked me for a haircut recommendation. I told her the only cut I know is the one from the bar fight last week.$h",
+    "Thu4": "You know this valley better than most now. Tell me what you have seen out there, I only ever hear it second hand.$h",
+    "Fri4": "Friday is my favourite, @. The saloon is full of people I would not trade for any kingdom. Including you, even when you track mud across my floor.$h",
+    "Sat4": "If the Party Girl throws another party in my saloon, she pays for the broken glass. That is the deal. She has not agreed yet, but I am working on her.$h",
+    "Sun4": "I used to pour for a whole kingdom, you know. Now it is a dozen people and a dog who sleeps under the piano. Better, honestly. Quieter.$h",
+    "Mon6": "Careful, @. If you keep coming in this often, I will have to start remembering your order.$h",
+    "Tue6": "Someone spilled a potion on the piano and now it floats. I am not going to ask who. I am going to let it float.$u",
+    "Thu6": "The Dye Trader came in with a bucket of color and asked me to be his model. I said no. He asked again. I am still saying no.$a",
+    "Sat6": "You have been a fine customer, @. Good tips, quiet manners, and you never set off explosions in the back room. I would call that a friend.$h",
+    "Mon8": "Between us? I am glad you came to town, @. I was starting to think this place would never fill up again.#$b#Don't tell anybody that, I have a reputation to keep.$l",
+    "Tue8": "Some nights I stand back here and count the regulars and worry. One of them will get hurt in the mines, one will get lonely. I never say anything, but I count.$s",
+    "Wed8": "You can talk to me, you know. Anything. I am no healer, but I am a good listener. The Nurse says so, and she never compliments anyone.$h",
+    "Thu8": "My old tavern in Eternia had a window that looked out on the sea. I never could fix the glass after the storms. Here the valley is calm enough that I might finally do it.$s",
+    "Fri8": "@, when I see you come through that door my whole day gets better. I do not say it much, but it is true.$l",
+    "Sat8": "There is a lot of history behind this bar. The Clothier's cursed past, the Wizard's bad ideas, the Princess's royal tab. I am glad to have someone new to share the stories with.$h",
+    "Sun8": "I keep thinking about what I will do when the hard times come. I will pour drinks, that is what. Drinks help people face anything.$h",
+    "Mon10": "I have been thinking, @. You can come in any time, even after closing. The door is never locked for you.$h",
+    "Sun10": "I have decided. If I ever had one last bottle to share, you would be the one I shared it with. Don't make me regret saying that.$h",
+    "summer_Wed": "Summer Wednesdays are hot enough to melt the bottles. I keep the cellar cold, so come down and cool off.$h",
+    "summer_Sat": "The Luau is coming, and the soup had better not be cooked by the Dryad again. Last year it tasted like a tree.$a",
+    "fall_Fri": "Fall nights are my favourite. The mines are quiet, the stars are out, and the regulars come in with stories.$h",
+    "winter_Tue": "Brr. The cold pushes everyone into the saloon. My fireplace has never been so popular, or so messy.$s",
+    "spring_Thu": "Spring means the Painter starts trying to paint my bar. I told her the bar is already a masterpiece of spilled drinks.$h",
+    "winter_Fri8": "Cold night, warm drink. There is nothing more I would want from this town, @.$l",
+    "fall_15": "Half of fall is gone already. The leaves blow in through the door and I have to sweep them out every hour.$s",
+    "spring_7": "Oh, look at the spring flowers. The Dryad would be proud. I will put a few on the bar. Don't ask me where I got them.$h",
+    "winter_12": "The Festival of Ice is coming and I am not chopping any more ice for the fishing contest. The Angler can do it herself.$a",
+    "fall_28": "The last days of fall. Winter is coming, and so is the Festival of Ice. I am already stocking the cellar with extra Ale.$h"
+  },
+  "rainy": "Rain again. The roof leaks right over the piano, so the piano is getting a bath. Come in before you get soaked, @.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The Eye is gone? Well, my windows are safe for another night. Drinks are on me this round.$h",
+    "evilBoss": "Something nasty from the caves was finally put down, and the whole valley heard it. Good riddance. My cellar is safe now.$h",
+    "skeletron": "The dungeon is open and the Old Man is free, so the Clothier has been telling his cursed past story at full volume. I would rather have quiet.$a",
+    "queenBee": "The Queen Bee is down. Honey is cheap at the Merchant's now, and I am stocking the mead. Don't say I never think of you.$h",
+    "hardmode": "The Wall of Flesh fell and hardmode began. Every monster out there got tougher, and every drink in here got more expensive. My prices, not theirs.$u",
+    "mechs": "One of the mechanical bosses was smashed to bits last night. The noise rattled every bottle on my shelf. I am charging extra for the broken glass.$a",
+    "plantera": "Plantera is gone, and the jungle temple is open. Somebody will come in here bragging about it by noon, and I am ready to listen.$h",
+    "golem": "The Golem is finally down. I heard the crash from the saloon. The stone creature was rude, but its loot is worth the trouble.$h",
+    "cultist": "The Lunatic Cultist fell last night, and the celestial pillars are out there glowing. Stay away from them, friend, and drink some water.$u",
+    "moonLord": "The Moon Lord is defeated. Everyone is hoarse from cheering, and I poured free drinks until the kegs ran dry. Worth it.$h",
+    "goblins": "The goblin army got sent packing. Their tinkerers keep trying to sell me junk now. I told the Goblin Tinkerer to stay out of my bar.$a",
+    "pirates": "The pirates were driven back into the sea. Their captain left a tab. I expect the Pirate will pay it, one way or another.$a",
+    "frostLegion": "The Frost Legion is gone. Those snowmen did not even stop for a drink first, rude creatures. The cold is still sitting on my doorstep.$s",
+    "martians": "A Martian Madness was repelled last night. Their ships are all over the sky. I told them the saloon was closed, and they did not believe me.$u",
+    "bloodMoon": "There was a blood moon last night, and the zombies came up through the dirt pounding on my doors. I have boarded up the front, friend. Drink up before dark.$s",
+    "eclipse": "The eclipse turned the whole valley dark at noon. I could not see the bottles at all, so I poured by feel. If the drink tastes odd, that is why.$u",
+    "party": "The Party Girl is throwing a party today, in my saloon, without asking me first. She promised to pay for the glass. I am not holding my breath.$a"
+  },
+  "festivals": {
+    "spring13": "The Egg Festival is the one day I close early. Nobody brings an egg to the saloon anymore, so I bring a bottle instead.$h",
+    "spring24": "A Flower Dance without a barkeep is no dance at all. I will be here at the bar, dancing with my bottles.$h",
+    "summer11": "The Luau soup is in the pot. Somebody put mead in it. Please don't tell the Dryad, she would be furious and I would be buying the next round.$h",
+    "summer28": "The jellies glow on the beach tonight. I usually watch from the saloon porch, but tonight I will walk down with you, @.$h",
+    "fall16": "The grange displays are fine. My ale won the blue ribbon for the third year running, and nobody has proven it is not a family recipe.$h",
+    "fall27": "The haunted maze is full of spooks, and the saloon is full of drunk spooks. Stay close, and do not follow any lantern that laughs at you.$u",
+    "winter8": "The ice fishing contest is my favourite. The Angler is out there with her sad little rod, so I am backing her with a hot cocoa.$h",
+    "winter25": "I got a bottle from the secret gift exchange. I will keep the label a secret too, until you tell me what you got.$h"
+  },
+  "gifts": {
+    "loved": { "text": "Now that is a drink worth pouring. Thank you, friend, you know my weakness.$h", "stardew": ["346", "303"], "terraria": ["Ale", "FruitJuice"] },
+    "liked": { "text": "Hah, that is a fine addition to the shelf. Thanks, @.$h", "stardew": ["206", "213", "-7"], "terraria": ["FruitSalad"] },
+    "neutral": { "text": "Hm. Thanks, I will put it behind the bar.", "stardew": [], "terraria": [] },
+    "disliked": { "text": "Ugh, you could have brought a cork instead. Thanks, I think.$a", "stardew": ["-80", "-81"], "terraria": ["#junk"] },
+    "hated": { "text": "Get that out of my tavern before the Demolitionist sees it.$a", "stardew": ["168"], "terraria": ["#bossSummon", "#junk"] }
+  },
+  "events": [
+    {
+      "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",
+      "after": "Still slow in here, but I'm glad you stopped by.",
+      "reward": "FruitJuice", "rewardCount": 1,
+      "steps": [
+        { "say": "Oh! @, you startled me. I was wiping the same spot for the fifth time. Nobody has come in all morning.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Sit down, sit down. Business is slow and the Tavernkeep is bored. Bored is dangerous behind a bar.#$b#Don't mind me, I am just talking to the wood again.$h" },
+        { "question": "What brings you in today?", "answers": [
+            { "text": "Just wanted a drink.", "friendship": 20, "reply": "Then you came to the right counter. Sit, and I will pour.$h" },
+            { "text": "Just looking around.", "friendship": -5, "reply": "Looking, is it? Buy something or I will start charging for the stools.$a" } ] },
+        { "emote": "happy", "who": "farmer" },
+        { "pause": 500 },
+        { "say": "On the house today, since you are the only customer. Fruit juice, not that swill from the cellar.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4", "hearts": 4, "where": "home", "time": "night", "weather": "any", "music": "50s",
+      "with": ["Demolitionist"],
+      "after": "Pop in again, the stools are always warm for you.",
+      "steps": [
+        { "say": "Oh, @, you are just in time. Pull up a stool and keep your hands where I can see them.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Relax, barkeep. The keg only got a little warm, and nobody got hurt.$h", "who": "Demolitionist" },
+        { "say": "A little warm? It is singing, friend. Singing kegs do not stay on my counter.$a" },
+        { "emote": "exclamation", "who": "Demolitionist" },
+        { "pause": 600 },
+        { "question": "Drink or lecture?", "answers": [
+            { "text": "A drink, please.", "friendship": 25, "reply": "Good, the lecture is free and nobody wants it.$h" },
+            { "text": "Both, why not.", "friendship": 15, "reply": "Brave. Sit down, and both are on the house.$h" } ] },
+        { "say": "Between you and me, this is the best part of my day. The regulars are trouble, but they are my trouble.#$b#I would miss the noise if it stopped.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "Here, a fresh pour. Don't spill it on the piano. It has already floated once this week.$u" }
+      ]
+    },
+    {
+      "id": "h6", "hearts": 6, "where": "Beach", "time": "night", "weather": "any", "music": "sweet",
+      "after": "Still got the taste of the sea in my mouth, @.",
+      "reward": "Ale", "rewardCount": 2,
+      "steps": [
+        { "say": "Shh. Listen to that. The waves do not ask for a tab.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I used to walk a shore like this one, back home in Eternia. The kingdom had a sea, and I had a whole road of inns.#$b#Some nights I still hear the gulls and think it is the old harbor.$s" },
+        { "pause": 1200 },
+        { "question": "Do you miss your home?", "answers": [
+            { "text": "Every day, I bet.", "friendship": 30, "reply": "Hah. You are a good listener, @. Terrible for business, but good.$h" },
+            { "text": "Not really, this valley is nicer.", "friendship": 10, "reply": "Nicer, aye. Quieter too. Nobody here has tried to start a war over my tavern.$h" } ] },
+        { "say": "Here, take this Ale. It is the good stuff, saved for a night like this one.$h" },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "Don't tell the Merchant what it cost. He will want a cut of the sunset.$h" }
+      ]
+    },
+    {
+      "id": "h8", "hearts": 8, "where": "home", "time": "night", "weather": "any", "music": "echos",
+      "after": "I still count the regulars, but you are the one I count first.",
+      "steps": [
+        { "say": "Closing time already? Hm. Sit a minute, @. You are not a customer any more.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I have poured for everyone who walked into this town. The Nurse with her sarcasm, the Merchant with his prices, the Golfer ruining my floor.#$b#Hah. But I never asked any of them how they were holding up.$s" },
+        { "pause": 800 },
+        { "question": "How are you holding up, Tavernkeep?", "answers": [
+            { "text": "Tired, honestly.", "friendship": 25, "reply": "Then go home and sleep. The chairs will still be here tomorrow.$h" },
+            { "text": "Fine, you need not ask.", "friendship": -5, "reply": "Fair enough. But the offer stays open. It always does.$h" } ] },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "Here, I keep a bottle of the old Eternian stuff under the counter for emergencies. This one is for you.$h" },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "Don't tell the others I gave you the good bottle.$l" }
+      ]
+    },
+    {
+      "id": "h10", "hearts": 10, "where": "Farm", "time": "day", "weather": "sunny", "music": "jaunty",
+      "after": "Keep that sunny weather coming, my back is tired of cellar air.",
+      "steps": [
+        { "say": "Look at this, @. Sunlight. A whole field of it, and nobody is shouting for a refill.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Don't laugh. I have been stuck behind a counter for years, and I wanted to see what the valley looks like when nobody is buying.#$b#Turns out it looks a lot like home, minus the cliffs.$s" },
+        { "pause": 800 },
+        { "question": "Glad you came out here with me?", "answers": [
+            { "text": "Always, Tavernkeep.", "friendship": 40, "reply": "Hah. Stop it, you will make me cry into my own bottles.$l" },
+            { "text": "Only a little bit.", "friendship": -5, "reply": "A little is more than I expected from you, @.$h" } ] },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "When I first got here I thought I would hate it. Now I would miss this valley if it moved away.$h" },
+        { "face": "self", "toward": "up" },
+        { "say": "Do me a favour and keep that sunny weather coming. My back is tired of cellar air.$h" },
+        { "emote": "happy", "who": "self" }
+      ]
+    }
+  ]
+}

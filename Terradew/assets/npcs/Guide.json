@@ -1,0 +1,224 @@
+{
+  "npc": "Guide",
+  "villager": "Gunther",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Hello there, @! Welcome to the museum and library. I am the Guide, and I know a little about nearly everything in this world.#$b#Ask me anything. If I do not know the answer, I will read until I do. Oh, and please do not touch the exhibits.$h",
+    "Mon": "Good morning, @. Did you know the mines are much safer when you carry a torch? Just a helpful hint from your friendly Guide.",
+    "Tue": "Tuesday is donation day at the museum. If you find anything old and odd out on your travels, bring it in. I will look at it very carefully.",
+    "Wed": "The Wizard came into the library yesterday asking about old spells again. I showed him the second shelf. He thanked me by turning my hat into a frog.$u",
+    "Thu": "Have you tried the special pizza at the Stardrop Saloon? The Tavernkeep swears it heals you. I have not tested it myself, but I have read all about it.",
+    "Fri": "Fridays I sort the donation box. Whatever you bring me, I will examine it twice before I tell you what it is. Usually it turns out to be a rock.$h",
+    "Sat": "The Demolitionist asked if he could blow a hole in the library wall for a bigger reading nook. I said no. Then he asked again while holding dynamite.$a",
+    "Sun": "A quiet Sunday. The best kind of day for reading. Do you have a favorite book, @? Tell me about it and I will tell you what I think.$h",
+    "Mon2": "Hello again, @. Your hat is looking a little worn. Shall I point you toward the tailor in Pelican Town, or would you rather keep the old one for luck?",
+    "Tue2": "Oh, good, you are back. I have been meaning to ask how the mines are treating you. Watch your footing near the lava, please.",
+    "Wed2": "Most visitors come to the museum to see the big bones and then leave. I do not mind it. Still, it is nice when someone reads the little plaques too.",
+    "Thu2": "Remember the Calico Desert has its own tunnels full of old things. The Dye Trader there knows more about them than most. He is loud, but he is useful.",
+    "Fri2": "You look like you have been out in the sun all day, @. Drink some water, and then come and tell me what you found. I want to hear all about it.",
+    "Sat2": "Hello, @. Do you know what a Guide is for? Pointing the way, mostly. It is a strange job to have in a quiet valley, but I am glad to still be useful.",
+    "Sun2": "Sunday afternoon is my favorite time to sit by the library window. Come and sit a while if you have a free moment. I will make the tea.",
+    "Mon4": "@, you keep coming back to the museum, and I have to admit I look forward to it. You actually listen when I talk, which is more than I can say for most people.$h",
+    "Tue4": "I was thinking about the last time the Goblin Tinkerer came by. He was a bit grumpy, but he really wanted to learn about the old machines. I am proud of how far he has come.$h",
+    "Wed4": "Some days the library feels too big and too quiet. Then you walk in with your dirt on your boots and I feel like the place has a heartbeat again.$h",
+    "Thu4": "Did you know the Angler keeps a list of every fish in the valley, and he checks it twice a day? I thought that was ridiculous. Now I am starting to think it is a sensible system.$h",
+    "Fri4": "If you ever need help with a map, a recipe, or a strange creature in the caves, come find me. I will always have time for you, @.$h",
+    "Sat4": "Saturday nights at the saloon are loud, but I do not mind. I like to see everyone laughing, even the Nurse, who pretends she does not enjoy it.$h",
+    "Sun4": "I had a dream about the old dungeon last night. The Old Man was waving at me from the cell and I could not reach him. Silly, I know. I am glad you were there in the morning to cheer me up.$s",
+    "Mon6": "The Forest is full of strange things this time of year. I would like you to come with me on my next walk, @. Two sets of eyes are better than one when you are looking for rare herbs.$h",
+    "Tue6": "I keep a small notebook of every monster I have met, @. It is a long list. Some of them I would like to meet again, and some of them I would rather never see again.$s",
+    "Wed6": "I have been thinking about what I want to do after the museum is finished. Maybe a small house by the river, with a garden of old plants and a very large table covered in books.$h",
+    "Thu6": "You ask the best questions, @. Most people just want the answer. You want to know why it is the answer. That is how a good Guide thinks.$h",
+    "Fri6": "Sometimes I wonder if I am too old for adventures now. Then I see you coming back from the mines covered in dirt and grinning, and I think maybe I am not old at all.$h",
+    "Sat6": "The Dryad told me once that the forest remembers everyone who walks through it. I think the valley remembers you too, @. You have made a real home here.$h",
+    "Sun6": "I wrote a letter to my old friends last week. I do not expect a reply. It just felt right to say the things I had been keeping in my head.$s",
+    "Mon8": "Do you know why I became a Guide? When I was young I got lost in the old caves for three days. A stranger found me and showed me the way out. I promised myself I would do the same for others.$s",
+    "Tue8": "I never thought I would find a place where I could stop running. Pelican Town is quiet, and the people here look out for each other. I feel safe here, @, and I have you to thank for part of that.$h",
+    "Wed8": "There are nights I still dream of the blood moon and the monsters beneath it. Then I wake up, see the library shelves, and remember that everything is safe. You helped with that too.$h",
+    "Thu8": "I trust you more than anyone I have met in a long time, @. You are kind, you are brave, and you still listen to an old Guide ramble. That means a lot to me.$h",
+    "Fri8": "If anything ever happens to me, I want you to know the museum is yours to look after. Keep the lights on and keep the bones dusted. That is all I ask.$s",
+    "Sat8": "Being close to you has made me braver, @. I used to hide behind my books. Now I walk out into the valley with you and I laugh about it. That is a gift I did not expect.$h",
+    "Sun8": "Sunday evenings are my favorite now, because you usually stop by. I hope you do not mind the old Guide talking your ear off. I like the company more than I can say.$h",
+    "Mon10": "I have kept most of my life locked up in books and maps, @. Telling you about it makes it feel lighter. Thank you for being someone I can trust with the parts I do not share.$s",
+    "Fri10": "Whenever I see you walk into the museum, I think about all the places we have been and all the things we have found together. You are my favorite adventure, @.$h",
+    "summer_Wed": "Summer is a good time to read outside. The library gets too hot in the afternoon, so I take my books down to the river. The water keeps the pages cool.",
+    "winter_Fri8": "Winter makes the library feel warmer, somehow. The fire is lit, the chairs are soft, and the shelves are full of stories. You are welcome to borrow anything, @.$h",
+    "fall_15": "The leaves are turning and the museum is full of fall visitors. I love this season. It is a time to remember what has been done, and to look forward to what will come.",
+    "spring_Sat": "Spring has brought new seeds, new bugs, and a few new questions from the Wizard. I have a feeling the Dryad is behind some of them. She loves a tricky riddle.",
+    "winter_Mon": "Winter Monday. The Pelican Town roads are white, and the library is very quiet. A good time to read by the fire, @. Come in and get warm.",
+    "summer_Sun": "Summer Sunday, @. I have been thinking about the beach. I might walk down this afternoon and try to catch a fish. The Angler would be horrified, I am sure.$h",
+    "fall_Tue": "Fall Tuesday. The harvest is in and the Farmers have been bringing me squash to put on the museum table. I cannot say no to a good squash.$h"
+  },
+  "rainy": "Rain again. The library smells of wet paper, which I actually love, but please wipe your boots before you come in, @.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The Eye of Cthulhu is gone! I was up half the night rereading everything I know about it. It was not as frightening as the stories say, @. Mostly it was big, and very annoyed.$h",
+    "evilBoss": "Something was burrowing beneath the valley, and now it has been dealt with. Well done, @. Stay sharp in the caves for a while longer, just in case.$u",
+    "skeletron": "Skeletron is defeated! The old dungeon is open now, and the Old Man is free. The history down there must be extraordinary. I cannot wait to see what we find.$h",
+    "queenBee": "The Queen Bee has been defeated. The jungle honey will be sweeter than ever. I am glad, @. I was never very good at running from bees.$h",
+    "hardmode": "The Wall of Flesh fell, and the Hallow has started spreading. The monsters are much stronger now, @. Be careful out there. The crystals are beautiful, but they bite.$s",
+    "mechs": "One of the mechanical bosses was destroyed last night! The metal menace is finally quiet. I have sketches of it in my notebook, @, and they are very impressive, if I may say so.$h",
+    "plantera": "Plantera is defeated! The jungle temple is open, and the flowers have stopped trying to eat people. That is a relief. Good work, @. Bring me a flower if you find a spare.$h",
+    "golem": "The Golem has fallen! Lihzahrd stone everywhere, and a temple that looks like it came out of an old storybook. It is hard to believe a place like that was hiding under the jungle.$u",
+    "cultist": "The Lunatic Cultist is defeated. The celestial pillars are glowing in the sky now. I am learning a lot from the stars lately, @, and I am not sure I am ready for all of it.$u",
+    "moonLord": "The Moon Lord is gone. The sky is quiet, and the stars are just stars again. Thank you, @. I could not have fought up there, but I could worry about you, and I did.$h",
+    "goblins": "We drove the goblin army back last night! The Goblin Tinkerer is pleased, the Merchant is complaining about the price of everything, and I am exhausted. Good job, @. You were very brave.$h",
+    "pirates": "The pirates were repelled last night, and their ship is wrecked on the beach. Did you know some pirates keep their maps in bottles? I intend to read every one, @.$h",
+    "frostLegion": "The Frost Legion was turned back last night! Snow everywhere, and the frozen crowd is gone. Stay warm, @. The library has plenty of blankets if you need one.$h",
+    "martians": "The Martian Madness was repelled last night. Strange lights and stranger machines. I am glad to be back on solid ground. Please do not let them bring any more metal into town, @.$u",
+    "bloodMoon": "There was a blood moon last night, and the monsters came out in force. Did you bar your door like I told you? Good. Stay indoors when the sky turns red, @.$s",
+    "eclipse": "The sun went dark last night. A full solar eclipse, and the monsters were wild. I could not put my book down. I think I will sleep much better tonight.$h",
+    "party": "The Party Girl is throwing a party today, @, and she says I am on the guest list. I have said no three times now. I think I will go, but only for a short while.$h"
+  },
+  "festivals": {
+    "spring13": "The Egg Festival! Hidden eggs are the best kind of treasure. Good luck, @, and keep your eyes on the bushes near the fountain.$h",
+    "spring24": "The Flower Dance! I am no dancer, but I have memorized every flower in the valley. Ask me about any of them, @. I will not stop talking, I warn you.$h",
+    "summer11": "The Luau! I put a bag of mixed berries into the community soup and a note on where to find the rarest fish. Eat well, @, and share the soup with everyone.$h",
+    "summer28": "The Dance of the Moonlight Jellies. The jellies glow on the beach at night. Beautiful, and quiet enough for a walk along the sand, @.$h",
+    "fall16": "The Stardew Valley Fair! I am judging the grange display on old things. Do not enter a rock, @. I have already had that conversation with three people this week.$u",
+    "fall27": "Spirit's Eve! The haunted maze is spooky, but the lanterns are lovely. I have read that the ghosts only chase people who run. So walk slowly, @.$u",
+    "winter8": "The Festival of Ice! The ice fishing contest is a good chance to watch the Angler show off. Keep warm, @, and do not sit on the ice for too long.$h",
+    "winter25": "The Feast of the Winter Star! I have a little something for you under the tree, @. Do not open it until everyone is watching.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Oh, @! This is wonderful. Something this rare belongs in a museum, and I will treasure it all the same.$h",
+      "stardew": ["80", "392", "74"],
+      "terraria": ["GoldBar", "#gem"]
+    },
+    "liked": {
+      "text": "Ah, something useful. Thank you, @. This will come in handy on the next expedition.$h",
+      "stardew": ["16", "18", "20", "22"],
+      "terraria": ["Mushroom", "Torch", "#plant"]
+    },
+    "neutral": {
+      "text": "Thank you, @. I will find a place for it on the shelf.",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Oh. Please keep that away from the exhibits, @. It is not the sort of thing I want near the books.$s",
+      "stardew": ["168"],
+      "terraria": ["#explosive", "Cobweb"]
+    },
+    "hated": {
+      "text": "Get that out of here, @! Do you want the whole library to go up in smoke? Never bring that near me again.$a",
+      "stardew": ["-28"],
+      "terraria": ["#bossSummon", "Bone"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "weather": "any",
+      "music": "sweet",
+      "after": "If you want to read the plaques properly, come back when the light is better.",
+      "reward": "Torch",
+      "rewardCount": 5,
+      "steps": [
+        { "say": "Oh! @, you startled me. I was just dusting the fossils. Mind the dust, it gets in your lungs.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 500 },
+        { "say": "Did you know the first guides were simply people who had walked every road twice? That is the kind of thing I like to keep on these shelves.#$b#Most visitors just want to look at the big bones and leave.$h" },
+        { "question": "Do you enjoy the history here?", "answers": [
+            { "text": "I really do.", "friendship": 30, "reply": "Then you are welcome here any time. There is always another dusty book to share.$h" },
+            { "text": "Not really.", "friendship": -10, "reply": "Ah. Well, the bones are still impressive, even if the stories are not.$s" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Here, take this. Every adventurer should carry some light, even on a sunny farm. Consider it a thank you for listening to an old librarian.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "Town",
+      "time": "day",
+      "weather": "any",
+      "music": "jaunty",
+      "steps": [
+        { "say": "Oh, @. You are walking through town with that look on your face again. Something on your mind?$u" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Honestly, I have been worrying about the museum. Not enough visitors, and the fossils are gathering dust in storage.$s" },
+        { "question": "Would you help me find more treasures?", "answers": [
+            { "text": "Of course, I will look.", "friendship": 30, "reply": "Thank you. You always find the strangest things, which is exactly what this place needs.$h" },
+            { "text": "Maybe later.", "friendship": -5, "reply": "Fair enough. Even the Guide needs a day off now and then.$s" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "pause": 400 },
+        { "say": "And do not tell the Merchant I said that. He will try to sell me a stuffed fish.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "Forest",
+      "time": "day",
+      "weather": "any",
+      "music": "playful",
+      "with": ["Wizard"],
+      "steps": [
+        { "say": "@! Good, you are here. The Wizard and I are arguing about a book, and I need a witness.$u" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "I have read this book three times, and the spell in it is for a healing potion, not a sandwich.$a" },
+        { "say": "A sandwich? It is an ancient healing spell, and my magic is perfectly correct.$a", "who": "Wizard" },
+        { "pause": 600 },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Who is right?", "answers": [
+            { "text": "The Guide is right.", "friendship": 20, "reply": "Thank you! Finally, somebody with sense. The Wizard owes me a spell and a snack.$h" },
+            { "text": "The Wizard is right.", "friendship": 10, "reply": "Ha! At least one of us admits the sandwich might be a little bit tasty.$h" } ] },
+        { "emote": "angry", "who": "Wizard" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "Beach",
+      "time": "night",
+      "weather": "any",
+      "music": "sweet",
+      "after": "The stars are beautiful tonight. Do not walk back in the dark alone.",
+      "reward": "Lens",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "Oh! @, you came down to the beach at night. I come out here when the sky is too quiet to read.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 600 },
+        { "say": "When I was a young guide, I walked the edges of the world with nothing but a torch and a map. Most of my friends are gone now. It is strange how quiet things get after you survive.$s" },
+        { "say": "I think that is why I like it here, @. People are alive around me, and you are alive. That is worth more than any treasure in the museum.$h" },
+        { "question": "Do you miss the old adventures?", "answers": [
+            { "text": "Sometimes, yes.", "friendship": 40, "reply": "Then we should have one together. Bring a torch and a map, and we will watch the sunrise from the dunes.$h" },
+            { "text": "Not at all.", "friendship": 0, "reply": "Good. You have earned some quiet, and so have I.$h" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Here. My old lens from my first journey. It helped me find my way, and I think it will help you too.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "home",
+      "time": "night",
+      "weather": "any",
+      "music": "musicboxsong",
+      "after": "I have been thinking about that journal all day. Thank you, @.",
+      "steps": [
+        { "say": "@, you are here late. Come in, mind the bones. I was just looking at the old journal I carried all through my travels.$s" },
+        { "say": "Every name in it is someone I failed to save. Every page is a lesson I learned the hard way.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 700 },
+        { "say": "But the last page is blank, and I think it is time I wrote something new. I would like it to be about you.$h" },
+        { "question": "Would you like to be in my journal?", "answers": [
+            { "text": "I would be honored.", "friendship": 60, "reply": "Then I will write about the day you came to the museum and made an old Guide smile. That will be my favorite page of all.$h" },
+            { "text": "Maybe another time.", "friendship": 10, "reply": "That is fine, @. I will keep the page warm until then.$h" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    }
+  ]
+}

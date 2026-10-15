@@ -1,0 +1,191 @@
+{
+  "npc": "Merchant",
+  "villager": "Pierre",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Welcome to my general store! Everything here is for sale, and most of it is a bargain. Most of it.$h",
+    "Mon": "Good morning, @! Looking for supplies? I have seeds, bait, and a few suspicious potions that fell off a goblin cart.$h",
+    "Tue": "Tuesday is the slowest day for trade. Nobody wants to buy anything while the farm is still wet with dew.#$b#So I count my coins twice. Then I count them again.$h",
+    "Wed": "Hello, @. Did you know a Dryad once tried to sell me a sapling for three gold? I told her I would take ten, and she laughed at me.$u",
+    "Thu": "Ah, @! Business is booming, thanks to the goblin army clearing out the hills. Their loot is worth a fortune, provided you do not mind the smell.$h",
+    "Fri": "The Demolitionist came in again yesterday asking for more gunpowder. I sold him a crate, of course. Business is business, even when it blows things up.$h",
+    "Sat": "Saturday means the saloon is full and my store is empty. The Tavernkeep says that is because I am too expensive. Nonsense, I am simply priced correctly.$a",
+    "Sun": "Sunday is a day of rest, but I keep the shutters half open. A good merchant never truly sleeps. Well, not since the Wall of Flesh incident anyway.$s",
+    "Mon4": "@, you have been a loyal customer for a while now. I have started saving the good stock for you. Do not tell the others, they would be jealous.$h",
+    "Tue4": "Between us, the coins are not the best part of this job. Meeting folk from every corner of the Terraria world is what keeps me going.$h",
+    "Wed4": "My grandfather ran a shop like this one. He sold rope and lanterns to miners heading into the mines. I still keep his brass scale on the counter.$s",
+    "Thu4": "I do not usually say this to customers, but I am glad you came to Pelican Town. The valley feels a little more alive since the Terraria folk moved in.$h",
+    "Fri4": "Every Friday I restock the shelves from the caravan that comes through the Calico Desert. Those camel drivers are the worst haggling partners in the valley.$a",
+    "Sat4": "If you ever need a discount, just ask nicely. Nicely and with a smile. I do have a soft spot for a farmer who smiles.$h",
+    "Sun4": "Sundays are when I sit back and count my savings. Half of it goes to the store, and the other half goes into a little cottage by the sea someday.$h",
+    "Mon8": "I will tell you a secret, @. When I first came to this valley I was so scared I could barely speak. Selling things was the only way I knew how to make friends.$s",
+    "Tue8": "You know what scares me most? Not the bosses, not the blood moons. It is the day the store is empty and nobody needs anything from me.$s",
+    "Wed8": "Thank you for always coming by, @. Most folks only shop when they need something. You visit just to talk, and that means more to me than all the gold in my till.$h",
+    "Thu8": "Sometimes I dream I am selling wares to the cosmic folk beneath the Moon Lord. They always ask for a discount. Always.$u",
+    "Fri8": "When I was a boy my mother told me a good deal makes both people smile. I have not forgotten that, even when the Clothier and I argue over prices.$h",
+    "Sat8": "I am glad you are my friend, @. Honestly, I think I would have closed the shop years ago without someone to talk to on quiet afternoons like this.$l",
+    "Sun8": "If you ever need anything, come to me first. I will look after you, and I will only charge you a little. Do not tell the Tavernkeep I said that.$h",
+    "Mon2": "Oh, a customer! Do you want the good bait or the cheap bait? The cheap bait is for the Angler, he is very picky.$h",
+    "Tue2": "Please keep your hands off the top shelf, @. The Party Girl once hid a whole barrel of confetti up there. We are still finding it in the carts.$a",
+    "Wed2": "The Guide walked in yesterday asking for directions to the Dungeon. I sold him a map, of course. Well, I sold him an old wrapping paper and called it a map.$h",
+    "Thu2": "The Golfer keeps buying golf balls from me. Hundreds of them. I do not think he has ever once hit one.$u",
+    "Fri2": "Every buyer thinks they are getting the best price. Clever buyers know they are getting exactly the price I wanted.$h",
+    "Sat2": "The Goblin Tinkerer keeps asking me for gears, and he always leaves without paying. We have a truce, I suppose.$s",
+    "Sun2": "A fine day for shopping, @. The sun is out and the valley looks lovely. Perfect for selling something to a farmer who has been standing here too long.$h",
+    "Tue6": "The Demolitionist asked me for thirty bundles of dynamite once. He does not own a single blast-proof wall. I do not ask questions, I simply ask for payment first.$h",
+    "Thu6": "@, you know the mines are dangerous. I stock extra lanterns for you, just in case. Not because I care. Because they sell well.$h",
+    "Sat6": "When the Party Girl throws a party the whole town crowds into my shop for snacks. I make a fortune. I also sweep up a mess. Mostly I make a fortune.$h",
+    "Fri10": "@, I have been keeping an eye on your stock. You work harder than anyone I know. If you ever need a loan, you will have my first offer.$h",
+    "summer_Wed": "The summer heat is terrible for stock. Keep the cheese in the cellar, @, unless you want to be selling moldy wheels for a month.$a",
+    "winter_Fri8": "It is cold outside, @, but the store is warm. Come in, have a seat, and I will tell you about the good old days when this place was half the size.$h",
+    "fall_Tue4": "Fall harvest is my favorite time. Everyone in the valley brings me their best crops, and I am always happy to buy the best ones.$h",
+    "summer_Sun": "A lovely summer Sunday, @. The beach is busy and the saloon is loud. I do not mind it. Loud customers buy loud things.$h",
+    "winter_Mon": "Winter is hard on business. Folks stay indoors and only buy what they absolutely need. Heat lamps and wool sell like crazy this time of year, though.$h",
+    "fall_Thu": "This fall I plan to clear out the old stock and make room for the new goods the Terraria traders have promised. Worth every coin, I assure you.$h",
+    "spring_Sat": "Spring is a fresh start. New seeds arrive at the store, and every farmer comes in with a hopeful look. Let us make this year the best one yet, @.$h",
+    "spring_Fri6": "The spring rain is wonderful for my crops but terrible for my cellar. I have buckets everywhere. Sometimes I think the store leaks more than the sky.$s",
+    "fall_15": "Halfway through fall and the shelves are finally looking full. Do not let me catch you buying the last pumpkin seeds, @. Those belong to me.$h"
+  },
+  "rainy": "Rain on the roof and not a single customer in sight. Come in out of the wet, @, and I will tell you about the time the goblins tried to sell me a leaky bucket.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The Eye of Cthulhu is finally gone, @. I sold a dozen lenses to its fans before they stopped staring. Business as usual, but quieter.$h",
+    "evilBoss": "The Eater of Worlds and the Brain of Cthulhu, I do not care which. Whatever crawled out of the ground is gone, and my shelves are fuller for it.$u",
+    "skeletron": "The dungeon is open, @, and the Old Man is free at last. The Clothier was very upset about that, so I sold him a bandage. He will be fine.$h",
+    "queenBee": "The Queen Bee is down. Honey everywhere! I bought every jar the bees left behind and sold it all before lunch.$h",
+    "hardmode": "The Wall of Flesh fell and hardmode began. The Hallow glows and the monsters are meaner, so my prices just went up. Blame the monsters, not me.$s",
+    "mechs": "One of those mechanical bosses was destroyed last night. I heard the noise from my cellar and sold all my spare gears by morning.$u",
+    "plantera": "Plantera is defeated and the jungle temple is open. The jungle folk want seeds in return. I told them my prices are firm, but I do have a nice deal on bamboo.$h",
+    "golem": "The Golem is finally gone. The lihzahrd temple is quiet now. I miss the traders, but I do not miss the traps.$s",
+    "cultist": "The Lunatic Cultist is defeated and the celestial pillars glow in the sky. A stargazer paid me in fallen stars yesterday. Strange currency, but it sparkles.$u",
+    "moonLord": "The Moon Lord is gone, @. The whole valley cheered. I tried to sell the crowd some souvenirs, and they bought every single one. Wonderful.$h",
+    "goblins": "The goblin army was repelled last night. Their leader ran off with my best shovel. I have decided to call that an unpaid debt.$a",
+    "pirates": "The pirates tried to raid the docks but they were sent packing. They left behind a chest of gold coins. I do not trust pirates, but I trust their gold.$h",
+    "frostLegion": "The Frost Legion came out of the snow and we pushed them back. I sold a whole crate of warm blankets. Best winter sales I have ever had.$h",
+    "martians": "The Martians came with lasers and flying saucers, and we sent them home. I wonder if they would like a discount on fuel. Probably not.$u",
+    "bloodMoon": "There was a blood moon last night, @. Keep your doors locked. The zombies bought nothing, which is very rude of them, and I stayed up counting coins.$s",
+    "eclipse": "The sun went dark yesterday during the eclipse and every shopper ran home. Nobody bought a thing. I spent the afternoon staring at the sky and sweeping floors.$s",
+    "party": "The Party Girl is throwing a party today, @! I have stocked extra snacks and party hats. I will charge double, of course. That is what parties are for.$h"
+  },
+  "festivals": {
+    "spring13": "Egg Festival! I have hidden the best eggs in the valley for the contest. Well, I hid them in my shop. Do not tell the children.$h",
+    "spring24": "Flower Dance. I always pick the prettiest flower for my dance partner, though I usually have to sell it to them first.$h",
+    "summer11": "The Luau! I have added a crate of my finest cheese to the community soup. It is a generous donation, I promise, and not at all a way to win the big prize.$h",
+    "summer28": "The Dance of the Moonlight Jellies. I stand on the beach and watch the jellies glow. They do not buy anything, but they are very pretty to look at.$h",
+    "fall16": "Stardew Valley Fair. The grange displays are wonderful this year, but my own display is better. Look at those pumpkins! Priced to sell.$h",
+    "fall27": "Spirit's Eve. The haunted maze is terrifying. A ghost tried to haggle with me in there. Honestly, I think he won.$u",
+    "winter8": "Festival of Ice. The ice fishing contest is on, and the Angler is already complaining about the cold. I sold him a warm hat for his troubles.$h",
+    "winter25": "Feast of the Winter Star. I have a gift for you under the counter, @. It is a secret gift, so do not look yet. Not until we exchange them properly.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Oh! Now that is what I call a valuable item. I will treasure it, and I will know exactly what it is worth.$h",
+      "stardew": ["72", "336"],
+      "terraria": ["GoldBar", "#gem"]
+    },
+    "liked": {
+      "text": "Nice, very nice. That is a fine piece of merchandise. I could sell it, but I think I will keep it.$h",
+      "stardew": ["-12", "-15"],
+      "terraria": ["GoldCoin", "#ore"]
+    },
+    "neutral": {
+      "text": "Hmm. Not bad, not great. I will find a spot on the shelf for it, eventually.",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Ugh, junk! Is this from a goblin cart? I am not taking that as a gift, friend. Take it back to the scrap pile.$a",
+      "stardew": ["390", "330"],
+      "terraria": ["Cobweb", "Gel"]
+    },
+    "hated": {
+      "text": "Are you trying to insult me? That is trash. I have a reputation to protect, @, and this does not help one bit.$a",
+      "stardew": ["-28"],
+      "terraria": ["#junk", "#bossSummon"]
+    }
+  },
+  "events": [
+    { "id": "h2", "hearts": 2, "where": "home", "time": "day", "music": "playful",
+      "after": "Don't tell anyone about my secret stash, alright?",
+      "reward": "PiggyBank", "rewardCount": 1,
+      "steps": [
+        { "say": "Oh! @, you startled me. I was just counting today's takings.$u" },
+        { "face": "self", "toward": "up" },
+        { "pause": 600 },
+        { "say": "Forty-one gold... forty-two... Hm? Why yes, I always count twice.#$b#A merchant who trusts his first count is a poor merchant.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you ever give discounts?", "answers": [
+            { "text": "Only to friends, I bet.", "friendship": 30, "reply": "Ha! Perhaps. Friends do get the best prices.$h" },
+            { "text": "You are a bit greedy.", "friendship": -10, "reply": "Greedy? I prefer the word thrifty.$a" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Here. Something to keep your own coin safe. Every adventurer needs one.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ] },
+    { "id": "h4", "hearts": 4, "where": "Town", "time": "day", "weather": "sunny", "music": "sweet",
+      "after": "Keep your eyes open for bargains on the road, friend.",
+      "steps": [
+        { "say": "@! Just the customer I was hoping to see. Have you noticed the square is missing a bench? I have been meaning to sell one.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "exclamation" },
+        { "say": "Between us, the Terraria folk keep wandering in with coins that are not from this world.#$b#A goblin tried to pay me with a rusty spoon. I could not believe my eyes.$u" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "pause": 500 },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Anyway, I have seeds on sale this spring. Half price for the first ten customers, and you are very near the front of the line.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "Do not tell the others about the discount.$s" }
+      ] },
+    { "id": "h6", "hearts": 6, "where": "Saloon", "time": "night", "music": "jaunty", "with": ["DD2Bartender"],
+      "after": "The Tavernkeep still owes me a drink. Do not let him forget it.",
+      "steps": [
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Ah, @! Come, sit. The Tavernkeep and I were just arguing about who owes whom a drink.$h" },
+        { "say": "Owes? You owe me three months of rent for that crate of Pale Ale.$a", "who": "DD2Bartender" },
+        { "say": "Rent is a dirty word, friend. Ask our farmer here, they know a good deal when they see one.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Who is right here?", "answers": [
+            { "text": "The Merchant is right.", "friendship": 30, "reply": "Ha! A good judge of character, @.$h" },
+            { "text": "The Tavernkeep is right.", "friendship": -10, "reply": "Traitor. Nobody ever votes for the coin.$a" } ] },
+        { "say": "Hmph. Fine. The next round is on me then, if only to spite him.$h", "who": "DD2Bartender" },
+        { "emote": "happy", "who": "farmer" },
+        { "pause": 400 },
+        { "say": "Well, that is one round of goodwill. Now I need a second.$h" }
+      ] },
+    { "id": "h8", "hearts": 8, "where": "home", "time": "night", "weather": "any", "music": "sweet",
+      "after": "Thank you for listening. It is nice to say it out loud sometimes.",
+      "steps": [
+        { "say": "@, you are still here. Come in, I was just closing up for the night.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 500 },
+        { "say": "I never told you why I took this store, did I? My grandfather built it, and when the goblins came I was the only one left who knew the books.$s" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "I thought I would sell it when the Terraria folk moved in. Instead I found friends I did not expect.$h" },
+        { "question": "Are you glad I stayed?", "answers": [
+            { "text": "Very glad, Merchant.", "friendship": 40, "reply": "Good. So am I, friend. Truly.$l" },
+            { "text": "Only because of the discounts.", "friendship": -5, "reply": "Ha! Then I will make sure the discounts stay good.$h" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "pause": 600 },
+        { "say": "Now go home, @. Morning comes early, and I have shelves to fill.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ] },
+    { "id": "h10", "hearts": 10, "where": "Farm", "time": "day", "weather": "sunny", "music": "jaunty",
+      "after": "I'm still thinking about your farm. Such a lovely spread of crops.",
+      "reward": "Ruby", "rewardCount": 1,
+      "steps": [
+        { "say": "Look at this farm, @! Every row is straight and every crop is glowing. I would sell you the whole field if it were not already yours.$h" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "face": "self", "toward": "farmer" },
+        { "say": "You know, I used to count coins. Now I count friends, and you are the best of them.$l" },
+        { "pause": 500 },
+        { "emote": "heart", "who": "farmer" },
+        { "question": "Want to be my partner in business?", "answers": [
+            { "text": "Yes, let us build something.", "friendship": 50, "reply": "Splendid! I will bring the ledger. You bring the crops.$h" },
+            { "text": "Maybe later.", "friendship": 10, "reply": "Fair enough. The offer will still be on the counter.$h" } ] },
+        { "say": "For you, a little gift. This ruby has been waiting in my drawer for a special friend.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "emote": "happy", "who": "farmer" }
+      ] }
+  ]
+}

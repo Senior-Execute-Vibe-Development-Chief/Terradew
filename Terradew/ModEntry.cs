@@ -31,6 +31,8 @@ public sealed class ModEntry : Mod
     private Bundles bundles = null!;
     private Houses houses = null!;
     private Villagers villagers = null!;
+    private NpcStories stories = null!;
+    private Cast cast = null!;
     private Draw draw = null!;
     private Hud hud = null!;
     private bool helloSent;
@@ -55,7 +57,9 @@ public sealed class ModEntry : Mod
         mining = new Mining();
         wallClimb = new WallClimb(bridge);
         houses = new Houses(Monitor);
-        villagers = new Villagers();
+        stories = new NpcStories(helper, Monitor, bridge);
+        cast = new Cast(helper, sprites, Monitor, stories.ContentOf);
+        villagers = new Villagers(stories, backpack, hand);
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper, backpack);
@@ -89,6 +93,7 @@ public sealed class ModEntry : Mod
         bridge.CoinAck += ack => money.Ack(ack);
         bridge.Notice += notice => hud.Notice(notice.Text, new Color(notice.R, notice.G, notice.B));
         bridge.StationPlaced += placed => stations.OnStationPlaced(placed, bridge);
+        bridge.GiftTaken += taken => stories.OnGiftTaken(taken);
 
         helper.Events.GameLoop.SaveLoaded += (_, _) => StartFarm();
         helper.Events.GameLoop.ReturnedToTitle += (_, _) => StopFarm();
@@ -110,6 +115,8 @@ public sealed class ModEntry : Mod
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => bundles.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => villagers.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => cast.OnAssetRequested(e);
+        helper.Events.Content.AssetRequested += (_, e) => stories.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => stations.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => backpack.OnAssetRequested(e);
         helper.Events.World.ObjectListChanged += (_, e) => { if (Leading) mining.OnObjectListChanged(e, bridge); };
@@ -129,6 +136,8 @@ public sealed class ModEntry : Mod
         hand.Reset();
         wallClimb.Reset();
         mining.Reset();
+        cast.Reset();
+        stories.Reset();
         helloSent = false;
     }
 
@@ -141,6 +150,8 @@ public sealed class ModEntry : Mod
         wallClimb.Reset();
         pendingChats.Clear();
         mining.Reset();
+        cast.Reset();
+        stories.Reset();
         Clock.Reset();
         helloSent = false;
     }
@@ -197,6 +208,9 @@ public sealed class ModEntry : Mod
             money.Update(bridge);
         vitals.Update(bridge, config);
         routes.Update(bridge, maps, player, Maps.PlaceOf(location).Key);
+        if (e.Ticks % 30 == 0)
+            cast.Update(bridge.Facts);
+        stories.Update(e.Ticks);
     }
 
     private void SendPulse(Farmer player, GameLocation location)
@@ -251,6 +265,8 @@ public sealed class ModEntry : Mod
             return;
         houses.Publish(bridge);
         bridge.Send(new DayStarted { TotalDays = Game1.Date.TotalDays });
+        cast.Update(bridge.Facts);
+        stories.OnDayStarted();
     }
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)

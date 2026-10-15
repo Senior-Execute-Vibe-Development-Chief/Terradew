@@ -119,8 +119,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station
   with the Stardew pickaxe or axe to take it back. Stardew's own furniture and decoration stay as they are.
 - **Mine barrels and crates are Terraria pots.** They take the look of that floor's biome (hellstone pots in the underworld, dungeon pots in the Skull Cavern) and, as well as Stardew's own loot, spill Terraria pot loot: coins, potions, torches and hearts.
-- **Terraria townsfolk replace the Stardew villagers.** The villagers are gone: no talking, gifts, friendship,
-  marriage or heart events. Each Terraria town NPC moves into one villager's home instead, the morning after its
+- **Terraria townsfolk play the Stardew villagers.** Each Terraria town NPC moves into one villager's home, the morning after its
   Terraria conditions are met (the Guide first, the Merchant once you carry 50 silver, and so on): the Guide in
   the museum, the Merchant at Pierre's, the Nurse at Harvey's clinic, the Arms Dealer at the Adventurer's Guild,
   the Angler at Willy's, the Goblin Tinkerer at Clint's, the Mechanic and Steampunker at Robin's, the
@@ -128,6 +127,16 @@ Keys can be changed in `Mods/Terradew/config.json`.
   Sandy's, the Wizard in the tower, Truffle in Sebastian's basement room (in hardmode), and the rest in the other villagers' houses. The Stardew shops stay open
   where they always were. The full roster of vanilla town NPCs is in play, except Santa Claus.
   Bound townsfolk move in once rescued in Terraria, or at the point vanilla would first leave them to be found: the Tavernkeep after the evil boss, the Stylist and Golfer after the Eye of Cthulhu, the Tax Collector and Wizard in hardmode.
+  Once moved in, the NPC takes over that villager's life: it walks their schedule, looks like its Terraria self
+  with its Terraria name and head portrait, and says its own lines (written in `Terradew/assets/npcs`) for each day,
+  heart level, season, rain, festival, and the big things that happen in the Terraria world (a boss falls, a blood
+  moon, a goblin army). Friendship, gifts and heart events (2 to 10 hearts) work as in Stardew; Stardew items
+  and Terraria items can both be given, and each NPC has its own loved and hated ones. Some heart events give a
+  Terraria item. Talk to an NPC a second time on the same day to open its Terraria chat (shop, healing). Each
+  heart takes 2% off its shop prices, up to 20%. The Stylist, Painter, Clothier, Golfer, Pirate, Nurse and Truffle
+  can be dated and married, with a 14-heart event after the wedding. Villagers with no Terraria NPC (Abigail,
+  Caroline, George, Jas, Jodi, Maru, Penny, Sam, Shane, Vincent) are gone, as is any villager whose NPC has not
+  moved in yet. Characters outside the town roster (the Dwarf, Gil, Mr. Qi and the like) stay as they are.
 - **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
   farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
   head portrait when you talk to them.
@@ -160,5 +169,7 @@ or run against, so expect a round of compile fixes on the first build, then play
 - Mine floors that need every monster killed for a ladder may need the ladder from a rock instead.
 - Hardmode's Hallow and Corruption do not spread over time; each place keeps the biome it is given.
 - Both mods must be the same version: they refuse to link if their protocol numbers differ.
-- Festivals and cutscenes may still show the old villagers, and the help-wanted board still posts their requests.
+- The villagers' own heart events are removed. Other cutscenes and festivals leave out the absent villagers,
+  so some of their lines and steps are skipped.
+- An NPC whose villager home is on Ginger Island (the Witch Doctor) is only met there.
 - Multiplayer is not supported yet; the protocol is ready for one Terraria character per farmer.

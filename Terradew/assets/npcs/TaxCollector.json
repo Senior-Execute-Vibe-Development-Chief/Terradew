@@ -1,0 +1,210 @@
+{
+  "npc": "TaxCollector",
+  "villager": "Lewis",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Ah, a new face. I am the Tax Collector, which means you will like me about as much as you like winter.#$b#But I am also the one keeping this town from falling apart, so you had better get used to me.$h",
+    "Mon": "Another Monday, another stack of receipts. Every week the ledger gets longer and nobody pays me any faster.",
+    "Tue": "Did you know the farm produce has been undertaxed for three seasons? I am not accusing anyone. I am just looking at you.",
+    "Wed": "Wednesday. Half the town owes me money and the other half owes money to the first half. It is a very tangled web.",
+    "Thu": "Thursday is for invoices. Friday is for audits. Please do not be on my list for either.",
+    "Fri": "Friday. The one day I can pretend my desk is tidy before the weekend mess arrives.",
+    "Sat": "Saturday, and the town square is busy with everyone selling something. Everyone except me. I am the one who takes the cut.",
+    "Sun": "Sunday. I am supposed to be resting, but my conscience keeps counting the week's sums. Ugh.",
+    "Mon2": "Two hearts already? You must be a good customer. Or a very sneaky one. I will decide which later.",
+    "Thu2": "I hear you have been fishing at the beach. Fish are not taxable, I checked. A pity, I would have loved to tax a fish.",
+    "Tue6": "Between us, the Tavernkeep owes me for three months. I do not dare collect it, the man is terrifying with a mop.",
+    "Wed2": "Did you know the mines are fully taxable? Every ore you carry out is a little piece of the town's future. Mostly mine.",
+    "Wed6": "Some days I wish I had taken up farming. Nobody sends a farmer a bill for the weather.",
+    "Sat6": "I used to dream of a quiet job in a small town. Turns out a small town means a very small pile of money to count.",
+    "Fri10": "You have become a regular part of my week, @. I suppose that means you are now on my books. Congratulations.",
+    "Sun10": "You have become rather important to me, @. Do not let it go to your head. I will only count it once.",
+    "Mon10": "A Monday with you feels lighter than it ought to. I think the ledger is missing a column, and the column is you.",
+    "Mon4": "Ah, @! Good morning. I have already been up for two hours counting the coins twice. What can I do for you?$h",
+    "Tue4": "The Nurse says I am the most boring man in the valley. She is not wrong, but she still stops by my desk anyway.$h",
+    "Wed4": "Wednesday mornings I like to walk the town square. It is the only time the mayor's manor feels like a home instead of an office.$h",
+    "Thu4": "The Angler wants to tax me for fishing rights. Bratty little so-and-so. You are much nicer company, @.$h",
+    "Fri4": "Fridays I review the disasters of the week. You have made a few of them less disastrous. Thank you for that.$h",
+    "Sat4": "A fine Saturday, @. The soup at the Luau is an excellent investment. I will be tallying the contributions, but I am glad you came.$h",
+    "Sun4": "Sundays are when I finally put my feet up. I would like you to join me sometime, if you bring a decent lemonade.$h",
+    "Mon8": "I will admit it, @. The paperwork is only half the reason I come out to talk to you. The other half is that I like having someone to talk to.$h",
+    "Tue8": "When my sister moved away the house got very quiet. Now the valley is full of people, and I think it suits an old tax man.$s",
+    "Wed8": "You know what I want more than gold? A quiet beach, a chair, and a fishing line that nobody bothers to audit.$h",
+    "Thu8": "I trust you more than the ledger, and I do not say that about anything with column headers.$h",
+    "Fri8": "I worry about the valley when the bosses come. Every monster is a bill for repairs. But I worry less when you are around.$s",
+    "Sat8": "If the goblins ever march again, I want you on my side. Even I cannot tax a goblin army into leaving.$u",
+    "Sun8": "Today I counted my savings and realized I could retire. But I would like to keep working, if only to keep an eye on you.$h",
+    "summer_Wed": "Summer Wednesday, and the sun makes my desk too warm. The ink runs and the numbers blur. I am not complaining, only sweating.$s",
+    "summer_Sun": "The summer sun is lovely, but the beach is crowded with tourists asking for directions to shops I do not own.$h",
+    "summer_20": "Midsummer days are long, and so are my lunch breaks. Strange, I have never taken a lunch break before this year.$h",
+    "winter_Fri8": "Winter Friday. Snow piles up on the manor steps and I am stuck inside with frosty ledgers. Come warm my desk, will you?$h",
+    "winter_Tue2": "Winter Tuesday. Please do not track snow onto my rug. Snow is taxable, you know.$u",
+    "winter_25": "Feast day. The town gives gifts this time, and I am told I am not allowed to tax the Feast. A miracle.$h",
+    "fall_Mon": "Fall Monday. The leaves keep landing in my ledger, and I swear they are filing a complaint against me.$h",
+    "fall_15": "The fifteenth of fall. Halfway through the harvest, halfway through my patience.$h",
+    "spring_Sat4": "Spring Saturday. The flowers are blooming and I am finally out of the office. I feel young again. Almost.$h",
+    "spring_3": "Early spring. The taxes are due and the town is in a panic, but at least the sun is out.$h"
+  },
+  "rainy": "Rainy days are the only ones I do not mind staying indoors. The roof leaks in one corner, and I am charging myself rent for it.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The giant eye is gone from the skies. Good. It was staring at my ledger all night, and I am sure it was counting.$h",
+    "evilBoss": "The Eater of Worlds and the Brain of Cthulhu are both finished. The insurance claims from that mess will take a year to process.$s",
+    "skeletron": "Skeletron is defeated and the dungeon is open. The Old Man is free, and I suspect he will want a discount on his rent.$u",
+    "queenBee": "The Queen Bee is gone. The honey trade was a monopoly, and I have no idea what the prices will do now.$u",
+    "hardmode": "The Wall of Flesh has fallen and hardmode has begun. The monsters got stronger, the prices got higher, and my tax rates are going up. Do not say I did not warn you.$a",
+    "mechs": "One of the mechanical bosses is destroyed. Clockwork machines are expensive to clean up, and I am sure the Mechanic will send me a bill.$h",
+    "plantera": "Plantera has been put to rest and the jungle temple is open. I have already drafted a tax on the jungle treasure. Do not ask me how.$h",
+    "golem": "The Golem has fallen. The temple's gold rubble must be surveyed and taxed, and I have never been so eager to do paperwork.$h",
+    "cultist": "The Lunatic Cultist is defeated and the celestial pillars are open. A pillar tax would be an enormous number. I am already drafting the letters.$u",
+    "moonLord": "The Moon Lord is gone and the sky is quiet again. A night without a cosmic horror means I might finally get some sleep.$h",
+    "goblins": "The goblin army was repelled last night. I counted them, and they still owe the town a fine for the broken fence.$a",
+    "pirates": "The pirates are gone. They tried to take my coins, but I suspect the Pirate will be sending his invoice to the sea.$h",
+    "frostLegion": "The Frost Legion is repelled and the snow is clearing. My feet are cold, but the books are, thankfully, dry.$h",
+    "martians": "The Martian Madness is over and the saucers have left our fields. I have billed the damage to the Martian Tax Office.$h",
+    "bloodMoon": "There was a blood moon last night. The monsters came out, the town locked its doors, and I counted the coins under my mattress three times.$u",
+    "eclipse": "The sun went dark in a solar eclipse last night. I did not collect a single payment all day. Even the sky is behind on its taxes.$h",
+    "party": "The Party Girl is throwing a party today. I have been invited, which I find suspicious. I will go, but only to audit the snacks.$h"
+  },
+  "festivals": {
+    "spring13": "The Egg Festival! Everyone hides eggs and I hide my wallet. Nobody has ever found it, so I count that as a win.$h",
+    "spring24": "The Flower Dance. I have not danced since the old days and I do not intend to start. But I will watch you, @, and count your steps.$h",
+    "summer11": "The Luau. Everyone adds to the community soup and I stand there with a ledger and a tally. I put in a coin, and the soup is wonderful.$h",
+    "summer28": "The Dance of the Moonlight Jellies. The jellies swim under the stars and the beach looks like a dream. A fine place to forget about numbers. For an hour.$h",
+    "fall16": "The Stardew Valley Fair. Every stall pays a fee to me, and every prize ribbon is a little tax on the glory. I have never been happier to collect.$h",
+    "fall27": "Spirit's Eve. They say the ghosts in the maze do not pay taxes. Those are the worst kind of residents.$u",
+    "winter8": "The Festival of Ice. Ice fishing, snow sculptures, and a contest I have to judge fairly. Which means no bribes, @. I am watching you.$h",
+    "winter25": "The Feast of the Winter Star. A secret gift exchange, and gifts are not taxed. Lovely. I have already picked something out for you.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Gold! Real, honest gold. Now that is a gift a tax man can respect. Thank you, @.$h",
+      "stardew": ["72", "336"],
+      "terraria": ["GoldBar", "GoldRing", "GoldWatch"]
+    },
+    "liked": {
+      "text": "Gems, nice and shiny. Shiny things make my ledger look almost cheerful.$h",
+      "stardew": ["-2"],
+      "terraria": ["Sapphire", "Emerald", "Ruby"]
+    },
+    "neutral": {
+      "text": "Dandelions. Not taxable and not valuable. I will take them anyway. Thank you, I suppose.",
+      "stardew": ["22"],
+      "terraria": ["Mushroom"]
+    },
+    "disliked": {
+      "text": "Ugh. Trash? I am a tax collector, not a rubbish bin.$a",
+      "stardew": ["168", "-81"],
+      "terraria": ["Gel", "Cobweb", "Seashell"]
+    },
+    "hated": {
+      "text": "A boss summon? You want me to tax a monster sized disaster? Take it away this instant. Every boss costs this town a fortune.$a",
+      "stardew": ["-28"],
+      "terraria": ["#junk", "#bossSummon", "WhoopieCushion"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "with": [], "music": "playful",
+      "after": "Don't tell anyone I nearly cried over my ledger. It was only dust.",
+      "steps": [
+        { "say": "Oh! @, you startled me. Never sneak up on a man with an open ledger.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Three hundred gold for the fence repair and not one coin paid. Nobody in this valley pays on time.$s" },
+        { "say": "Not that I am complaining. Complaining is the one thing I do without a receipt.#$b#Now then, what can I do for you?$h" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you think I am too strict?", "answers": [
+            { "text": "A little bit, yes.", "friendship": 20, "reply": "A little? Hmph. Perhaps a very small little.$h" },
+            { "text": "Not at all. A town needs its books in order.", "friendship": 40, "reply": "Finally, someone with sense. Sit down, you are making the desk look untidy.$h" },
+            { "text": "I would pay double to never see you again.", "friendship": -40, "reply": "Double? Now there is a figure I can work with.$a" } ] },
+        { "say": "Well. You have made me lose my count. Forty-one, forty-two... no matter, I will start again tomorrow.$s" },
+        { "pause": 600 },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "Oh, and @, the Merchant still owes me for a chair. Don't tell him I said so.$h" }
+      ]
+    },
+    {
+      "id": "h4", "hearts": 4, "where": "Town", "time": "day", "weather": "sunny", "with": [], "music": "jaunty",
+      "reward": "GoldCoin", "rewardCount": 5,
+      "after": "Five gold was a generous refund. Do not get used to it.",
+      "steps": [
+        { "say": "@! Walk with me, I am doing my rounds. Every paving stone in this square gets a proper inspection.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "I came here with one suitcase and a debt I had not earned. The square had weeds, nobody paid for anything, and the fountain was just a puddle.$s" },
+        { "pause": 800 },
+        { "say": "Look at it now. Everyone pays for something, and the fountain is a proper fountain. I had a hand in that, you know.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "question": "Are you happy with the taxes here?", "answers": [
+            { "text": "Yes, I suppose.", "friendship": 15, "reply": "Suppose? Ha! That is as close to a compliment as I give out.$h" },
+            { "text": "No, they are robbery.", "friendship": -20, "reply": "Robbery! Well. Robbery with a receipt, at least.$a" } ] },
+        { "say": "Between us, a man has to be paid to keep the lights on.#$b#And one day I would like a cottage by the beach. Waves, a chair, and no ledgers at all.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Don't tell anyone I want to retire. They would tax the idea.$h" },
+        { "say": "Here, @. A tax refund. Five gold coins, the first I have ever handed out. Do not make a habit of asking.$h" }
+      ]
+    },
+    {
+      "id": "h6", "hearts": 6, "where": "Saloon", "time": "night", "weather": "any", "with": [], "music": "50s",
+      "after": "Keep this between us. The Tavernkeep thinks I am a very stingy man, and I like it that way.",
+      "steps": [
+        { "say": "Ah, @. Sit down. The Tavernkeep is pouring, and no, I am not paying for your drink.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Back in the old days I taxed the things that crawled out of the dungeon. Eye things, slime things, things with far too many legs.$u" },
+        { "say": "They paid in teeth, mostly. Teeth. I could not balance a ledger with teeth.$s" },
+        { "pause": 600 },
+        { "question": "Why stay here instead of running off?", "answers": [
+            { "text": "Because the town needs a good accountant.", "friendship": 30, "reply": "Exactly. Who else would keep this valley's figures from ruin?$h" },
+            { "text": "Because you like it here.", "friendship": 50, "reply": "Like? I suppose I do. Don't tell anyone, it is bad for my reputation.$h" },
+            { "text": "Because nobody else would hire you.", "friendship": -30, "reply": "Ouch. Well, that is also true. Drink up and forget I said anything.$s" } ] },
+        { "say": "The valley is the only place my ledgers ever balanced, @. I would not trade that for a mountain of gold.#$b#Please don't repeat that either.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "Now the Tavernkeep says this round is on me. Oh, cheap, cheap. He can count the glasses himself.$h" }
+      ]
+    },
+    {
+      "id": "h8", "hearts": 8, "where": "Beach", "time": "night", "weather": "any", "with": [], "music": "sweet",
+      "after": "Did I really tell you about my sister? Well. Best not mention it at the next audit.",
+      "steps": [
+        { "say": "The tide is coming in and the moon is out, and here I stand. On a beach. At night. Don't you dare say a word.$u" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "My sister moved to the big city twenty years ago. We write letters, the only post I do not mind paying postage on.$s" },
+        { "pause": 700 },
+        { "say": "Some days I think the valley needs me to keep it running. Other days I think I need it more. That is a terrible admission from a tax man.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you miss your family too?", "answers": [
+            { "text": "Every single day.", "friendship": 40, "reply": "Then we both have good reason to keep writing letters.$s" },
+            { "text": "Only sometimes.", "friendship": 20, "reply": "Sometimes is enough, I think. It is the sort of thing that comes back around.$h" },
+            { "text": "Not really.", "friendship": -30, "reply": "Hm. Good for you, then. Somebody has to keep the books.$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Thank you for listening, @. You are the only one in town who never asks about my audit.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h10", "hearts": 10, "where": "Farm", "time": "day", "weather": "sunny", "with": [], "music": "musicboxsong",
+      "reward": "GoldRing", "rewardCount": 1,
+      "after": "Your fence is repaired, by the way. Do not tell the Merchant who paid for it.",
+      "steps": [
+        { "say": "@! Don't look so surprised. The mayor visits his farm once a season, and this is my season.$h" },
+        { "move": "self", "dx": 0, "dy": 1 },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Your parsnips are in very orderly rows. Better kept than my ledger, I will admit.$h" },
+        { "pause": 500 },
+        { "say": "Now, about the old fence on this farm. Forty gold in fines. Paid, @. In full.$u" },
+        { "say": "Don't look at me like that. The town books call it miscellaneous kindness. I invented that column just now.#$b#It is my only soft spot, and somehow it is in your field.$l" },
+        { "emote": "heart", "who": "farmer" },
+        { "question": "Why did you pay it for me?", "answers": [
+            { "text": "Thank you, Mayor.", "friendship": 30, "reply": "Mayor is a title. Friend is a better word, though I would rather not say it too loudly.$h" },
+            { "text": "That was very generous of you.", "friendship": 50, "reply": "Shh! Generous is a word that will ruin my reputation.$h" } ] },
+        { "move": "self", "dx": 0, "dy": -1 },
+        { "say": "Here is a small token from the mayor's own desk. Keep it safe, it is worth more than it looks.$h" },
+        { "sound": "coin" },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "And don't tell the Merchant. He would want a cut of my kindness.$h" }
+      ]
+    }
+  ]
+}

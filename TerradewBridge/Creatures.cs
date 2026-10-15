@@ -48,6 +48,13 @@ public sealed class Creatures : GlobalNPC
         if (WallOfFlesh.Owns(npc))
             return;
         Fit(npc);
+        if (Followers.Hold(npc))
+        {
+            away = false;
+            chasing = false;
+            plane = Vector2.Zero;
+            return;
+        }
         bool worm = npc.aiStyle == NPCAIStyleID.Worm;
         if (!ready || seenType != npc.type)
         {

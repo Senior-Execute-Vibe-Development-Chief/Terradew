@@ -32,6 +32,7 @@ internal sealed class Bridge : IDisposable
     public event Action<CoinAck>? CoinAck;
     public event Action<Notice>? Notice;
     public event Action<StationPlaced>? StationPlaced;
+    public event Action<GiftTaken>? GiftTaken;
 
     public bool IsConnected => link.Connected;
 
@@ -122,6 +123,10 @@ internal sealed class Bridge : IDisposable
             case Core.Protocol.StationPlaced placed:
                 // Always raised, even while transient messages are dropped: a station Terraria took must end up placed or refunded.
                 StationPlaced?.Invoke(placed);
+                break;
+            case Core.Protocol.GiftTaken taken:
+                // Always raised: Terraria already took the item, so the villager must still get it.
+                GiftTaken?.Invoke(taken);
                 break;
             case Core.Protocol.Notice notice:
                 if (raiseEvents)

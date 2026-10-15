@@ -111,13 +111,14 @@ public static class Shops
         return items;
     }
 
-    private static long Price(Item item) => item.shopCustomPrice ?? item.GetStoreValue();
+    /// <summary>The price after the discount the NPC gives friends of their villager.</summary>
+    private static long Price(NPC npc, Item item) => Followers.Discounted(npc.type, item.shopCustomPrice ?? item.GetStoreValue());
 
     public static ShopStock Stock(NPC npc)
     {
         var stock = new ShopStock { NpcId = npc.whoAmI, Name = npc.GivenOrTypeName };
         foreach (Item item in Fill(npc))
-            stock.Entries.Add(new ShopEntry(Inventory.Describe(item), Price(item)));
+            stock.Entries.Add(new ShopEntry(Inventory.Describe(item), Price(npc, item)));
         return stock;
     }
 
@@ -130,7 +131,7 @@ public static class Shops
         if (buy.Index < 0 || buy.Index >= items.Count)
             return;
         Item item = items[buy.Index];
-        long price = Price(item);
+        long price = Price(npc, item);
         if (Inventory.Coins(player) < price || !player.BuyItem(price))
         {
             BridgeSystem.Instance.Notice($"Not enough coins for {item.Name} ({Coins.Format(price)}).", 255, 200, 80);

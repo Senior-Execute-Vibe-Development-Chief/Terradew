@@ -12,14 +12,24 @@ using Terradew.Core.Town;
 namespace Terradew;
 
 /// <summary>
-/// Stardew villagers are gone from view: their homes now belong to Terraria town NPCs. They still walk their
-/// schedules, so shops that name them keep working, but they are not drawn, cannot be talked to, and do not
-/// block the farmer. Their shop lines are dropped so no villager speaks.
+/// Villagers are played by Terraria town NPCs (see <see cref="Cast"/>). A villager nobody plays yet is not drawn,
+/// cannot be talked to, and does not block the farmer; one who is played walks their schedule, talks, and takes
+/// gifts. Shop counters show the resident's head and say nothing.
 /// </summary>
 internal sealed class Villagers
 {
     private static Villagers? instance;
     private IMonitor? monitor;
+    private readonly NpcStories stories;
+    private readonly Backpack backpack;
+    private readonly Hand hand;
+
+    public Villagers(NpcStories stories, Backpack backpack, Hand hand)
+    {
+        this.stories = stories;
+        this.backpack = backpack;
+        this.hand = hand;
+    }
 
     public void Install(Harmony harmony, IMonitor monitor)
     {
@@ -171,7 +181,7 @@ internal sealed class Villagers
         foreach (NPC npc in npcs)
         {
             if (npc.IsVillager)
-                npc.farmerPassesThrough = true;
+                npc.farmerPassesThrough = !Cast.Shown(npc);
         }
     }
 
@@ -209,7 +219,7 @@ internal sealed class Villagers
     {
         try
         {
-            return !__instance.IsVillager;
+            return Cast.Shown(__instance);
         }
         catch (Exception error)
         {
@@ -222,7 +232,7 @@ internal sealed class Villagers
     {
         try
         {
-            return !__instance.IsVillager;
+            return Cast.Shown(__instance);
         }
         catch (Exception error)
         {
@@ -231,14 +241,21 @@ internal sealed class Villagers
         }
     }
 
-    private static bool BeforeCheckAction(NPC __instance, ref bool __result)
+    private static bool BeforeCheckAction(NPC __instance, Farmer who, ref bool __result)
     {
         try
         {
-            if (!__instance.IsVillager)
-                return true;
-            __result = false;
-            return false;
+            if (!Cast.Shown(__instance))
+            {
+                __result = false;
+                return false;
+            }
+            if (instance != null && instance.stories.Interact(__instance, who, instance.backpack, instance.hand))
+            {
+                __result = true;
+                return false;
+            }
+            return true;
         }
         catch (Exception error)
         {

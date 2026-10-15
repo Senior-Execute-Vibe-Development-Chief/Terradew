@@ -266,7 +266,16 @@ public sealed class BridgeSystem : ModSystem
                 Inventory.ForceResend();
                 break;
             case NpcInteract interact:
-                Shops.Talk(link!, player, interact.NpcId);
+                Shops.Talk(link!, player, interact.NpcId >= 0 ? interact.NpcId : Followers.FindTownie(interact.NpcType));
+                break;
+            case VillagerSpots spots:
+                Followers.Receive(spots);
+                break;
+            case Friendships friends:
+                Followers.Receive(friends);
+                break;
+            case GiftItem gift:
+                link!.Send(Followers.Gift(player, gift));
                 break;
             case Buy buy:
                 Shops.Buy(link!, player, buy);

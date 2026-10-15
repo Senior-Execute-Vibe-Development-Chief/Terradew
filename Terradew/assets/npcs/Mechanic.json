@@ -1,0 +1,242 @@
+{
+  "npc": "Mechanic",
+  "villager": "Robin",
+  "gender": "Female",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Oh, hello there, @! I'm the Mechanic, though up here everyone just calls me Robin. I took over the carpenter's shop on the mountain and I've been elbow deep in gears ever since. Mind the springs on the floor, alright?$h",
+    "Mon": "Monday already? The gears never sleep, so I don't either. Mind the wire by the door.",
+    "Tue": "Tuesday means oiling every hinge in this shop. Left alone they squeak like a grumpy goat.",
+    "Wed": "Wednesday. The Steampunker wants a new boiler again. I keep telling her the last one still has a dent from the ceiling.$u",
+    "Thu": "Thursday is inventory day. Bolts, bolts and more bolts. Thrilling, I know.",
+    "Fri": "Friday! The mine trolley always sticks on Fridays. If you're passing the cart, grab me some Iron Bars.",
+    "Sat": "Saturday, and the whole valley is out in the sun. I'd rather be under a machine, but I do love a good walk up this mountain.$h",
+    "Sun": "Sunday is my rest day. Mostly. There's always a clock somewhere that needs winding.",
+    "Mon2": "Back again? Fine, you can hold the lantern while I work. Don't drop it on the saw.$h",
+    "Tue2": "If you see a bent pipe lying about, don't kick it. That's a steam valve, and it has feelings.",
+    "Mon4": "Oh, @, you're becoming a regular up here. I'll admit I look forward to your visits more than I let on.$l",
+    "Tue4": "My bolt bin rattled all night, and I thought of you. Silly, I know. Here, want to try turning this crank?$h",
+    "Wed4": "Did you know I built my first contraption from a broken spoon and a bicycle wheel? My teachers were not impressed.$h",
+    "Thu4": "I like having someone to test my gadgets on, @. Most folks just stare at them and walk away.$h",
+    "Fri4": "The trolley is fixed for another week, thanks to your help with the rope. I owe you a pie, at least.$h",
+    "Sat4": "You know what I love about valley folk? Everyone brings a slice of their own weather with them.$h",
+    "Sun4": "Sundays are nicer with company. Stay for a cup of tea while the kettle whistles, will you?$h",
+    "Mon6": "Anything broken on your farm, you tell me first. I'd rather fix a sprinkler than watch a crop wilt.$h",
+    "Thu6": "I used to hide in the workshop when the goblins came through. These days I'm the one bringing gadgets out to meet them.$h",
+    "Fri6": "You keep finding me in the mess and never complain. I like that about you.$h",
+    "Sat6": "Out with it, then. What's the most useless machine you've ever owned? Mine is a clock that runs backward.$h",
+    "Sun6": "I made a little wind chime that sings when you whistle near it. Come by after supper and I'll show you.$h",
+    "Mon8": "I never told anyone this, but as a kid I took apart the town hall clock. My mother cried, then bought me a toolbox the very next day.$l",
+    "Tue8": "Sometimes the shop gets too quiet, and I hear every old gear groaning. Having you here makes the noise feel friendly.$l",
+    "Wed8": "The Steampunker and I argue all the time, but she's family to me. I wouldn't trade that for a dozen clean workshops.$h",
+    "Thu8": "I was scared when I first arrived here. A new town, a new shop, a house with no one to share it. You made it feel like home.$l",
+    "Fri8": "If I ever stop fixing things, I'd still want you around to tell me when my hair looks like a rat's nest.$h",
+    "Sat8": "Would you believe I'm happiest when a machine finally hums right? It's like a song, and you're the one who taught me to listen.$l",
+    "Sun8": "The farm is my favorite project, @. Every field, every fence, every gear you oil. I hope you know how much it means to me.$l",
+    "Wed2": "Careful with the blue fuel can. It's flammable and it smells like sunshine, which makes it dangerous.$h",
+    "Wed10": "We have been through so many breakdowns together. The gears are fine now, and so am I.$l",
+    "Fri10": "Promise me you'll always come up the mountain when something breaks. Even if it's just your heart. I can weld that too.$l",
+    "Sun10": "This shop wasn't a home until you walked in. Gears, grease and all, I'm glad you're here.$l",
+    "spring_Tue": "Spring always makes the shop damp and the kettle sulky. Still, the mountain air is lovely this time of year.",
+    "summer_Sat": "The summer heat makes the gears seize up. Come by with cold water and I'll tell you how to fix my fan.$h",
+    "fall_Mon": "Autumn leaves blow straight into my workshop. I've started sweeping twice a day, and still they come.",
+    "winter_Sun": "Snow piles up on the shop roof and the chimney coughs the whole time. Warm yourself by the forge, @.$h",
+    "winter_Fri8": "The cold makes the best ideas come, @. Last night I designed a heater that runs off coal and mostly stays put.$h",
+    "spring_13": "The Egg Festival is coming, and I've built a little egg-tapping machine. I promise it's safe, probably.$h",
+    "fall_15": "Harvest season is busy, but I always find time to walk the lanes and wave at the farmers.$h",
+    "winter_20": "Quiet winter days are good for building. I'm working on something new, and it's almost done.$h",
+    "summer_3": "Summer mornings are for tinkering on the porch. The birds like my wind chimes more than I do.",
+    "summer_Mon": "The mine's rails are hot enough to fry eggs this week. Don't tell the Dwarf I said so.",
+    "winter_Thu": "Cold metal is brittle, so I keep everything warm before I use it. Good habit for people too.",
+    "spring_Sun": "Spring is the season for new projects. I've already started three, and only one is on fire.$h"
+  },
+  "rainy": "Rain on the mountain roof sounds just like a clockwork drum. I'd say it's relaxing, but the puddles keep ruining my wiring.",
+  "marriage": {},
+  "situations": {
+    "eye": "The big eyeball in the sky is gone, @. Good riddance. Those lenses were scratched anyway.$h",
+    "evilBoss": "Something big and nasty fell in the caves last night. My wrenches are still rattling from it.$u",
+    "skeletron": "Skeletron is down! The dungeon is open and the Old Man is free. The Clothier is buying a round for everyone at the saloon, so mind your coin.$h",
+    "queenBee": "The Queen Bee is finally gone. The honey smell has nearly worn out of my overalls, bless it.$h",
+    "hardmode": "The Wall of Flesh has fallen and hardmode has begun. Everything in the caves got meaner overnight, so keep your gear oiled.$u",
+    "mechs": "One of the mechanical bosses was smashed last night. Beautiful metal and a terrible mess. I'm already sorting the parts.$h",
+    "plantera": "Plantera is defeated! The jungle temple is open now, and I want every vine cut back for the sake of my gears.$h",
+    "golem": "The Golem is down, so the temple idols can stop glaring at me. I'll sleep better tonight.$h",
+    "cultist": "The Lunatic Cultist fell and the celestial pillars appeared in the sky. Go take a look before the sky gets stranger.$u",
+    "moonLord": "The Moon Lord is gone. I didn't know the sky could be this quiet until last night.$u",
+    "goblins": "A goblin army came marching through and got sent packing. The Goblin Tinkerer grumbled all morning about the cleanup.$a",
+    "pirates": "Pirates came up the shore last night and were chased off. Their ship still has a cannon I would love to take apart.$h",
+    "frostLegion": "The Frost Legion came for the valley last night. Cold snowmen with real knives. We held the line, mostly.$u",
+    "martians": "Martians! Ray guns and flying saucers over the farm last night. I wanted to be frightened, but I was too busy taking notes.$u",
+    "bloodMoon": "There was a blood moon last night and the monsters came out in droves. Keep a lamp by the door, @.$s",
+    "eclipse": "The sun went dark last night in a solar eclipse and all my clocks went haywire. Still, what a sight.$u",
+    "party": "The Party Girl is throwing a party today. I already set my best party hat on the workbench. Don't tell her, but she's worse with tools than I am.$h"
+  },
+  "festivals": {
+    "spring13": "Happy Egg Festival, @! I brought my egg-tapping machine. Please do not let the Party Girl near the crank.$h",
+    "spring24": "Flower Dance! I'd dance with you, but my boots squeak on the polished floor. Watch your toes.$h",
+    "summer11": "For the Luau I've put a copper pot in the soup. Mostly so it can be heated, which is more than my lunch can say.$h",
+    "summer28": "The Dance of the Moonlight Jellies on the beach is my favorite night of the year. The jellies glow, the gears sparkle.$h",
+    "fall16": "Stardew Valley Fair! I have a new gadget on display in the grange. It spins, it whistles and it has a tiny flag on top.$h",
+    "fall27": "Spirit's Eve! I put some creaky gears in the maze. Watch out for the ticking, it is not a ghost. Probably.$u",
+    "winter8": "Festival of Ice! I'm entering the ice fishing contest with a heater I built myself. Cheating? Only a little.$h",
+    "winter25": "Feast of the Winter Star! I wrapped my gift with wire and tiny wrenches. Open it carefully, @.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "A wrench, a cog and a shiny bar of metal, all in one afternoon? You've made my whole week, @. Now, let's see what this little beauty can do.$h",
+      "stardew": ["336", "335"],
+      "terraria": ["Wrench", "Actuator", "Cog"]
+    },
+    "liked": {
+      "text": "Ooh, parts! Some wire and a clock piece. Good taste, @. I can use these right away.$h",
+      "stardew": ["334", "380"],
+      "terraria": ["Wire", "MechanicalWheelPiece", "Timer1Second"]
+    },
+    "neutral": {
+      "text": "Thanks, @. That's a nice little thing. I'll find a place for it on the shelf.",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Oh... this isn't something I can use. Honestly, it's just clutter on my workbench, @.$a",
+      "stardew": ["168", "-81"],
+      "terraria": ["#seed", "#dye"]
+    },
+    "hated": {
+      "text": "Slime? Bat wing? Junk? Put that away, @. My shop is not a rubbish heap, and I have feelings about it.$a",
+      "stardew": ["766", "767"],
+      "terraria": ["#junk", "#potion"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "weather": "any",
+      "music": "jaunty",
+      "after": "Careful with that spring on the way out, it has a temper.",
+      "reward": "Wire",
+      "rewardCount": 10,
+      "steps": [
+        { "say": "Oh! @, hello. Mind the gears on the floor, they bite.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Name is Robin, but up here everyone calls me the Mechanic. I keep this shop running and the Steampunker's lab next door, which she keeps blowing up.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "I can fix nearly anything with a wrench and a bit of wire. Here, have a look at this lever I rebuilt last week.$h" },
+        { "question": "What do you fix on your farm?", "answers": [
+            { "text": "Mostly broken sprinklers.", "friendship": 20, "reply": "Sprinklers are lovely little machines. Bring them by and I'll tune them for you.$h" },
+            { "text": "Nothing, I just watch the crops grow.", "friendship": -10, "reply": "Hmph. Watching things grow is a job for scarecrows.$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Anyway, that wire is for you. Keep it away from the stove and you'll be fine.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "Mountain",
+      "time": "day",
+      "weather": "sunny",
+      "music": "playful",
+      "after": "If you hear a whistling up in the pines, that's just my rocket rig.",
+      "steps": [
+        { "say": "@! Fancy meeting you up here by the old quarry. I come to test my rocket rig. Mostly the rockets go up, mostly.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "exclamation" },
+        { "move": "self", "dx": 0, "dy": 1 },
+        { "say": "Mind where you stand. The wind up here blows my hat into the pines every second day.$h" },
+        { "pause": 800 },
+        { "say": "The pines hum when the wind is right. My mother said I was born listening to machines, and the trees hum too.$s" },
+        { "move": "self", "dx": 0, "dy": -1 },
+        { "say": "I came up here after the shop sat empty for years. Nobody wanted the sawdust and the ghost of an old saw.#$b#Working with my hands keeps the quiet thoughts away.$s" },
+        { "question": "Do the pines ever talk back?", "answers": [
+            { "text": "Only when I ask nicely.", "friendship": 25, "reply": "Then we're two of a kind. Fine company, you are.$h" },
+            { "text": "They sound like a broken fan to me.", "friendship": -15, "reply": "Ha. A broken fan is still a fan, and I'll fix it one day.$a" } ] },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Thanks for listening, @. It's nice to have someone who doesn't think I'm mad for talking to tree sap.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "home",
+      "time": "day",
+      "weather": "any",
+      "music": "jaunty",
+      "with": ["Steampunker"],
+      "after": "Don't let the Steampunker talk you into standing near the boiler again.",
+      "reward": "Actuator",
+      "rewardCount": 5,
+      "steps": [
+        { "say": "Oh, @! Perfect timing. Come see what the Steampunker did to my workbench.$u" },
+        { "say": "It was an experiment! The little boiler ran on sparks for a whole minute.$h", "who": "Steampunker" },
+        { "face": "self", "toward": "Steampunker" },
+        { "say": "A whole minute of smoke and singed eyebrows, and you call that science?$a" },
+        { "emote": "angry", "who": "Steampunker" },
+        { "move": "Steampunker", "dx": 1, "dy": 0 },
+        { "say": "Oh, I was only joking. You two are the only people in town who understand a good gear ratio.$h", "who": "Steampunker" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Want to help build something loud?", "answers": [
+            { "text": "Yes, let's build something loud.", "friendship": 30, "reply": "Loud is exactly what I hoped you'd say.$h" },
+            { "text": "No, I'd rather keep my eyebrows.", "friendship": -5, "reply": "Sensible. The boiler will still be waiting for you.$s" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "This is my favorite bench. The Clockwork Assault Rifle is one of my designs, and most folks never even know it.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "Town",
+      "time": "night",
+      "weather": "any",
+      "music": "sweet",
+      "steps": [
+        { "say": "The lamps make everything look like a machine at night. Good thing I like the dark.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "My dad was a mechanic too, back in a mining town far from here. He taught me a broken thing isn't finished until it works again.$s" },
+        { "pause": 1000 },
+        { "say": "I think that's why I stayed in the valley. Everyone here gets a second chance, even a rusty old carpenter's shop.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Let me walk you back. The mine trolley runs late and I don't want you lost in the dark.$h" },
+        { "question": "What do you want most from life?", "answers": [
+            { "text": "A quiet farm and good friends.", "friendship": 35, "reply": "That's a fine dream. I'll help you keep the fences straight.$h" },
+            { "text": "Adventure and treasure.", "friendship": 10, "reply": "Ha! Then be careful. Treasure always has a trap, and I always have a fix.$h" } ] },
+        { "emote": "heart", "who": "farmer" },
+        { "face": "self", "toward": "up" },
+        { "say": "Goodnight, @. Rest well. Machines run better when their minds are calm.$h" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "Farm",
+      "time": "day",
+      "weather": "sunny",
+      "music": "sweet",
+      "after": "Your farm is my favorite machine in the valley. Don't tell the others.",
+      "reward": "MechanicalLens",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "@, your farm is the best machine in the valley. Every row straight, every sprinkler humming.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Do you know how rare it is to find something that works this well? I used to think all things had a breaking point.$s" },
+        { "pause": 900 },
+        { "say": "Then I met folks who stayed with the broken things and fixed them. You taught me that, you know.$h" },
+        { "emote": "heart", "who": "self" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "question": "Should we build a new mailbox or keep the old one?", "answers": [
+            { "text": "Build a new one together.", "friendship": 40, "reply": "Together. That's a deal I'll sign in grease.$h" },
+            { "text": "Keep the old one, it has character.", "friendship": 5, "reply": "Character! It has more rust than character, but I agree.$h" } ] },
+        { "say": "Thanks for letting me see your fields, @. Ideas always come easier when I see something grow.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    }
+  ]
+}

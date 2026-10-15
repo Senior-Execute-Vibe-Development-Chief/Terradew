@@ -132,7 +132,7 @@ internal static class ProtocolTests
         return failed;
     }
 
-    private static Message Roundtrip(Message message)
+    internal static Message Roundtrip(Message message)
     {
         byte[] frame = Wire.Encode(message);
         int length = BitConverter.ToInt32(frame, 0);

@@ -1,0 +1,231 @@
+{
+  "npc": "Princess",
+  "villager": "Evelyn",
+  "gender": "Female",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Oh, hello there, @! I am the Princess, though I rarely have a kingdom to rule these days. Still, a visitor is a visitor, and you are very welcome in my little river house.$h",
+    "Mon": "Monday, my dear. Back home every Monday began with a parade of silver pennants. Here it begins with the squeak of a rusty gate.",
+    "Tue": "Tuesday is tea day, and I take it very seriously. Would you be so kind as to pour the cups?",
+    "Wed": "Wednesday brings a fresh basket of wildflowers from the river meadow. I arrange them every single time, even when they wilt by supper.",
+    "Thu": "Thursday is for polishing my crown. It is only a paper crown, but I polish it with great dignity.",
+    "Fri": "Friday. The Golfer keeps knocking his golf balls into my rose bushes. I forgive him, mostly, because he apologizes so sweetly.",
+    "Sat": "Saturday means a long walk along the river to see the fish. Did you know the sunfish here are shy around royalty? It is quite insulting.$u",
+    "Sun": "Sunday is for resting, and I rest with a book of old fairy tales. I always skip ahead to the ending to see whether the hero got the cake.$h",
+    "Mon2": "Oh, you came back! Sit down, sit down. I was just telling the rose bushes about you, and they are very jealous.$h",
+    "Tue2": "Mind the teacups, @. They are older than the Golfer's golf career, and that is saying something.$h",
+    "Sat2": "The Tavernkeep keeps begging me to sing at the saloon. I have agreed to one verse, provided nobody throws anything.$u",
+    "Thu2": "On Thursdays the river is especially clear, and I like to count the pebbles at the bottom. There are always exactly enough.",
+    "Sun2": "If you are passing on a Sunday, please bring a book. I have read every one in this house twice and need fresh stories.$h",
+    "Mon4": "You are becoming a true friend, @. At court I had many people who bowed to me, but very few who simply sat and talked. I like you for sitting with me.$h",
+    "Tue4": "I baked a little cake this morning, and I could not help thinking you would want a slice. It is a bit lopsided, but the frosting is wonderful.$h",
+    "Wed4": "Did you know the fairies of the Hallow used to visit my nursery? Their tiny lights kept the nightmares away. I miss that light sometimes.$h",
+    "Thu4": "Once the polishing was done, I looked out at the river and thought of your farm. The valley is so much warmer since you came to live in it, @.$h",
+    "Fri4": "You have been so patient with my silly stories about unicorns, @. Most people laugh. You simply ask me what the unicorns were like.$h",
+    "Sat4": "A walk with you is the finest part of my Saturday. Let us go see the fish, and I will let you hold my parasol.$h",
+    "Sun4": "On Sundays I read aloud, and you are the only one who ever asks for another chapter. Shall we start the next one today?$h",
+    "Mon6": "I had a bad dream about the mines last night. Silly, I know. But you walked through it carrying a lantern, and the mines looked friendly after that.$h",
+    "Tue6": "I have a secret. When I was small I wanted to be a knight far more than a princess. Do not tell my tutors.$l",
+    "Wed6": "Sometimes I wish I could show you my old kingdom. It was all glowing crystal and singing flowers. Here the flowers are just as lovely, and the company is better.$h",
+    "Thu6": "I used to hide when the goblins came marching through. These days I offer them tea, and they are very confused about it.$h",
+    "Fri6": "You always come up the path with a smile, even after a long day in the mines. I think that is the bravest thing I have ever seen.$h",
+    "Sat6": "Tell me honestly, @. Must a princess be perfect? I have dropped more teacups than I can count, and the valley still lets me stay.$l",
+    "Mon8": "I have never told anyone that I miss being loved for my kindness and not for my title. You are the first person to love me that way, and I am so grateful.$l",
+    "Tue8": "When I first moved in I cried every night for a week. Now this house feels like home, and a large part of that is you visiting.$l",
+    "Wed8": "You make me braver, @. I used to hide from the bats in the caves. Now I wave at them and invite them to tea. Well, mostly I wave.$h",
+    "Thu8": "I have been thinking about what family means. Not a family written in a royal book, but people who come knocking at your door. You are part of mine now.$l",
+    "Fri8": "I keep one of your ribbons in my jewelry box, the one you gave me on the first day. It is my most precious treasure.$l",
+    "Sat8": "We should walk down to the beach at dusk someday. The sea turns to a sheet of gold, and I would like to see it with someone I trust.$l",
+    "Sun8": "Reading is lonely without someone to share it with. I am so glad I have you to read the sad parts to, @. Thank you for sitting with me.$l",
+    "Fri10": "If the kingdom ever calls me home, I hope you would come along. Not as a courtier, but as my dearest friend.$l",
+    "Wed10": "I think I can finally say it. This little house has a chair with your name on it, whenever you want to sit in it.$l",
+    "Sun10": "Every Sunday I used to keep one chair empty at my table, just in case someone came. Today I do not have to keep it empty.$l",
+    "summer_Wed": "The summer river is warm and sparkling, and I wade in with my skirts tied up. Do not tell the Golfer, he will laugh himself silly.$h",
+    "spring_Sun": "Spring is my favorite season. Every flower in the valley seems to be showing off, and I cannot blame them at all.$h",
+    "fall_Mon": "Autumn leaves drift down onto my tea. I scoop them out with a little silver spoon and pretend it is a royal ceremony.$h",
+    "winter_Thu": "Winter makes my river house very cozy. Come sit by the fire, and I will wrap you in my best blanket.$h",
+    "spring_13": "Happy Egg Festival, @! I painted six eggs in the colors of my old kingdom. Whatever you do, do not let the Golfer near them with a club.$h",
+    "summer_20": "The summer nights are short and sweet. The Golfer has started practicing his swing under the moon, and I told him he will hit the moon one day.$u",
+    "fall_15": "Harvest time brings fresh berries, and I made preserves with the Golfer's help. Mostly he ate them while I stirred.$h",
+    "winter_Fri8": "Winter nights by the fire are my favorite nights of the year. Sit close, @. The stove is warm and so is the company.$l"
+  },
+  "rainy": "Rain on the river house is the most soothing sound in the world. I hum along to the drops, and the rose bushes drink up every bit of it.",
+  "marriage": {},
+  "situations": {
+    "eye": "The great eye in the sky is gone, @. I thought it would be bigger. Mostly I am relieved it stopped staring through my windows.$h",
+    "evilBoss": "The creature from the deep caves has been destroyed. The river is calm again, and my fish have stopped hiding under the rocks.$h",
+    "skeletron": "The skull in the dungeon has been defeated, and the Old Man is free at last. Such a lonely old gentleman. I shall send him a lovely cake.$h",
+    "queenBee": "The Queen Bee has been defeated in the jungle. I did not know bees could be so grumpy, but the honey is ever so sweet now.$h",
+    "hardmode": "The Wall of Flesh has fallen, and the Hallow is spreading. Everything glows a little brighter now, but the monsters are much meaner. Be careful out there, @.$u",
+    "mechs": "One of those mechanical beasts has been destroyed. The Mechanic says the noise was horrid, and I quite agree with her.$h",
+    "plantera": "Plantera is defeated, and the jungle temple is open. I hear the flowers there sang with relief. Such a lovely sound.$h",
+    "golem": "The Golem has fallen in the temple. I hear it was made of stone and stubbornness, a little like the Golfer, I think.$h",
+    "cultist": "The Lunatic Cultist is gone, and the pillars of light are shining over the valley. I feel like a princess in a fairy tale.$u",
+    "moonLord": "The Moon Lord has fallen. The sky looks so calm now, and I can finally sleep without listening for strange noises.$h",
+    "goblins": "The goblin army was repelled last night. I offered them tea, but they only wanted to steal my teaspoons. Brutes.$a",
+    "pirates": "The pirates tried to raid the beach, but you chased them off. My hero! I hope they have learned their lesson.$h",
+    "frostLegion": "The Frost Legion has been pushed back. The snow looked so pretty, but the tiny ice soldiers were rather rude about it.$u",
+    "martians": "The Martians have gone home, at least for now. Their ray guns made my tea cold, which I consider a personal insult.$a",
+    "bloodMoon": "There was a blood moon last night. The sky went red, and I stayed indoors with the curtains closed and a very large blanket.$u",
+    "eclipse": "The sun went dark yesterday during the eclipse. It was spooky and beautiful, and I held my breath until the light came back.$u",
+    "party": "The Party Girl is throwing a party today! I have agreed to wear a paper crown, which I suppose is my royal duty now.$h"
+  },
+  "festivals": {
+    "spring13": "Happy Egg Festival, @! I painted six eggs in the colors of my old kingdom. Whatever you do, do not let the Golfer near them with a club.$h",
+    "spring24": "The Flower Dance! Everyone is dressed in petals and ribbons. Would you do me the honor of a turn around the stage?$h",
+    "summer11": "The Luau! I brought a bowl of chilled berry punch for the community soup. It is not really soup, but the valley seems to enjoy it.$h",
+    "summer28": "The moonlight jellies are beautiful tonight. They float like tiny lanterns, and I feel like a child in the glowing gardens of home.$h",
+    "fall16": "Stardew Valley Fair! I entered my rose preserves in the grange display. The judge says they are too sweet. I told him a princess is allowed to be sweet.$h",
+    "fall27": "Spirit's Eve! The maze is so dark, but I brought a lantern shaped like a fairy. Stay close to me, @, and do not wander off.$u",
+    "winter8": "Festival of Ice! I built a snow sculpture of a unicorn. The Golfer says it looks like a sheep. I am choosing to ignore him.$h",
+    "winter25": "Feast of the Winter Star! I have a gift for you wrapped in silver paper. Open it at once, I cannot wait another moment!$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Diamonds, a unicorn horn and a rainbow wand? @, you have made a princess very happy. These shall go in my finest box.$h",
+      "stardew": ["72", "74"],
+      "terraria": ["RainbowRod", "UnicornHorn", "PixieDust"]
+    },
+    "liked": {
+      "text": "How lovely! Sweets and dainty flowers. I always say a gift should be as pretty as the giver.$h",
+      "stardew": ["220", "221", "591"],
+      "terraria": ["CandyApple", "CandyCane", "ChocolateChipCookie"]
+    },
+    "neutral": {
+      "text": "Thank you, @. That is a very practical item. I shall find it a shelf next to the teapot.",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Oh my. This is rather rough for a royal house. Please take it back to wherever it came from, dear.$u",
+      "stardew": ["168", "766"],
+      "terraria": ["#explosive", "#junk"]
+    },
+    "hated": {
+      "text": "Slime and bat wings on my clean rug? Goodness, @, I am appalled. Please take it away before the rose bushes faint.$a",
+      "stardew": ["767", "769"],
+      "terraria": ["Gel", "#bossSummon"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "weather": "any",
+      "music": "sweet",
+      "after": "Do come back for tea any time, @. The kettle will always be on.",
+      "steps": [
+        { "say": "Oh! @, you found the path. Forgive the rug, the Golfer has been practicing putts again.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I am the Princess, though I live here like any other villager. A river house is far more charming than a castle, I have decided.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Would you care for some tea? The kettle is singing, and I have far too many teacups for one royal guest.$h" },
+        { "question": "What do you enjoy most here?", "answers": [
+            { "text": "The river and the fish.", "friendship": 20, "reply": "Fish are wonderful company. They never once ask me to curtsy.$h" },
+            { "text": "Nothing much, it is quiet.", "friendship": -10, "reply": "Quiet? My dear, this valley is full of wonders. You simply have not looked properly yet.$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Now then, a little welcome gift for the river house. Keep it somewhere sunny, it will be happier there.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "Town",
+      "time": "day",
+      "weather": "any",
+      "with": ["Golfer"],
+      "music": "jaunty",
+      "reward": "CandyCane",
+      "rewardCount": 3,
+      "steps": [
+        { "say": "@! What a happy surprise. The Golfer and I were just deciding which of these bakery treats is the finest.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Give me a moment, my dear. I am torn between the honey bun and the sugar ring. Golfer, you are no help at all.$u" },
+        { "say": "I say the honey bun, obviously. Every princess deserves a sticky finger now and then.", "who": "Golfer" },
+        { "move": "Golfer", "dx": 1, "dy": 0 },
+        { "question": "Which would you pick?", "answers": [
+            { "text": "The sugar ring, please.", "friendship": 15, "reply": "A fine choice. Sugar on the outside and a very good heart within, just like you.$h" },
+            { "text": "The honey bun for me.", "friendship": 15, "reply": "Ha! Two votes for honey now. The Golfer will be insufferable.$h" } ] },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Here, my dear. A candy cane for good company. Please do not let the Golfer have the last one.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "home",
+      "time": "night",
+      "weather": "any",
+      "music": "musicboxsong",
+      "after": "Leave the lamp lit when you go, if you would. Old habits.",
+      "steps": [
+        { "say": "@? Oh, you came up the path so late. I could not sleep, I am afraid. Come in before the moths find you.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "sad", "who": "self" },
+        { "say": "Silly dreams again, about the mines and a lantern that went out. In my dream you were the one who relit it. Strange, is it not?$l" },
+        { "question": "Do you have dreams that scare you?", "answers": [
+            { "text": "Sometimes, yes.", "friendship": 20, "reply": "Then you understand. Talking helps. Thank you for listening to me.$h" },
+            { "text": "No, I sleep like a log.", "friendship": -5, "reply": "Lucky you. Some of us must keep the lamps lit for ourselves.$s" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Sit with me by the window for a little while, will you? The river is so calm tonight.$h" },
+        { "pause": 800 },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "Forest",
+      "time": "night",
+      "weather": "any",
+      "music": "sweet",
+      "reward": "PixieDust",
+      "rewardCount": 5,
+      "steps": [
+        { "say": "@, I am so glad you came. The forest is quiet tonight, and the fireflies are dancing just for us.$l" },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "I want to tell you something real. Back home people loved the crown, but rarely the one wearing it. Here you sit beside me in the grass and simply talk.$l" },
+        { "pause": 800 },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Would you tell me about your own family, @? I would very much like to know who you really are.$h" },
+        { "question": "Where did you grow up?", "answers": [
+            { "text": "A small farm town far away.", "friendship": 25, "reply": "A small town. I think I would have loved it there. Thank you for telling me.$l" },
+            { "text": "Somewhere I would rather not talk about.", "friendship": -10, "reply": "That is all right. Some rivers run quietly, and I will not ask you to swim them tonight.$s" } ] },
+        { "pause": 600 },
+        { "say": "Here, take this. A little pixie dust from my old garden. It always made me feel brave when I was small.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "Farm",
+      "time": "day",
+      "weather": "any",
+      "music": "sweet",
+      "after": "Have you seen the sunset from the farm? It is my favorite view in the world.",
+      "steps": [
+        { "say": "@! You came out to the farm just to see me? Oh, you will make me blush, I can feel it already.$l" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I have been thinking about my old kingdom. The crown, the grand halls, the parades. None of it was as warm as this little farm, with you waving from the fields.$l" },
+        { "emote": "heart", "who": "farmer" },
+        { "move": "self", "dx": 0, "dy": 1 },
+        { "say": "Will you stay a while longer? Sunset is my favorite part of the day, and I want to watch it with my dearest friend.$h" },
+        { "pause": 1000 },
+        { "question": "Shall we watch the sunset together?", "answers": [
+            { "text": "Yes, let us stay.", "friendship": 30, "reply": "Oh, wonderful. Then we shall count the clouds until the stars come out.$h" },
+            { "text": "I need to head home soon.", "friendship": 0, "reply": "Of course. Come back soon, and bring me a story to tell.$h" } ] },
+        { "move": "self", "dx": 0, "dy": -1 },
+        { "say": "You are my dearest friend in this valley, @. Whatever the kingdoms and monsters do, that will never change.$l" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    }
+  ]
+}

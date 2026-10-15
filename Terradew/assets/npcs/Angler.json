@@ -1,0 +1,212 @@
+{
+  "npc": "Angler",
+  "villager": "Willy",
+  "gender": "Male",
+  "child": true,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Oh, a farmer! Finally, somebody to talk to who isn't the Guide. I'm the Angler, and this is my fish shop. I'm not a kid, I'm a professional.$u#$b#Okay, I'm a kid. But I'm a professional kid.$h",
+    "Mon": "Monday already? Fish don't care what day it is, and neither do I.$h",
+    "Tue": "Tuesday tides are the best for catching things. Everybody else is at work, so the water is all mine.$h",
+    "Wed": "Hmph. Wednesday. The Merchant says I'm not allowed near the cash box. He's just jealous of my fishing.$a",
+    "Thu": "Thursday is for practicing my knots. Did you know there are a hundred knots? I know ninety-nine.$h",
+    "Fri": "Fridays are for gossip. The Party Girl says there's going to be a party, but she says that every day.$h",
+    "Sat": "Saturday! Let's go to the mines later. I hear there are fish down there that glow.$h",
+    "Sun": "Sunday. Quiet day. Good for sitting on the dock and thinking about big fish.$s",
+    "Mon2": "Oh, it's you. Did you bring my bucket back? Good. Don't touch the crate, there's a fish in it.$a",
+    "Tue2": "The Tavernkeep says I need to stop shouting at customers. I'm not shouting. I'm informing them.$u",
+    "Wed2": "Hm, your hat is kind of cool. Don't tell anyone I said that.$h",
+    "Thu2": "The Merchant tried to sell me a rod that's way too heavy. Please, I'm a fishing expert, not a fool.$a",
+    "Fri2": "Want a fish? I've got extras. You can pay me back by not touching the bucket, okay?$h",
+    "Sat2": "Saturday means the beach is full of tourists, and they all want to touch my fish. Gross.$a",
+    "Sun2": "Evening is the best time to fish. It's the only time nobody bugs me about my homework.$h",
+    "Mon4": "@! You're back already? I was just about to stop watching the water. Good timing.$h",
+    "Tue4": "Tuesdays are better now that you come by. Don't tell the gulls I said that.$l",
+    "Wed4": "Did you bring any bait? Real bait, not that stale worm stuff from the general store.$h",
+    "Thu4": "I'm going to show you the knot I invented. It's called the Willy Knot. I can't tell you how it works, it's a secret.$h",
+    "Fri4": "Friends are important. The Tavernkeep says so, and he's never been wrong. Mostly.$h",
+    "Sat4": "Want to race to the end of the pier? I'll give you a head start.$h",
+    "Sun4": "I've been thinking about my dad. He always told me patience wins the big fish. I think he's right, you know.$s",
+    "Mon6": "I'm learning to cast the long way now. My arm is sore, but my casts are better than the Guide's.$h",
+    "Tue6": "The Dryad says the sea and the forest are connected. I don't believe her, but the fish seem to agree.$u",
+    "Wed6": "Do you ever wonder what's out past the reef? I dream about going there someday, maybe on a big boat.$h",
+    "Thu6": "I practice my casts on the mine carts. They don't fight back, which is nice for a change.$h",
+    "Fri6": "The Pirate came by today asking for a fish. I gave him a seaweed sandwich. He said it was delicious, but he was lying.$h",
+    "Sat6": "I like being on the beach when the sun goes down. Everything turns orange and the fish get sleepy.$h",
+    "Sun6": "Sometimes I forget to eat lunch when I'm fishing. The Nurse says I need to eat. She says it like I'm a hundred years old.$a",
+    "Mon8": "Don't tell anyone, but I used to cry when I lost a fish. Now I just cry a little and then go catch another one.$s",
+    "Tue8": "@, you're the only one I'd show my secret fishing spot to. It's behind the rocks, and I'm not telling you exactly where.$h",
+    "Wed8": "Sometimes I think about the dreams I have. Scary eyes, big moons. The Guide says they're just dreams. I hope the Guide is right.$s",
+    "Thu8": "When you're here, the beach feels less lonely. Hm, I didn't say that. Forget I said it.$l",
+    "Fri8": "Remember the Angler's Quest? I finished it because of you. Every time I got stuck, you told me to keep trying.$h",
+    "Sat8": "Next summer I want to enter the fishing contest and win. Then you'll be my lucky charm, okay?$h",
+    "Sun8": "I'm glad you're my friend, @. I didn't have many before. Most kids think fishing is boring.$s",
+    "Fri10": "Everything I know about fishing I learned from making mistakes. Lots of them. Don't tell the Guide.$h",
+    "Tue10": "When I'm older I'll have a shop with a fish tank as big as the saloon. Maybe you'll come visit and bring a sandwich.$h",
+    "summer_Wed": "Summer heat is awful. The fish all sink to the cool parts and I have to chase them. It's exhausting, honestly.$s",
+    "winter_Fri8": "I'm wearing three sweaters, @, and I still can't feel my toes. Winter fishing is a test of character.$u",
+    "fall_15": "Leaves are falling on the water and I keep catching them instead of fish. Hey, that's a joke. Ha.$h",
+    "spring_Sat4": "The beach is waking up again! Look, the little crabs are out. Careful, they bite, and I don't mean my jokes.$h"
+  },
+  "rainy": "Rain means the big fish come up close to the shore. That's science. Also, my hat is soaked, and I'm not happy about it.$a",
+  "marriage": {},
+  "situations": {
+    "eye": "Did you hear? The giant eyeball in the sky got knocked out. Good riddance. I'm still not going on the night boats.$u",
+    "evilBoss": "The Eater of Worlds or the Brain of Cthulhu, whichever one it was, is gone from under the ground. The fish down there are very relieved.$h",
+    "skeletron": "Skeletron is finally defeated and the dungeon is open! The Old Man got freed too, which is good, he has great stories. I'm not going in there alone, though.$u",
+    "queenBee": "The Queen Bee is gone! The honey shop has gone quiet. The bees are sulking, but I'm happy. Bees sting. Fish don't.$h",
+    "hardmode": "The Wall of Flesh fell and hardmode started! The Hallow is spreading everywhere and the fish glow weird colors. It's kind of cool, but I'm scared.$u",
+    "mechs": "One of those big mechanical bosses was destroyed! I heard the blast all the way down here. Mechanical things are so loud.$u",
+    "plantera": "Plantera is dead and the jungle temple is open! I want to see the flowers there, and maybe a huge fish in the jungle pond.$h",
+    "golem": "The Golem is defeated! The temple is quiet again. I still don't think stone idols should be napping so close to the water.$a",
+    "cultist": "The Lunatic Cultist is down, so the celestial pillars are showing up. I saw a glowing pillar from the beach. It made the seagulls scream.$u",
+    "moonLord": "The Moon Lord is gone! The sky finally got quiet. I can sleep again, and so can the fish.$h",
+    "goblins": "We beat back a goblin army! I hid behind the net and yelled encouragement. Mostly I yelled, honestly.$h",
+    "pirates": "The pirates came, and the pirates left. Some of them tried to steal my bait. Nice try. Nobody steals from the Angler.$a",
+    "frostLegion": "The Frost Legion got sent back to the snow! Their snowballs were terrible, but they were very determined.$h",
+    "martians": "The Martians came and got beaten. Their ship lights were so bright. I want to know how they made those, but nobody will tell me.$u",
+    "bloodMoon": "Did you see the blood moon last night? The fish all hid and the water went dark red. It was creepy and I loved it.$u",
+    "eclipse": "The sun went out in the middle of the day! It was an eclipse. I watched the water turn dim. The fish were confused, like me.$u",
+    "party": "The Party Girl is throwing a party today! She says I have to come, but I'm bringing my fishing rod and I'm not dancing.$h"
+  },
+  "festivals": {
+    "spring13": "The egg hunt! I'm not a baby, but I found the glowing egg under the dock first. Don't tell anyone I cheered for a whole second.$h",
+    "spring24": "The Flower Dance! I'm only going if somebody asks me properly. Nobody has asked yet, so I'm fishing instead. Totally my choice.$s",
+    "summer11": "The Luau! I put my best bass in the community soup this year. Everyone said it smelled amazing, and I didn't even burn it.$h",
+    "summer28": "Dance of the Moonlight Jellies! The jellies glow on the beach at night. I'll stay up late and catch the brightest one, I promise.$h",
+    "fall16": "The Stardew Valley Fair! I'm entering the fishing games this year. I'll win fair and square, no matter what the Merchant says about it.$u",
+    "fall27": "Spirit's Eve! The maze is spooky, but I'm not scared of ghosts. I'm only a little scared of the lighthouse. Okay, a lot.$s",
+    "winter8": "The Festival of Ice! Ice fishing! I have been waiting all year for this. My toes will freeze, but the fish will be worth it.$h",
+    "winter25": "Feast of the Winter Star! I got a gift from my secret friend, and I'm sure it's a fishing rod. Mostly sure. Please don't let it be socks.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "A catch! For me? This is the best fish I've ever seen. Okay, the second best. Thank you, @!$h",
+      "stardew": ["128", "143", "-4"],
+      "terraria": ["Bass", "Trout", "GoldenCarp", "#fish"]
+    },
+    "liked": {
+      "text": "Hmm, not bad. Not bad at all, @. I'll eat it while I fish.$h",
+      "stardew": ["152", "-7"],
+      "terraria": ["Sashimi", "CookedFish", "#bait"]
+    },
+    "neutral": {
+      "text": "Okay. I guess that's something, right?",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Ew, what is this? Take it back, I'm not a trash collector.$a",
+      "stardew": ["168", "-16"],
+      "terraria": ["#junk", "Gel"]
+    },
+    "hated": {
+      "text": "Gross! Get that away from my bucket right now!$a",
+      "stardew": ["-75", "-80"],
+      "terraria": ["#seed", "#plant"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2", "hearts": 2, "where": "home", "time": "day", "weather": "any", "music": "playful",
+      "after": "Don't tell anyone about my secret stash of bait, okay?",
+      "reward": "Trout", "rewardCount": 2,
+      "steps": [
+        { "say": "Hey! Don't just stand there, @. Look what I caught this morning!$h" },
+        { "emote": "exclamation" },
+        { "say": "A bass! A big one! Well, big for a fish my size, which is medium. But I caught it, so it's the best.#$b#Everybody says I'm too little to fish the deep water. I'm not too little. I'm just fast.$a" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you think I'm too young to be a real angler?", "answers": [
+            { "text": "No, you are a real angler.", "friendship": 30, "reply": "Hmph. Obviously. Good answer, @.$h" },
+            { "text": "Maybe you should practice more.", "friendship": -10, "reply": "Practice? I've been practicing since before I could walk!$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Here, you can have one of my trout. I have lots. Don't tell the Merchant I gave away stock.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "face": "self", "toward": "up" },
+        { "pause": 500 },
+        { "say": "Okay, that's enough showing off. Go catch something. A real fish, not a pebble from the pond.$u" }
+      ]
+    },
+    {
+      "id": "h4", "hearts": 4, "where": "Beach", "time": "day", "weather": "sunny", "music": "sweet",
+      "after": "If you see a huge golden fish out past the rocks, you come get me. Deal?",
+      "steps": [
+        { "say": "@! You came to the beach. Nobody comes to the beach in the morning except me and the gulls.$h" },
+        { "say": "I come down here every morning to check the tide. The sea is the only place in this town that doesn't tell me to go home and do my homework.$s" },
+        { "say": "Don't laugh, okay? Last week I tried to catch the Golden Carp. It lives out past the rocks. I got my line tangled in a crab instead.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Want to help me find the Golden Carp?", "answers": [
+            { "text": "Sure, let's go fishing together.", "friendship": 40, "reply": "Really? Okay! You can hold the bucket. That's a very important job.$h" },
+            { "text": "Not really my thing.", "friendship": -15, "reply": "Hmph. Fine. I'll fish alone, see if I care.$s" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Grown-ups keep telling me to be patient. I AM patient. I've been patient for three whole years!$a" },
+        { "emote": "sad" },
+        { "pause": 700 },
+        { "say": "...Thanks for listening, @. Don't tell the others I was sad, okay?$s" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6", "hearts": 6, "where": "Beach", "time": "night", "weather": "any", "music": "echos",
+      "with": ["Guide"],
+      "after": "The Guide says the best catches come after dark. I'm going to test that theory every night.",
+      "steps": [
+        { "say": "Oh! @, perfect timing. The Guide was just telling me about the old fishing tales.$h" },
+        { "say": "Hm, a young angler, eh? Fishing at night is a fine way to learn patience. The lakes hold their secrets for those who wait.$h", "who": "Guide" },
+        { "say": "I'm not learning patience. I'm waiting for the big ones to come up. It's the same thing, mostly.$h" },
+        { "move": "Guide", "dx": 0, "dy": 1 },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you believe in lucky fishing spots?", "answers": [
+            { "text": "Yes, I believe in luck.", "friendship": 25, "reply": "Good. Luck is half of fishing. The other half is never giving up.$h" },
+            { "text": "No, luck is for losers.", "friendship": -5, "reply": "Sure, sure, grown-up talk. Keep your opinion. I'll keep my fish.$a" } ] },
+        { "say": "Keep your line tight and your heart steady. The fish can smell fear, you know.$h", "who": "Guide" },
+        { "sound": "fishBite" },
+        { "jump": "self" },
+        { "say": "Hey! That was a bite! Oh no, it got away. Typical.$a" },
+        { "pause": 600 },
+        { "say": "Thanks, Guide! I'm going to catch a Golden Carp before the end of summer, you'll see.$h" },
+        { "say": "I will believe it when I see it, young one.$h", "who": "Guide" },
+        { "say": "@, you can stay and watch the moon with me, if you want.$h" }
+      ]
+    },
+    {
+      "id": "h8", "hearts": 8, "where": "home", "time": "night", "weather": "any", "music": "sweet",
+      "after": "Thanks for coming over. I feel a lot better now, so don't worry about me.",
+      "steps": [
+        { "say": "@, you're up late. Come in, the door's open. Mind the bucket.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I had a bad dream. There were huge eyes in the sky, and they were looking down at the valley.$s" },
+        { "emote": "sad" },
+        { "question": "Do you think the bad things in the world can reach Pelican Town?", "answers": [
+            { "text": "Not while I am here to keep watch.", "friendship": 40, "reply": "You would really do that? Okay. Then I'll keep watch too, and we can take turns.$h" },
+            { "text": "Probably, yes.", "friendship": -20, "reply": "Then don't say that. I'm trying to sleep.$s" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Thanks for staying, @. Sleeping is easier when someone's around. Don't tell anyone I said that.$h" },
+        { "pause": 800 },
+        { "say": "Hey... Can you tell me a story about the fishing contest? The one where somebody's bobber sank?$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h10", "hearts": 10, "where": "Town", "time": "day", "weather": "sunny", "music": "jaunty",
+      "with": ["Guide"],
+      "reward": "FishermansGuide", "rewardCount": 1,
+      "after": "I'm going to frame my Angler's Quest board. Right next to my fish.",
+      "steps": [
+        { "say": "@! Guess what? I finished the whole Angler's Quest board! Every single one of them! Look at my bucket of tokens!$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "The Guide helped with the hard ones. Mostly I just didn't quit. Now say it, @. Say I'm the best kid angler in the valley!$h" },
+        { "question": "You are the best kid angler in the valley.", "answers": [
+            { "text": "You are the best kid angler in the valley.", "friendship": 50, "reply": "Hehe! I knew you'd say it. Finally, somebody who gets it.$h" },
+            { "text": "Maybe. There are a lot of kids out there.", "friendship": -10, "reply": "Hmph! Then I'll just have to prove it again with bigger fish.$a" } ] },
+        { "move": "Guide", "dx": 1, "dy": 0 },
+        { "say": "Ahem. I will admit the boy has grit. Grit, mind you, not manners.$h", "who": "Guide" },
+        { "say": "Hey! I have manners! Mostly.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "pause": 500 },
+        { "say": "Here, take this. The Fisherman's Guide. I already know everything in it, so it's yours now.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    }
+  ]
+}

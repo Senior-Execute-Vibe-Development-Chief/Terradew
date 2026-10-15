@@ -28,6 +28,8 @@ public sealed class Town
         homes.Clear();
         residents.Clear();
         visitedOcean = false;
+        sawBloodMoon = sawEclipse = sawParty = false;
+        Followers.Clear();
     }
 
     public void Load(string savedHomes, string savedResidents)
@@ -109,6 +111,46 @@ public sealed class Town
             }
         }
         SendFacts(link);
+        // Stardew has picked this morning's talk from the facts it had; passing happenings start over.
+        sawBloodMoon = sawEclipse = sawParty = false;
+    }
+
+    private bool sawBloodMoon;
+    private bool sawEclipse;
+    private bool sawParty;
+
+    /// <summary>Passing happenings are held until the next Stardew morning, when villagers talk about them.</summary>
+    private void Latch()
+    {
+        sawBloodMoon |= Main.bloodMoon;
+        sawEclipse |= Main.eclipse;
+        sawParty |= Terraria.GameContent.Events.BirthdayParty.PartyIsUp;
+    }
+
+    /// <summary>The <see cref="Terradew.Core.Town.Happenings"/> ids that are true in this world.</summary>
+    private IEnumerable<string> Happenings()
+    {
+        var all = new (bool Yes, string Id)[]
+        {
+            (NPC.downedMoonlord, "moonLord"),
+            (NPC.downedAncientCultist, "cultist"),
+            (NPC.downedGolemBoss, "golem"),
+            (NPC.downedPlantBoss, "plantera"),
+            (NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3, "mechs"),
+            (Main.hardMode, "hardmode"),
+            (NPC.downedBoss3, "skeletron"),
+            (NPC.downedBoss2, "evilBoss"),
+            (NPC.downedQueenBee, "queenBee"),
+            (NPC.downedBoss1, "eye"),
+            (NPC.downedMartians, "martians"),
+            (NPC.downedPirates, "pirates"),
+            (NPC.downedFrost, "frostLegion"),
+            (NPC.downedGoblins, "goblins"),
+            (sawBloodMoon, "bloodMoon"),
+            (sawEclipse, "eclipse"),
+            (sawParty, "party"),
+        };
+        return all.Where(a => a.Yes).Select(a => a.Id);
     }
 
     private TownFacts Facts(Player player)
@@ -230,8 +272,12 @@ public sealed class Town
             // The portrait must be on disk by the time Stardew opens a shop this resident runs.
             int head = Terraria.GameContent.TownNPCProfiles.GetHeadIndexSafe(npc);
             SpriteDump.NpcHead(head);
-            facts.Residents.Add(new TownResident(npc.type, npc.GivenOrTypeName, home ?? "", head));
+            // Stardew draws the villager this NPC plays from its sprite sheet.
+            SpriteDump.Npc(npc.type);
+            facts.Residents.Add(new TownResident(npc.type, npc.GivenOrTypeName, home ?? "", head, Main.npcFrameCount[npc.type], NPCID.Sets.ExtraFramesCount[npc.type]));
         }
+        Latch();
+        facts.Happenings.AddRange(Happenings());
         link.Send(facts);
     }
 

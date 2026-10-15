@@ -108,6 +108,9 @@ internal sealed class Draw
 
         foreach (EntityState entity in world.Entities)
         {
+            // A town NPC playing a villager is drawn as that villager, by Stardew.
+            if (entity.Has(EntityFlags.Town) && Cast.Plays(entity.NpcType))
+                continue;
             (float x, float y) = WorldProjection.ToMap(world.RegionX, world.RegionY, entity.X, entity.Y);
             // A big body reaches well past its feet point, so the cull margin grows with its hitbox.
             int reach = 64 * 6 + (int)(Math.Max(entity.Width, entity.Height) * WorldProjection.Scale);

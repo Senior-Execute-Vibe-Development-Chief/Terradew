@@ -1,0 +1,234 @@
+{
+  "npc": "GoblinTinkerer",
+  "villager": "Clint",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Name's Goblin Tinkerer. Used to be a goblin, back when I went around stealing shiny things from the adventurers. Now I fix things instead. Hot metal, sharp tongs, no more sneaking. You look like someone who breaks things, @.$h",
+    "Mon": "Morning, @. The forge was cold when I walked in, and a cold forge is a crime against iron. Something is always waiting to be heated around here.",
+    "Tue": "Tuesday. I like Tuesdays. Nobody comes in on Tuesdays wanting a sword sharpened in five minutes.$h",
+    "Wed": "I have a gizmo half built on the workbench. It has three springs and a little bit of cursed goblin magic. Don't touch it, @.",
+    "Thu": "The Mechanic keeps sending me wires to fix. I fix them, she sends more. I think that is called friendship.$h",
+    "Fri": "The Steampunker wants a gear on everything. Everything, @. My anvil has a gear on it now, and it turns. Don't ask.$u",
+    "Sat": "Market day. Half of Pelican Town comes by to see what I can squeeze out of old scrap. Last week I turned a rusty pan into a lantern.$h",
+    "Sun": "Sundays I clean the forge. Hot coals, sooty tongs, a lot of swearing. Peaceful, really.",
+    "Mon4": "You know, @, back when I was a goblin I only stole things and ran. Working the forge with people is much nicer. Thanks for stopping by.$h#$b#Don't tell the Merchant I said that. He'd try to charge me for it.",
+    "Tue4": "Every time someone brings me something broken, I feel a little like a healer. A healer for machines. And I charge double.$h",
+    "Wed4": "The old goblin armies made me build traps. Now I build pulleys and water wheels for the farms. Honestly, the farms are a far better hobby.$h",
+    "Thu4": "The Demolitionist once asked me for dynamite that could knock a hole in the moon. I said no, but I did make him a very nice fuse.$u",
+    "Fri4": "Whenever someone asks what I want to be when I grow up, I say a tinkerer. I was always going to be one, goblin or not.$h",
+    "Sat4": "I like your company at the saloon, @. The Tavernkeep pours a decent cider and never asks what I am doing with all the scrap in my pockets.$h",
+    "Sun4": "On quiet Sundays I think about the mines. All that metal down there. Sometimes I dream I am pulling a gear out of a rock. Strange, huh?$s",
+    "Mon8": "I'll be honest with you, @. When I first came to the valley I was sure everyone would remember the goblin in me. You never once looked at me that way.$l",
+    "Tue8": "Some nights I don't sleep well. The old goblin camps creep into my head. Being here in the forge with you makes the noise quieter.$s",
+    "Wed8": "If you ever need a bomb, a gadget or some fancy doohickey, you come to me first. I'd build you almost anything, @.$l",
+    "Thu8": "The Nurse says I should take breaks. I say the forge is my break. She says that is not how breaks work. She's usually right, which is annoying.$h",
+    "Fri8": "Every piece of scrap in this forge has a story behind it. I could tell you each one, @. Maybe I will, over a drink at the saloon.$l",
+    "Sat8": "Do you know the best part of my week? Watching someone's face when a broken thing works again. That is why I tinker. For that face.$h",
+    "Sun8": "I'm glad the Merchant and the Demolitionist did not run me out of town when I showed up. It could have gone very differently. I owe this valley a lot.$s",
+    "Mon2": "Oh, hello. Mind the sparks near the anvil. They bite.",
+    "Wed2": "Careful with that bucket, @. It holds quenching water and I would hate to see you boil your boots.$h",
+    "Sat2": "Morning market is busy today. Everyone wants their hoes sharpened before the planting rush.",
+    "Sun2": "Oh, it's you. Good. I was about to start hammering and I'd rather you didn't get a headache from it.$h",
+    "Thu6": "You have a good eye for quality, @. The bars you brought me were clean and straight. That is rare.$h",
+    "Sat6": "I've been wondering what you think of the mines these days. I still get a jolt of nerves going down there. Old habits.$s",
+    "Sun6": "I put a little clock on the wall. It is only slightly wrong. The Mechanic says that makes it charming. I say it makes it late.$h",
+    "Mon10": "You are welcome here any time, @. I mean that. Come in when the forge is hot and leave when you've had enough of the noise.$l",
+    "Wed10": "I was going to give you something on your birthday, but I finished it early. You'll find out what it is soon enough.$l",
+    "Sat10": "I'd fight a goblin army for you, @. Not that there are many left. But if there were, I would stand right there beside you.$h",
+    "spring_Wed": "Spring means the mountain thaw brings fresh ore into the mines. I have plenty to do. Good thing I like digging.$h",
+    "summer_Wed": "Summer heat turns my forge into an oven. I do not complain. Much.",
+    "fall_Sat": "Fall means the fair is coming, and every tool in town needs sharpening first. Busy, busy.$h",
+    "winter_Fri8": "Winter nights are the best for the forge. Warm fire, cold windows, and a friend to talk to. That's a fine winter, @.$l",
+    "fall_15": "Halfway through fall already. I have counted my bars twice and both counts agree. I am now a very organized goblin.$h",
+    "winter_Mon": "The ground is frozen, so the mines are quiet. Quiet is good for thinking. I have been thinking about you, @.$l",
+    "spring_Sun": "A spring Sunday. The birds outside are louder than my hammer. I call that a victory for the birds.$h",
+    "summer_Fri8": "Hot nights by the forge with the doors open, the sea breeze coming in. Summer is the time for a cold drink with a good friend.$l"
+  },
+  "rainy": "Rain drumming on the forge roof, @. Puts me in the mood to tinker with clockwork. Nothing beats a rainy afternoon of gears and gossip.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The big eye is gone from the sky. Good riddance. I didn't like being watched while I worked, @.$u",
+    "evilBoss": "One of those horrid worms or brain things finally got what was coming to it. The mines feel a little lighter today.",
+    "skeletron": "The giant skull fell apart in the dungeon and the Old Man is free! The Clothier nearly wept into his hat. Good news for everybody, @.$h",
+    "queenBee": "The Queen Bee is dead. Her honey goes in my cauldron now, I am not wasting a drop of it. Sweet victory, @.$h",
+    "hardmode": "The Wall of Flesh fell, and now the Hallow is spreading with stronger monsters behind it. Hardmode, @. Time to make better tools.$u",
+    "mechs": "One of those mechanical bosses got smashed to bits last night. I know those gears well. I'd love a few spares for my bench, but I won't say how I'd come by them.$h",
+    "plantera": "Plantera is defeated. The jungle temple is open, and there are flowers the size of a house in there. I want a sample, @.$u",
+    "golem": "The stone golem finally came apart in the temple. Gears everywhere. I took a few, and I will be keeping them away from the Mechanic.$h",
+    "cultist": "The Lunatic Cultist is gone. Those celestial pillars glow over the valley now. Pretty, but my compass keeps spinning.$u",
+    "moonLord": "The Moon Lord is defeated, @. My ears are still ringing. Whatever fell from the sky, I am keeping a piece of it for the bench.$u",
+    "goblins": "The goblin army came and went again. Believe me, I know how goblins fight. I helped you beat them, and I am proud of that.$h",
+    "pirates": "Pirates tried to take the beach last night. The Pirate says he stayed out of it. Mostly. Bring cannons next time.",
+    "frostLegion": "The Frost Legion pushed into the valley and got pushed right back out. Their icy armor is a fine material for a tinkerer. Shame it melts so quickly.",
+    "martians": "Martians in the valley! Ray guns and flying saucers. The Steampunker was thrilled. I was only worried about the crops, @.$u",
+    "bloodMoon": "The moon was red last night. Not a good sign. Keep your sword sharp and your bombs sharper, @.$u",
+    "eclipse": "The sun went dark last night. I kept the forge burning the whole time, just in case. Good thing too.$h",
+    "party": "The Party Girl is throwing a party today, which means hammering is for later. I already built a stage for her, @. Don't tell her I cried at the fireworks."
+  },
+  "festivals": {
+    "spring13": "Egg Festival! I hid a few tinkered eggs in the grass. They chirp when you find them. Good luck, @.$h",
+    "spring24": "The Flower Dance! I would love to dance, but I have sooty hands. Maybe next year I'll wash them first.",
+    "summer11": "Luau time! I dropped a rusty gear into the community soup. It adds a fine flavor, I promise you.$h",
+    "summer28": "The Moonlight Jellies glow on the beach and remind me of the glowing ore veins deep in the caves. Beautiful, @.$h",
+    "fall16": "Fair day! I entered my clockwork bird in the contest. It flew for six whole seconds. A triumph.$h",
+    "fall27": "Spirit's Eve. I am not scared of the maze, I have been in goblin caves. But the ghosts are unnerving, and so are those carved pumpkins.$u",
+    "winter8": "Ice fishing and snow sculptures. I built a snow cannon and nobody asked me to. It's a classic, @.$h",
+    "winter25": "Feast of the Winter Star. I wrapped a gift in old wire for the Merchant. Don't tell them, @.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Now this is a fine piece! I could build something amazing out of it. Thank you, @.$h",
+      "stardew": ["336", "337", "66"],
+      "terraria": ["GoldBar", "MeteoriteBar", "#gem"]
+    },
+    "liked": {
+      "text": "Ooh, that's useful. Right into the toolbox it goes.$h",
+      "stardew": ["335", "334", "80"],
+      "terraria": ["IronBar", "#ore"]
+    },
+    "neutral": {
+      "text": "Hm. Decent enough. I'll find a use for it eventually.",
+      "stardew": ["388", "390"],
+      "terraria": ["Wood", "Rope"]
+    },
+    "disliked": {
+      "text": "Ugh. Take that back, @. I don't need junk cluttering up my forge.$a",
+      "stardew": ["-5"],
+      "terraria": ["Cobweb", "Daybloom", "#plant"]
+    },
+    "hated": {
+      "text": "Get that trash out of my face! I am a tinkerer, not a rubbish bin.$a",
+      "stardew": ["767"],
+      "terraria": ["Spike", "Shiverthorn", "#junk"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "music": "playful",
+      "after": "Keep your hair away from the sparks, @. It smells terrible when it burns.",
+      "reward": "IronBar",
+      "rewardCount": 5,
+      "steps": [
+        { "say": "Oh! @, you walked right into my sparks. Hold still while I check the anvil.$u" },
+        { "face": "self", "toward": "up" },
+        { "pause": 500 },
+        { "say": "Hm. A chipped edge. Nothing a bit of heat won't fix. Hot work keeps a goblin honest, I always say.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you like watching things get fixed?", "answers": [
+            { "text": "Very much, yes.", "friendship": 25, "reply": "Good! Then you'll like the next bit, I promise.$h" },
+            { "text": "Not really, no.", "friendship": -10, "reply": "Hmph. Your loss, then. Bolts and all.$a" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "You seem like the sort who wanders into trouble. Here. Five bars of iron, shaped by my own hands, mostly. Don't drop them in lava.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "home",
+      "time": "day",
+      "weather": "sunny",
+      "music": "jaunty",
+      "after": "Wind it up if you ever get bored. It only plays properly on the third try.",
+      "steps": [
+        { "say": "@! Perfect timing. Come look at this. It's a music box I have been trying to get to play properly.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I started it years ago, back when I was still a goblin. Stolen gears, a broken spring, one sad whistle. Nobody would give me a second look.$s" },
+        { "pause": 800 },
+        { "say": "Then a Merchant sold me a proper spring at a fair price, and I have been fixing things ever since. Little by little.$h" },
+        { "question": "What did you do before you came here?", "answers": [
+            { "text": "I was a farmer too.", "friendship": 20, "reply": "Ha! Then you know all about hard work and sore backs.$h" },
+            { "text": "I was an adventurer.", "friendship": 10, "reply": "Adventurers break more things than they fix. I'm glad you're on the fixing side now.$h" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "emote": "exclamation" },
+        { "say": "Oh, it works! Listen to that. It sounds like home, @.$h" },
+        { "sound": "crafting" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Keep the box, if you like. Wind it up when the mines get lonely.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "Mountain",
+      "time": "day",
+      "weather": "any",
+      "with": ["Steampunker"],
+      "music": "playful",
+      "after": "The Steampunker says the spring is too loose. I say it is perfect. We're still arguing.",
+      "reward": "Gel",
+      "rewardCount": 20,
+      "steps": [
+        { "say": "Oh! @, and our tinkering friend too. Good, you can both settle an argument for me.$h" },
+        { "face": "self", "toward": "Steampunker" },
+        { "say": "The spring is too loose. Honestly, the spring is perfectly loose.", "who": "Steampunker" },
+        { "pause": 600 },
+        { "say": "Fine. You are both right, and I am mostly wrong. The spring is a little rusty.$s" },
+        { "emote": "sad" },
+        { "move": "Steampunker", "dx": 0, "dy": 1 },
+        { "say": "Honest answer. Since the goblins left I have been a little lonely. You two are the nicest company I have had in a long time.$l" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Want to stay for a cup of cider?", "answers": [
+            { "text": "Sure, lead the way.", "friendship": 30, "reply": "Good! Follow me. The cider is by the anvil and I'll fetch the crate.$h" },
+            { "text": "Maybe another day.", "friendship": -5, "reply": "Fine. I'll keep the cider warm. Don't let the Steampunker drink it all.$s" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "home",
+      "time": "night",
+      "music": "sweet",
+      "after": "I'm not sleeping, so I'm polishing. Come by anytime, the door is open.",
+      "steps": [
+        { "say": "@? Come in, come in. The forge is warm tonight. I couldn't sleep, so I've been polishing things.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "You know what I kept from the goblin camp? Just one thing. A tin cup my mother bent into a bell shape. Everything else I left behind.$s" },
+        { "pause": 900 },
+        { "emote": "sad" },
+        { "say": "When I'm with the valley folks, the cup feels like it's finally mine. Not something I stole. Something I made a home for.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Want to know a secret? I hung it by the door. Every time someone walks in, it rings. I'm glad it rings for you, @.$l" },
+        { "sound": "crafting" },
+        { "question": "Do you think I belong here?", "answers": [
+            { "text": "Yes, you belong here.", "friendship": 60, "reply": "Thank you, @. I never said it out loud before, but I'm glad you agree.$l" },
+            { "text": "Hm, it depends.", "friendship": -20, "reply": "Honest, at least. Fair enough. I'll earn it the slow way.$s" } ] },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "home",
+      "time": "night",
+      "music": "musicboxsong",
+      "after": "Ring that bell if you need me, @. I'll come running, even if I trip on the way.",
+      "reward": "IronAnvil",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "@. Hello, friend. I have something to show you. I've been working on it for a month, so hold still.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 700 },
+        { "say": "I melted down the old tin cup and recast it as a bell. Gold this time. Hardly the same thing, but I want you to have a piece of it.$l" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "emote": "exclamation" },
+        { "move": "self", "dx": 2, "dy": 0 },
+        { "say": "Thank you for the ringing at the door, and the company, and for coming by whenever the forge is cold.$l" },
+        { "question": "Will you keep it with you?", "answers": [
+            { "text": "I will treasure it.", "friendship": 80, "reply": "Then the bell is in good hands. Ring it when you are lost and I'll find you.$l" },
+            { "text": "It is a nice bell.", "friendship": 30, "reply": "Nice is enough for me, @. Now stop smiling, I can see it from here.$h" } ] },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "Goodnight, @. Don't stay out past the lamplight. The valley is safer with you in it.$h" }
+      ]
+    }
+  ]
+}

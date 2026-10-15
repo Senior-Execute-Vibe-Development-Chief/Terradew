@@ -1,0 +1,222 @@
+{
+  "npc": "PartyGirl",
+  "villager": "Pam",
+  "gender": "Female",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Hiya, @! You must be the new face in town. I'm the Party Girl, and trust me, this valley needed more fun yesterday.$h#$b#So what are we celebrating? Anything counts. A good harvest, a Tuesday, a slime that finally stopped bouncing on your porch.$u",
+    "Mon": "Monday already? Nobody told me! Monday is practically a party day if you squint hard enough.$h",
+    "Tue": "Tuesday! Perfect for a little warm-up party, don't you think? Wait, are you wearing confetti? That is a yes from me.$h",
+    "Wed": "Hump day! I have three parties' worth of streamers and one very loud boom box. Time to pick your side.$h",
+    "Thu": "Thursday! Nothing says Thursday like a balloon released over the mountains. Nobody ever stops to see where they land.$u",
+    "Fri": "Friday night! Are you coming out tonight, or will you sit at home like a grumpy cave bat?$h",
+    "Sat": "Saturday, bring the snacks! I need pizza and a barrel of Ale. The Tavernkeep refuses to sell me another barrel, so I'm improvising.$h",
+    "Sun": "Sunday. A quiet day for everyone else, but I'm planning a sunrise sing-along on the beach. Tell the Angler not to be grumpy about it.$h",
+    "Mon2": "Oh, @! Want to come to my trailer tonight? Just a few friends, a little music, and maybe some confetti everywhere.$h",
+    "Wed2": "You want to know a secret? I have been practicing the bus horn dance for weeks. The passengers love it, mostly.$h",
+    "Fri2": "Friday! My feet already hurt from last night, and I would not change a single step of it.$h",
+    "Sat2": "Did you finish the Community Center bundle yet? Don't forget to come dance when you're done with all that hard work.$h",
+    "Tue2": "Tuesday, @. Sometimes I catch myself humming party songs at the bus stop, and the Mechanic asks me to please stop.$l",
+    "Mon4": "Between you and me, I was up all night planning a surprise for the Merchant. Shh. He does not know yet.$h#$b#Don't look at me like that. It's a good surprise. Probably.",
+    "Tue4": "The Clothier told me I dance like a wind-up toy in a stormy room. Coming from a man with a cursed past, I took it as a compliment.$h",
+    "Wed4": "I've noticed you always wave back at me from the bus stop, @. Nobody else bothers. It makes my whole day brighter.$h",
+    "Thu4": "The Nurse keeps telling me to get more sleep. Sleep! As if I could sleep with a whole valley out there waiting to celebrate.$a#$b#Ha! Joking, @. Mostly.$h",
+    "Fri4": "Friday nights at the saloon are my favorite. The Demolitionist sets off a firework, the Guide yells at him, and I get to dance through the whole thing.$h",
+    "Sat4": "The mines are loud, the beach is loud, and the forest is loud in its own way. I like loud. Loud means somebody is having a good time.$h",
+    "Sun4": "I'm glad you're part of this town, @. I worried the valley would be too quiet with all the bosses and blood moons around. You made it fun.$h",
+    "Mon8": "You're the only one in this valley who laughs at my jokes, @. The rest of them just stand there looking sad at the bus stop.$s#$b#Thanks for always showing up. I mean that. Sorry, I got a bit soft there.$l",
+    "Tue8": "Some nights I'm not sure why I throw so many parties. Then you show up, and I remember it's because I like watching people smile.$l",
+    "Wed8": "I used to think parties were only about the music. Now I think they're about who you invite. I'm glad I invited you, @.$l",
+    "Thu8": "The Guide says parties are a distraction from real heroics. I say a hero needs a break now and then, and you look like you need one more than most.$h",
+    "Fri8": "Remember when you first arrived and I thought you were just another tourist? I was wrong. You belong here, and I'm not letting you leave without a dance.$l",
+    "Sat8": "Every party I've ever thrown has a little empty spot in it, for the friend who couldn't come. I hope you never end up in that spot, @.$s",
+    "Sun8": "I'd like you to know that when I'm scared of the dark, I think about your laugh. It sounds silly, but it works every time.$l",
+    "Sun10": "I'm going to say something I've never said before, @. Thank you for being my favorite person to celebrate with.$l",
+    "Fri10": "I used to hide behind the loudest music I could find. With you, I don't feel like I have to hide at all. That is rare, @.$l",
+    "Tue6": "When the lights go down at my trailer, sometimes I still feel a bit lonely. That's silly, right? Here, have a party hat. Don't argue.$h",
+    "Thu6": "I heard the Angler calling the sea monsters a bunch of cowards. Honestly, he is not wrong, but I wish he'd be nicer to them.$h",
+    "Sat6": "Some nights the saloon gets so loud I can't hear myself think. The Tavernkeep says that's good for business. I say it's good for everything.$h",
+    "spring_Wed": "Spring showers make me want to throw a party under the umbrellas. Strange? Maybe. Fun? Definitely!$h",
+    "summer_Sat": "Summer is party season, and the beach is the best place to show it off. Bring sunscreen, and maybe a bit of nerve.$h",
+    "summer_Tue": "This summer sun is so warm I could dance on the sand all day. Honestly, that is exactly what I plan to do.$h",
+    "fall_Mon": "The fall leaves look so good as confetti. Nature really does know what a party is.$h",
+    "fall_9": "Only a few weeks until the Stardew Valley Fair! I already have the streamers ready for the grange, @.$h",
+    "winter_Fri": "Winter is just a longer excuse to dance. I'm not complaining. The cocoa is great.$h",
+    "winter_Sun8": "The valley is cold, but the stars look nice from the bus stop. I sometimes wish I could share them with more people.$s",
+    "spring_20": "Ten days until the Flower Dance! You did remember your dancing shoes, right? I'll be checking.$h",
+    "winter_20": "Only a few days until the Feast of the Winter Star. Keep your secret gift a surprise, @. I'm terrible at keeping mine.$h"
+  },
+  "rainy": "Ugh, rain! Thank goodness my confetti is waterproof, or nobody would ever let me throw a party outdoors.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The Eye of Cthulhu is gone, @! I watched the whole thing from the top of the bus stop. Very dramatic, very wet, very good for the party schedule.$h",
+    "evilBoss": "Something nasty crawled out of the ground last night and somebody finally sent it back down. Let's celebrate that, yes?$u",
+    "skeletron": "Skeletron is defeated, and the dungeon is open again! The Old Man is free, and so is my dance floor, if I can get some people down there.$h",
+    "queenBee": "The Queen Bee is gone! The honey will be sweet for a while, and I'll be throwing a party with honey-glazed pizza. Nobody argue with me.$h",
+    "hardmode": "The Wall of Flesh fell, and now the Hallow is spreading everywhere. Shiny, scary, and very loud. Be careful out there, @.$u",
+    "mechs": "A mechanical boss was destroyed last night! I heard the explosions from my trailer. Honestly, the whole valley should throw a party for that.$h",
+    "plantera": "Plantera is defeated! The jungle temple is open now. I'm going to dance in the jungle, and I'd love for you to come.$h",
+    "golem": "The Golem is down! That stone head was not much of a party guest, but it was a lovely fight, @.$h",
+    "cultist": "The Lunatic Cultist is gone and the celestial pillars are up. Such a fancy light show. I'd like a party under it, please.$u",
+    "moonLord": "The Moon Lord is defeated! Nobody saw this coming, and frankly, the whole sky should have a party for it.$h",
+    "goblins": "The goblin army was pushed back last night. The Goblin Tinkerer is very proud of his old friends, and the Guide is very tired.$h",
+    "pirates": "The pirates were chased off last night, @. The Pirate looked very annoyed, and I think the beach smells better for it.$h",
+    "frostLegion": "The Frost Legion is gone for now. Snowmen may be cute, but I'd much rather have a snowy party.$h",
+    "martians": "The Martian Madness is over, @! Their saucers are gone, and the streets are finally quiet enough for a dance.$u",
+    "bloodMoon": "There was a blood moon last night! I stayed inside with every lantern lit and didn't dance once. Terrible. Let's make tonight better.$s",
+    "eclipse": "The sun went dark yesterday during the eclipse. I held a little party in the dark just to see how many people would come. Three! Better than none.$h",
+    "party": "The Party Girl is throwing a party today! Come to the bus stop with a smile and something to share. That's all I ask."
+  },
+  "festivals": {
+    "spring13": "Happy Egg Festival! The egg hunt is my favorite, because nobody can hide an egg from me. Go find the good ones, @.$h",
+    "spring24": "The Flower Dance! Everyone is holding a flower and nobody is holding still. Dance with me, @, before anyone else asks.$h",
+    "summer11": "The Luau! The community soup is bubbling and everyone is adding something. I brought a pineapple, a bit of pizza, and a whole lot of enthusiasm.$h",
+    "summer28": "The Dance of the Moonlight Jellies! The beach is glowing, the music is perfect, and I am dancing my heart out. Join me, @!$h",
+    "fall16": "The Stardew Valley Fair! The grange displays are wonderful, and there are so many games. I'm going to win a star token and make a fuss about it.$h",
+    "fall27": "Spirit's Eve! The haunted maze is terrifying, but a party in a graveyard is still a party. Just don't let the Tavernkeep scare you.$u",
+    "winter8": "The Festival of Ice! Ice fishing with the Angler is a terrible idea, but I'm going to be there cheering on the snow sculptures anyway.$h",
+    "winter25": "The Feast of the Winter Star! I'm giving everyone a gift they can't guess, and yes, I already know who I'm giving the best one to, @.$l"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Oh my gosh, a party in a bottle? You know me too well, @! Thank you, thank you, thank you!$h",
+      "stardew": ["303", "346", "206"],
+      "terraria": ["PinaColada", "FlaskofParty"]
+    },
+    "liked": {
+      "text": "Ooh, that's perfect for my next celebration! Thanks, @, you always think of the good stuff.$h",
+      "stardew": ["348", "459"],
+      "terraria": ["Ale", "Confetti"]
+    },
+    "neutral": {
+      "text": "Hm, thanks, @. I'll find a party spot for it somewhere in the valley.",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Oh... well, thanks for thinking of me, I guess. Maybe keep this one for yourself.$s",
+      "stardew": ["92", "330"],
+      "terraria": ["BottledWater", "#ore"]
+    },
+    "hated": {
+      "text": "Ugh, is that Joja? Get that thing away from my trailer, @, before the streamers curl up and die.$a",
+      "stardew": ["168"],
+      "terraria": ["JojaCola", "#junk", "#seed"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "BusStop",
+      "time": "day",
+      "music": "jaunty",
+      "after": "The bus will be here soon. Don't miss it, or I'll have to honk the horn outside your house.$h",
+      "reward": "PartyHat",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "Oh! @, perfect timing. I was just testing the horn. Want to hear it?$h" },
+        { "face": "self", "toward": "farmer" },
+        { "question": "Do you want to hear the horn?", "answers": [
+            { "text": "Go on, make some noise.", "friendship": 20, "reply": "Ha! That's the spirit, @! BEEEP!$h" },
+            { "text": "Maybe later, thanks.", "friendship": -5, "reply": "Aww, you're no fun. Okay, later, then.$s" } ] },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "Honestly, this bus is the only thing in the valley that never gets lonely. There is always someone in the seats.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Here, a little something from my party box. Keep it on your belt for emergencies.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "Saloon",
+      "time": "night",
+      "music": "50s",
+      "steps": [
+        { "say": "Are you here for the dance, @? The Tavernkeep says the floor is only safe for people who can keep up with me.$h" },
+        { "emote": "exclamation" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Okay, I'll be honest. I don't dance because I love it. I dance because it keeps the quiet away.$s" },
+        { "pause": 900 },
+        { "question": "Do you feel the quiet too?", "answers": [
+            { "text": "Sometimes, yes.", "friendship": 15, "reply": "Then we'll dance it away together, @. Deal?$l" },
+            { "text": "Not really. I like quiet.", "friendship": -5, "reply": "Hmm, fine. Then you'll have to pretend you're dancing with me.$a" } ] },
+        { "emote": "happy", "who": "self" },
+        { "say": "Okay, enough sad talk. Now dance with me! Everyone is watching.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "Beach",
+      "time": "night",
+      "music": "sweet",
+      "with": ["Angler"],
+      "after": "Don't tell the Angler I cried. He would never let me hear the end of it.$s",
+      "reward": "PinaColada",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "Shhh, @. Don't tell the Angler I'm out here. He thinks I'm asleep, and I'm not allowed to be grumpy at him.$u" },
+        { "move": "Angler", "dx": 1, "dy": 0 },
+        { "say": "I'm not following anyone! I'm fishing for the biggest fish in the ocean, and I'm not scared of your loud party tricks.$a", "who": "Angler" },
+        { "say": "Oh, you're fishing at night? That's brave of you, little one.$h" },
+        { "face": "Angler", "toward": "farmer" },
+        { "say": "Okay, @, here's the honest part. I told everyone I'd throw one more party before winter. I have a bad habit of making plans and forgetting to finish them.$s" },
+        { "pause": 800 },
+        { "say": "Then do a party with me! I want a fishing contest, a cake, and everybody in the valley invited.$h", "who": "Angler" },
+        { "emote": "heart", "who": "Angler" },
+        { "say": "Deal! Let's make it the best night the valley has ever seen.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "home",
+      "time": "night",
+      "music": "musicboxsong",
+      "after": "Please don't look at the letters again without me. I'm still embarrassed about them.$s",
+      "steps": [
+        { "say": "Oh! @, come in, come in. Excuse the mess, I was cleaning up confetti from last night. It gets everywhere.$h" },
+        { "pause": 700 },
+        { "say": "My trailer has a little secret. Behind the decorations is a box of letters from every party I ever held. Nobody came to every one.$s" },
+        { "emote": "sad", "who": "self" },
+        { "question": "Do you want to see them?", "answers": [
+            { "text": "Yes, I would love to see.", "friendship": 25, "reply": "Thank you. You really mean it, don't you?$l" },
+            { "text": "No thanks, I would rather not.", "friendship": -10, "reply": "Oh. Right. Maybe another day.$s" } ] },
+        { "say": "Here, look at this one. It says Dear Party Girl, you made my winter feel warmer. Signed, nobody important.$l" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Ha, I tell myself I'm not sentimental. Then a letter like this makes me cry into the confetti.$s" },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "You're going to be in the next letter, @. Don't you dare say no to that.$h" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "home",
+      "time": "night",
+      "music": "sweet",
+      "after": "Go get some sleep, @. And save me a dance tomorrow, please.$h",
+      "reward": "PartyPresent",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "@, I wanted to say something big tonight. Please don't laugh.$s" },
+        { "pause": 600 },
+        { "say": "I used to be the loudest person in every room. Then the quiet came, and nobody wanted a party anymore. I thought I had lost my way.$s" },
+        { "emote": "sad", "who": "self" },
+        { "say": "But you keep showing up. At the bus stop, the saloon, the beach, and now even my messy trailer.$h" },
+        { "question": "What do you think a party is for?", "answers": [
+            { "text": "Making sure nobody is left alone.", "friendship": 40, "reply": "Exactly. That's the whole secret, @. Thank you for knowing it too.$l" },
+            { "text": "Cake and noise, obviously.", "friendship": 5, "reply": "Ha! Cake and noise. Fine, you're half right, and I like you for it.$h" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Here, take this. It's a present from my favorite party. Open it when you're lonely, and then come find me.$l" },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "Now let's go out and dance, @. I want to see your happy face under the lanterns.$h" }
+      ]
+    }
+  ]
+}

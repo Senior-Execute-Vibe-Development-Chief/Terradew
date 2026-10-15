@@ -1,0 +1,246 @@
+{
+  "npc": "DyeTrader",
+  "villager": "Sandy",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Well hello there, @! Welcome to the Oasis. I am the Dye Trader, the most fabulous dyer for a thousand miles of sand.$h#$b#Need a color? Everything in my tent is dyed to perfection, darling.$h",
+    "Mon": "Monday in the desert means fresh batches cooking in the dye vat. The whole Oasis smells of cinnamon and a little bit of regret.$h",
+    "Tue": "Tuesday I trade with the caravans. They always want cheaper dye, and I always say no. Color costs what color costs, darling.$a",
+    "Wed": "Hello, @. The Wizard came by and tried to buy my blue dye for his tower. I told him it is not magic, it is art, and he sulked for an hour.$u",
+    "Thu": "Thursday is for pattern testing. I dye a swatch, pin it to my turban, and stand very still so I can admire myself.$h",
+    "Fri": "The Merchant wandered out to see my wares yesterday and asked if the dyes were on sale. Darling, a dye trader never discounts. Not even for the Merchant.$s",
+    "Sat": "Saturday is market day. I am so busy I can barely keep up with my own orders. Oh well, that is the price of being fabulous.$h",
+    "Sun": "Sunday is quiet at the Oasis. I lounge on the cushions and let the vats cool. It is the only time I can hear the sand.$s",
+    "Mon2": "@, do you know why I wear a robe? Every dye I make stains my skin a little. I wear it so the stains look intentional.$u",
+    "Wed2": "I was thinking about your farm, @. A bolt of bright red for the barn roof would be fiery, bold and perfectly seasonal.$h",
+    "Fri2": "The mines bring me gems to dye with, and the goblins bring me trouble. I would rather have the gems, honestly.$h",
+    "Tue6": "Do you know, @, I trained in this desert for years before I learned to dye properly? My first batch turned my hands green and my cat purple.$h",
+    "Thu6": "Between us, the Tavernkeep has been asking me to dye the saloon curtains. I said I would think about it, which means yes.$h",
+    "Sat6": "The Steampunker keeps sending me gears to use as buttons. I like the idea, but my robe is busy enough as it is.$u",
+    "Mon4": "@, I have been wanting to say this for a while. You are one of the few who truly appreciate color. That makes you my favorite customer.$h",
+    "Tue4": "I hope you did not mind me wearing that bright orange last week. I wanted to see if anyone in town would notice. You did, and that is a compliment.$h",
+    "Wed4": "Some days the desert glare hurts my eyes. You are the only one who has ever asked why I wear so many shades of blue. I was honored.$l",
+    "Thu4": "Every time I finish a new dye I think of the Clothier and the Stylist, and whether they would be proud or horrified. Probably horrified, but in a good way.$h",
+    "Fri4": "I never told anyone this, but my first dye was a mess of mud and cactus juice. I still keep a jar of it on the shelf to remind me how far I have come.$s",
+    "Sat4": "I do miss the big desert cities sometimes. The bright markets and the noise. Out here it is quiet, and I am still learning to like the quiet.$s",
+    "Sun4": "Thank you for dropping by, @. The Oasis gets lonely when the caravans leave. Stay a while and we can pick out colors together.$h",
+    "Mon8": "@, I trust you more than I trust my own dye vat, and that is saying something. If you ever find a rare color, bring it to me first. I will pay you handsomely.$l",
+    "Tue8": "I used to think nobody would ever stop by the Oasis to see me. Then you came along, bumping into my vats and asking silly questions. I am glad you did.$l",
+    "Wed8": "I was afraid everyone in the valley thought I was a little too much. You are the first person who called my turban magnificent. I cried a little. Do not tell anyone.$s",
+    "Thu8": "When the Wall of Flesh fell I was scared. Those hardmode monsters came close to the desert. But I kept thinking of the colors we would see together, and it helped.$s",
+    "Fri8": "Some nights I wonder what I would be doing if I had never left the caravan. Probably dyeing tents for strangers and never meeting anyone as lovely as you, @.$l",
+    "Sat8": "@, you have a good eye for color. Never let anyone tell you a bright shade is wrong. Brightness is the whole point of living, my friend.$h",
+    "Sun8": "I keep thinking about the sunsets we watched from the dunes. My favorite dye is the one I have not made yet, and I think it is the color of that sky.$l",
+    "Fri10": "I have been dreaming of a dye so bright it makes the sun jealous. You are the only one I would show it to, @.$l",
+    "Wed10": "@, if you ever need a bright dye for a special day, I will make it myself. Nobody else in the valley would get the shade right.$h",
+    "Sat10": "I have decided, @, that you are the first person in this valley I will teach my secret blend. Do not repeat it. Ever.$l",
+    "summer_Wed": "Summer Wednesdays are hot enough to melt the dye right off the bolts. I have started dyeing in the shade, and it is terribly inconvenient.$a",
+    "fall_Fri": "The autumn leaves inspire my new colors. I dyed a cloth the exact shade of a pumpkin. I am thrilled, and my cat is mortified.$h",
+    "winter_Sun": "Winter in the Calico Desert is not really winter, but I still get cold at night. I bundle up in scarves dyed crimson for courage.$h",
+    "spring_Sat": "Spring brings flowers, and I cannot get enough of them. I dye petals for the flower sellers. They tell me it makes their roses look richer.$h",
+    "summer_Tue": "Summer Tuesday, and the Oasis is at its brightest. Every color looks twice as vivid under this sun, and I have never been happier.$h",
+    "winter_Fri8": "@, I dreamed last night that you and I painted the whole desert pink. Then the sand turned to snow and we painted that too. A strange dream, but a sweet one.$l",
+    "spring_5": "Early spring is perfect for pastel dyes. The desert is full of color at last, and so am I.$h",
+    "summer_14": "Midsummer, and the caravans are running late. Still, I have plenty of color to keep me busy while I wait for them.$h",
+    "fall_15": "Fall in the desert is short and beautiful. I dyed my cushions burnt orange to match the sunsets over the dunes.$h",
+    "winter_20": "Winter twentieth, and the Oasis is so quiet I can hear the vats bubbling. It is peaceful in a way I did not expect.$h",
+    "winter_3": "Winter third. I started a new batch of blue dye today. It is the color of the cold night sky, and I am quite proud of it.$h"
+  },
+  "rainy": "Rain in the desert? Darling, this is a dye trader's nightmare. Every drop smears my fresh colors, so I am stuck indoors cursing the sky.$a",
+  "marriage": {},
+  "situations": {
+    "eye": "That giant eyeball is finally gone. I dyed a cloth in its honor. It is a rather murderous violet, and I am thrilled.$h",
+    "evilBoss": "The Eater of Worlds and the Brain of Cthulhu are both gone, or at least the brain is. Their ichor makes a dreadful dye, so I am scrubbing my vats twice.$a",
+    "skeletron": "The old skull has been put to rest and the dungeon is open. The Old Man came by my tent asking for a dye to match his beard. Hot pink, if you can believe it.$u",
+    "queenBee": "The Queen Bee is gone. Her honey shade is a gorgeous amber, and I have already bottled a batch of it for the caravans.$h",
+    "hardmode": "The Wall of Flesh has fallen and hardmode has begun. The Hallow glows with colors nobody has ever dyed before, so I must go hunting for them.$u",
+    "mechs": "A mechanical menace was smashed last night. I gathered the shiny bits and I am making the most dazzling silver dye in the valley.$h",
+    "plantera": "Plantera is defeated and the jungle temple is open. The jungle greens are glorious, and I need to get in there before my vine dye runs out.$h",
+    "golem": "The Golem has fallen apart. I collected a stone that gleams with sun-gold, and now I am dyeing a robe in its honor.$h",
+    "cultist": "The Lunatic Cultist is defeated and the celestial pillars stand over the valley. Their glow is the most theatrical color I have ever seen.$u",
+    "moonLord": "The Moon Lord is gone and the sky is clean again. I have dyed a hundred bolts of cloth in the deepest shade of night blue.$h",
+    "goblins": "The goblin army has been repelled. They left behind a stack of fabulous cloth and a lingering smell of smoke.$a",
+    "pirates": "The pirates were sent packing. They tried to buy dye for their sails and I refused, unless they paid in gold. They did not have any gold.$h",
+    "frostLegion": "The Frost Legion ran off. I dyed a whole row of scarves icy blue to keep my nerves steady.$s",
+    "martians": "The Martians are gone. Their saucer lamps were dazzling but dreadfully ugly, so I am making dyes that clash with everything they wore.$a",
+    "bloodMoon": "Last night the moon turned red. That is a color I could never match, so I stayed inside and dyed everything crimson just to be safe.$s",
+    "eclipse": "The sun went dark last night. I wore black for the whole eclipse, which was the perfect excuse for a new robe.$h",
+    "party": "The Party Girl is throwing a party today. I am bringing rainbow dye for the streamers, and nobody can say no to that.$h"
+  },
+  "festivals": {
+    "spring13": "Egg dyeing is an art, @. Most people use boring onion skins. I bring the good stuff, and it makes the eggs shimmer like jewels.$h",
+    "spring24": "A Flower Dance needs color. Let me dress you in something that will make the whole town turn and look.$h",
+    "summer11": "I have added a bottle of my finest sunset red to the community soup. It is not for drinking, but nobody has complained yet.$h",
+    "summer28": "Look at the jellies glowing blue and pink. I could never dye the sea that vivid, so I just admire it from the sand.$s",
+    "fall16": "My display at the grange has a whole wall of dyed fabrics, and everyone is trying to guess my secret ingredient. It is dye, obviously.$h",
+    "fall27": "Spirit's Eve is my favorite. Dye the sheets a ghostly grey, dye the candles green, and wander the maze like a proper specter.$h",
+    "winter8": "The ice fishing is not my thing, but the snow sculptures take dye beautifully. Frosted turquoise, darling.$h",
+    "winter25": "I received a secret gift this year, a vial of dye that changes color in the light. I have no idea who sent it, but I am thrilled.$u"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Oh my! That is the most gorgeous thing I have ever been handed. You have impeccable taste, and I will treasure this forever.$l",
+      "stardew": ["72", "74", "336"],
+      "terraria": ["#dye", "GoldBar", "Silk"]
+    },
+    "liked": {
+      "text": "Lovely, @. This would make a perfectly fabulous accent for my turban. Thank you.$h",
+      "stardew": ["64", "66", "68", "421"],
+      "terraria": ["#gem", "Mushroom"]
+    },
+    "neutral": {
+      "text": "Oh, thank you. It is not quite my shade, but a dye trader can always find a use for a little extra.$h",
+      "stardew": ["90"],
+      "terraria": ["#food"]
+    },
+    "disliked": {
+      "text": "Oh. Well. This is not something a dye trader can work with, I am afraid. Think of me next time.$a",
+      "stardew": ["168", "20"],
+      "terraria": ["#junk", "Gel", "Vine"]
+    },
+    "hated": {
+      "text": "Are you trying to insult me? This is the ugliest thing I have seen since the Martian lamps. Take it away this instant!$a",
+      "stardew": ["-28"],
+      "terraria": ["#bossSummon", "Cobweb", "SpiderEgg"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "music": "playful",
+      "after": "Careful with that violet on your sleeves, darling. It does not come out of anything.",
+      "reward": "DyeVat",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "Oh! @, you came all the way across the sand. Welcome to my tent, such as it is.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Mind the floor. Cloth is drying everywhere, and it stains quite badly.$a" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Look! I am testing a swatch of violet. It is the finest violet in the desert, and you are the first to see it.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "pause": 600 },
+        { "question": "What do you think of the violet?", "answers": [
+            { "text": "It is gorgeous.", "friendship": 30, "reply": "Right? I knew you had taste.$h" },
+            { "text": "It looks like a bruise.", "friendship": -10, "reply": "A bruise? Darling, it is a royal bruise.$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Here, take this. Every adventurer should own a proper dye vat. Just do not spill it on your shirt.$h" },
+        { "emote": "exclamation", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "Town",
+      "time": "day",
+      "weather": "sunny",
+      "music": "jaunty",
+      "with": ["Merchant"],
+      "after": "If the Merchant tries to sell you paint as dye, do not believe a word of it.",
+      "steps": [
+        { "say": "@! The sun is out and I came for a walk. Fine colors deserve fine weather.$h" },
+        { "say": "Oh, it is the Dye Trader again. Did you come to buy something, or to make me look bad in those robes?$a", "who": "Merchant" },
+        { "face": "self", "toward": "Merchant" },
+        { "say": "A dye trader needs sunshine to judge a color properly. You would not understand.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Did you know the Merchant once tried to sell me a bucket of paint as premium dye? I may never forgive him.$a" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "pause": 500 },
+        { "question": "Do you think he cheated you?", "answers": [
+            { "text": "Probably, yes.", "friendship": 20, "reply": "Thank you, @. Somebody finally agrees with me.$h" },
+            { "text": "No, he seems honest.", "friendship": -15, "reply": "Honest? Perhaps I am the only one who finds him hard to trust.$s" } ] },
+        { "say": "Anyway, let us look at the sunset from the bridge. The colors are fabulous.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "Saloon",
+      "time": "night",
+      "music": "sweet",
+      "with": ["DD2Bartender"],
+      "after": "Ask the Tavernkeep for the pink mug, it is my idea and he hates it.",
+      "reward": "BlueDye",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "Evening, @. The Stardrop Saloon is the only place in the valley where a dye trader can have a drink without anyone asking about his turban.$h" },
+        { "say": "Another round for the desert fellow, and this time put some color in the glass, my friend.$h", "who": "DD2Bartender" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I think color belongs in drinks too. A pink mug is just a glass with attitude.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "pause": 600 },
+        { "say": "I am a little homesick tonight, @. Back in the desert every night looked like this, all stars and sand.$s" },
+        { "face": "self", "toward": "up" },
+        { "pause": 800 },
+        { "say": "Stop being so gloomy. You have a whole valley full of people who think you are magnificent, darling.$h", "who": "DD2Bartender" },
+        { "question": "Do you miss home?", "answers": [
+            { "text": "Every single day.", "friendship": 15, "reply": "Then we will bring a little desert home to you. Next time I bring sand.$s" },
+            { "text": "Not at all, this place is great.", "friendship": 25, "reply": "Good. You are making me braver about it, @.$h" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Let me buy you a drink, the saloon's finest. I insist. It is about time I spent some coin.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "home",
+      "time": "night",
+      "music": "musicboxsong",
+      "after": "I still think about those dunes at sunset. Do not let me get sentimental in front of the Tavernkeep.",
+      "steps": [
+        { "say": "@, sit down, please. You look like you walked the whole valley. I made you a cup of tea with a little blue dye in it. Perfectly safe, I promise.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "question", "who": "self" },
+        { "say": "I was not always a dye trader, you know. I started out selling robes in the Calico Desert. The rain never came and nobody bought a single one.$s" },
+        { "pause": 800 },
+        { "say": "So I learned to make colors nobody else could. Sunset orange, midnight blue, and a green that looks like a wet cactus. It is my signature.$h" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "pause": 400 },
+        { "say": "When I left the caravan, I thought I would be alone forever. Then you came to this Oasis, and I finally had someone to show my colors to.$l" },
+        { "emote": "heart", "who": "farmer" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "question": "Will you come see the dunes with me at sunset?", "answers": [
+            { "text": "I would love to.", "friendship": 35, "reply": "Wonderful. Bring a blanket, the sand gets cold.$l" },
+            { "text": "Maybe another time.", "friendship": -5, "reply": "That is fine, my friend. I will wait a little longer.$s" } ] },
+        { "say": "Thank you for listening to an old dyer, @. You are one of the good ones.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "Beach",
+      "time": "day",
+      "weather": "sunny",
+      "music": "sweet",
+      "with": ["Angler"],
+      "after": "The sea is the best color in the world, and you are the best company for looking at it.",
+      "reward": "TealDye",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "@, the beach is such a bright place. Look at all the blues the water makes. I had to come see it with you.$h" },
+        { "say": "Oi, dye man! You are blocking my fishing line. Move your fabulous robe, I need the light.$a", "who": "Angler" },
+        { "face": "self", "toward": "Angler" },
+        { "say": "Dear child, your line is perfectly safe. You may have the light. I will admire the sea from here.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "emote": "happy", "who": "farmer" },
+        { "pause": 500 },
+        { "say": "The sea gave me my most cherished color. A deep teal, like the water right before a storm. I wish I could bottle it for you, @.$h" },
+        { "say": "Bottle the sea? That is the silliest thing I ever heard. Silly grown-ups.$h", "who": "Angler" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "question": "Would you like to watch the sea with me again?", "answers": [
+            { "text": "Yes, every day.", "friendship": 40, "reply": "Every day? Then you will have to dye your boots sea green too.$l" },
+            { "text": "Maybe once a season.", "friendship": 5, "reply": "Once a season is plenty, I suppose. The sea waits for no one.$s" } ] },
+        { "say": "Thank you, @. This was a perfect day, and I hope you know that.$l" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "npc": "Wizard",
+  "villager": "Wizard",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Ah, a visitor! I am the Wizard, keeper of this tower and of all the mana hiding in these woods. You may call me Master if you bring me interesting things.$h",
+    "Mon": "Good morning, @. The mana is thick today, like honey left out in the sun. Mind the sparkles, they bite.$h",
+    "Tue": "Tuesday. Mercury is in retrograde, which means my spells go backward and my socks come off. Nothing to be alarmed about.$u",
+    "Wed": "The Merchant sold me a mana potion that tasted like cold soup. I think he waters his stock. A wizard knows these things.$a",
+    "Thu": "I was up all night reading the old texts. Half the words are smudged, and the other half are rude to me.$s",
+    "Fri": "Fridays are for experiments. Last week I turned my hat into a frog. This week I will try to turn the frog back into a hat.$h",
+    "Sat": "Saturday, and the saloon is loud. I prefer my own quiet company, a candle, and a nice chilled potion.$h",
+    "Sun": "Sunday is for contemplation. I spent the whole morning staring at a cloud. It looked exactly like an eye, which is most unsettling.$u",
+    "Mon2": "Oh, @, you again? Stay a while. The tower chairs are very comfortable once you stop them from bouncing.$h",
+    "Wed2": "Careful on the staircase. The third step is a teleporter, and it sends you straight to the Dryad's garden. She does not like visitors who drop in uninvited.$u",
+    "Fri2": "I have been meaning to ask. Do you have any spare bottles? Empty ones, mind you. I keep catching ghosts in them and then wondering where they went.$s",
+    "Thu2": "Thursday tends to be a cloudy day for mana. If you see a strange glow over the forest, that is probably me, trying a new light spell.$h",
+    "Sat2": "The Stylist asked me to cast a glamour on her hair. I did it, and now it sparkles at night. She says it is perfect. I say it is a fire hazard.$h",
+    "Mon4": "@, you have been stopping by so often that my tower is starting to feel like home. Do not get used to me being this cheerful.$h",
+    "Tue4": "I have been brewing a potion to make people taller. It was meant for the Angler, not for you. Somehow we both ended up with a little extra height.$h",
+    "Wed4": "You know what makes the forest feel alive? Friends who visit. Even the squirrels have started to wave at me.$h",
+    "Thu4": "I finished a small charm for you. Do not thank me yet. It only works if you remember to wear it on Fridays.$h",
+    "Fri4": "The Angler keeps asking whether I can make the fish grow legs. I told him that is not a question for a wizard. It is a question for a fisherman.$u",
+    "Sat4": "Some nights I stare at the stars and wonder what the future holds. Then I look at my friends and think, perhaps the future is already here.$h",
+    "Sun4": "A quiet Sunday with good company. This is the kind of magic I like best, @. The kind you do not need a spellbook for.$h",
+    "Mon6": "A little secret, @. The mana flows strongest right here, which is why I built the tower in this forest. The trees whisper to me, and I whisper back.$h",
+    "Mon8": "I never tell anyone this, but when I was a boy I wanted to be a knight. The magic found me instead. I am glad it did, because now I have you.$s",
+    "Tue8": "Sometimes the mana goes quiet, and the tower falls silent. In those moments I think about how lonely I used to be. Thank you for filling that silence.$l",
+    "Wed8": "I wrote a letter to my old master once. He never wrote back. I still keep his staff by the door, in case he ever comes to visit.$s",
+    "Thu8": "@, I trust you more than my spellbooks. The books lie about the ingredients, but you always tell me the truth about my hat.$h",
+    "Fri8": "If the tower ever burned, I would save the books first, and then you. Please do not ask me to explain the order.$l",
+    "Sat8": "The saloon has a piano, and the Tavernkeep says I may play it. I think I will, one night, and you will be my first audience.$h",
+    "Sun8": "You have made this old wizard feel young again. I used to stare at empty shelves. Now I stare at a friend who brings cake.$l",
+    "Mon10": "@, I have started leaving the tower door open at night, just in case you need a place to rest when the monsters get too loud.$l",
+    "Wed10": "Do you know what the stars whisper when the moon is full? They say you are a good friend. I agree with them, though they also said I should cook more.$l",
+    "Fri10": "I have read every book in this tower, yet my favorite story is still the one you tell me when we sit by the fire together.$l",
+    "Sat10": "If the valley ever falls into darkness, I will light every candle in the tower and wait for you. That is a promise from a wizard, and we never break those.$l",
+    "spring_Wed": "Spring mornings in the forest smell like rain and new magic. The flowers hum louder, and so do my pet slimes.$h",
+    "summer_Fri": "The summer heat makes my tower stuffy, so I enchanted a fan to blow cool mana breezes. It mostly blows my papers into the river.$a",
+    "fall_Sun": "Autumn leaves fall in patterns that look like runes. I spent an entire afternoon trying to read them. I am fairly sure they said remember the Wizard.$h",
+    "winter_Tue": "Winter in the valley is bitterly cold, but the tower stays warm with a crackling fire and a dozen spellbooks for kindling. Do not tell the librarian.$u",
+    "winter_Fri8": "I have been dreaming of a spell that makes snowflakes fall upward. Silly, I know. But tonight, @, I think you would enjoy seeing it with me.$l",
+    "fall_15": "Halfway through autumn and the tower is busier than ever. A wizard's work is never done, but good company makes it lighter.$h",
+    "spring_5": "Early spring is the best time to plant new magic herbs. I have a whole row of mana flowers. Please do not step on them, they scream.$a",
+    "summer_20": "A warm summer evening, perfect for catching fireflies for my lanterns. If you have a spare moment, a few more would be wonderful.$h"
+  },
+  "rainy": "Rain on the tower means my lightning rods sing all afternoon. Stay inside, @, and let the thunder keep us company for a while.$h",
+  "marriage": {},
+  "situations": {
+    "eye": "The Eye of Cthulhu is gone, and I have never been so glad to see an eyeball vanish. It stared at my tower for weeks. Very rude.$h",
+    "evilBoss": "The Eater of Worlds and the Brain of Cthulhu have finally been defeated. Those worms and brains make dreadful tea guests. The tower is safe again.$h",
+    "skeletron": "Skeletron has fallen and the dungeon is open. The Old Man was freed, and now he floats around my tower asking for directions.$u",
+    "queenBee": "The Queen Bee is dead. The honey smelled wonderful, but I sneezed for three days. Never let a bee near me again.$s",
+    "hardmode": "The Wall of Flesh has fallen and hardmode has begun. The Hallow is spreading and the mana crystals glow brighter than ever. Stay close, @.$u",
+    "mechs": "One of the mechanical bosses has been destroyed. The clanking has stopped, and the tower no longer shakes every time someone sneezes.$h",
+    "plantera": "Plantera has been defeated. The jungle temple is open now, and the vines have finally stopped whispering my name at night.$h",
+    "golem": "The Golem is no more. Its stone head rolled right past my tower. I have kept its eye as a paperweight, though it is very distracting.$u",
+    "cultist": "The Lunatic Cultist has fallen. The celestial pillars are glowing, and I can feel the mana pour through the sky like a river.$u",
+    "moonLord": "The Moon Lord has been defeated. The sky is quiet again and the stars are singing softly. I think they are relieved too.$h",
+    "goblins": "The goblin army has been repelled. Their war drums are silent, and I finally finished my tea without a spear flying past the window.$h",
+    "pirates": "The pirates have been driven off. The Pirate is shouting about his ship, and I am shouting about the mess they left in my garden.$a",
+    "frostLegion": "The Frost Legion is beaten. My tower frosted over, and I had to thaw my spellbooks by the fire. Slightly singed, but alive.$s",
+    "martians": "The Martian Madness is over. Their saucers zipped over the forest all night, and I think one of them tried to borrow my telescope.$u",
+    "bloodMoon": "There was a blood moon last night. The shadows crawled out of the forest, and I spent the whole night reading protection charms.$s",
+    "eclipse": "The sun went dark during yesterday's eclipse. I spent the afternoon stargazing and hoping the valley would come back. It did, thank goodness.$u",
+    "party": "The Party Girl is throwing a party today. I have been asked to bring the fireworks. Mana fireworks, which are safer than they sound, I hope.$h"
+  },
+  "festivals": {
+    "spring13": "The Egg Festival! I hid a glowing crystal egg somewhere in the fields. Find it and I will teach you a spell. It is not a real egg, so do not eat it.$h",
+    "spring24": "The Flower Dance is tonight. I spent all week levitating petals onto the dance floor. Try not to sneeze, the pollen is extremely magical.$h",
+    "summer11": "The Luau! I put a jar of mana essence into the community soup. It should make everything taste delicious, and possibly glow.$h",
+    "summer28": "The Dance of the Moonlight Jellies. I have spent the evening on the beach with my lanterns, and the jellies float up and light the water. It is wonderful.$l",
+    "fall16": "The Stardew Valley Fair. I entered the spell contest, though the judges mostly wanted to see me make a cat float. It was a fair result.$h",
+    "fall27": "Spirit's Eve! The haunted maze is full of ghosts, and several of them insist they are my former students. Do not believe a word they say.$u",
+    "winter8": "The Festival of Ice. I carved a snow dragon and cast a warming spell on it. Mostly. The dragon is now sitting in a puddle, looking very pleased.$h",
+    "winter25": "The Feast of the Winter Star. I wrapped my gift with a tiny enchantment. It is supposed to open itself when the right person holds it.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Oh! Oh, @, this is exactly what my tower was missing. I could cry. Actually, I am crying a little, it is the magic.$l",
+      "stardew": ["72", "-2"],
+      "terraria": ["ManaCrystal", "SpellTome", "CrystalBall"]
+    },
+    "liked": {
+      "text": "A lovely trinket. It will look marvelous on my desk, between the candles and the cursed lamp.$h",
+      "stardew": ["66", "68"],
+      "terraria": ["Sapphire", "Lens"]
+    },
+    "neutral": {
+      "text": "Hm. Thank you, I suppose. Every object has a secret purpose, and I will find this one's eventually.$h",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Ugh, this smells like a slime's bad dream. Please take it away before the candles sneeze.$a",
+      "stardew": ["766", "767"],
+      "terraria": ["Gel", "Cobweb"]
+    },
+    "hated": {
+      "text": "How dare you bring this into my tower! Get it out, get it out before it summons a goblin!$a",
+      "stardew": ["168", "287"],
+      "terraria": ["#junk"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "music": "playful",
+      "after": "Careful with that crystal, it is still deciding whether it likes you.",
+      "reward": "ManaCrystal",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "Ah, @! Do not touch the crystal, it is still deciding whether it likes you.$u" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 500 },
+        { "say": "Hm. Mana has not flowed properly through this tower since the goblins moved in next door. Everything hums, the teapot sings, and my beard floats.#$b#I am told this is normal for a wizard. I am told a great many things.$h" },
+        { "question": "Do you believe in magic?", "answers": [
+            { "text": "Of course I do.", "friendship": 30, "reply": "Excellent! Then you may hold my hat while I work.$h" },
+            { "text": "Magic is just tricks.", "friendship": -10, "reply": "Tricks? Hah! Tell that to the moon when it turns red.$a" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Here, a small gift. Carry it wisely, it bites when it is bored.$h" },
+        { "sound": "shwip" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "pause": 400 },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "home",
+      "time": "night",
+      "music": "echos",
+      "after": "The stars are loud tonight. Listen to them with me, if you like.",
+      "steps": [
+        { "say": "@, you climbed my tower stairs at night. Brave, or foolish. I am still deciding which.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Sit, sit. The stars are louder tonight. I can hear them humming their old songs.#$b#When I was young, I wanted to be the greatest wizard in all of Terraria. Then I spent a whole afternoon trying to turn a slime into a sheep.$s" },
+        { "emote": "sad", "who": "self" },
+        { "pause": 800 },
+        { "question": "Did it work?", "answers": [
+            { "text": "Did you ever get a sheep?", "friendship": 40, "reply": "No sheep. Only a very confused slime that followed me around for a week.$h" },
+            { "text": "That sounds like a waste of time.", "friendship": -15, "reply": "Waste? Every failure is a lesson written in mana.$a" } ] },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "The real magic, @, is finding someone who will listen when the stars get loud.$l" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "emote": "heart", "who": "farmer" },
+        { "pause": 600 },
+        { "say": "Now hush. The constellation of the old staff is about to appear.$h" },
+        { "face": "self", "toward": "up" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "Town",
+      "time": "day",
+      "weather": "sunny",
+      "music": "jaunty",
+      "with": ["Guide"],
+      "after": "The Guide still owes me a bookshelf. Tell him that for me.",
+      "steps": [
+        { "say": "Ah, @! Good timing. Our friend the Guide has been asking me to fix his bookshelf. It keeps dropping all its books on his head.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I told him the books are not cursed. They are simply unhappy about being read incorrectly.$u" },
+        { "say": "Oh, so now I am cursed, am I?", "who": "Guide" },
+        { "emote": "angry", "who": "Guide" },
+        { "say": "Only a little. Do not panic, it is a very small curse.$h" },
+        { "emote": "exclamation", "who": "self" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "question": "Should we help him with the books?", "answers": [
+            { "text": "Let us do it together.", "friendship": 40, "reply": "Splendid! A wizard and a farmer together are stronger than any spell.$h" },
+            { "text": "Let the Guide do it.", "friendship": -5, "reply": "The Guide will not like that, but I admire your honesty.$h" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "Hey, I am right here, you know.", "who": "Guide" },
+        { "pause": 600 },
+        { "say": "Anyway. Thank you, @, for stopping by. Next time bring cake, the Guide never shares.$h" },
+        { "emote": "happy", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "home",
+      "time": "night",
+      "music": "sweet",
+      "after": "Thank you for listening to this old wizard. It means more than I can say.",
+      "steps": [
+        { "say": "@, I was hoping you would visit. Sit by the window. The valley looks like a painting from up here.$s" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I used to think I was the only one who could see the mana flowing through the hills. Then the Dryad looked at me like I was a silly child.#$b#She was right. Maybe I still am, a little bit.$h" },
+        { "pause": 700 },
+        { "emote": "sad", "who": "self" },
+        { "say": "Some nights the sky goes red and I remember the fear. The Blood Moon once took half my library. I still feel the empty shelves when I walk past them.$s" },
+        { "question": "Would you like to hear a spell I never finished?", "answers": [
+            { "text": "Yes, please tell me.", "friendship": 50, "reply": "It is a spell for remembering. I have never got past the first word.$l" },
+            { "text": "Maybe another time.", "friendship": 0, "reply": "Of course. The words will keep, like a good cup of tea.$h" } ] },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "pause": 400 },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Thank you for listening, @. You make this old tower feel less lonely.$l" },
+        { "emote": "heart", "who": "farmer" },
+        { "sound": "dwop" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "Beach",
+      "time": "day",
+      "weather": "sunny",
+      "music": "sweet",
+      "with": ["Pirate"],
+      "after": "I meant what I said, apprentice. Come by the tower whenever you like.",
+      "reward": "SpellTome",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "@! Perfect timing. The Pirate and I were arguing about whether the ocean has mana or just salt.$h" },
+        { "say": "Salt, obviously.$a", "who": "Pirate" },
+        { "emote": "angry", "who": "Pirate" },
+        { "say": "Mana is in the water, you fool. Look at the waves, they glow whenever I cast.$h" },
+        { "pause": 500 },
+        { "face": "self", "toward": "farmer" },
+        { "say": "@, I have been thinking. You have helped me more than any apprentice could. I would like to offer you something.#$b#Every wizard needs a true student. Would you be mine?$l" },
+        { "question": "Will you become my apprentice?", "answers": [
+            { "text": "I would be honored.", "friendship": 60, "reply": "Then wear this, my apprentice. It is a small thing, but it hums like a promise.$l" },
+            { "text": "I will think about it.", "friendship": 10, "reply": "Take your time. Good apprentices are worth waiting for.$h" } ] },
+        { "emote": "heart", "who": "farmer" },
+        { "sound": "shwip" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Oh, and do not tell the Pirate. He will want a discount.$h" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "say": "I heard that!$a", "who": "Pirate" },
+        { "pause": 600 },
+        { "emote": "happy", "who": "self" }
+      ]
+    }
+  ]
+}

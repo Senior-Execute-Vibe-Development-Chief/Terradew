@@ -123,6 +123,9 @@ internal sealed class Hand
         {
             if (!entity.Has(EntityFlags.Town) && entity.NpcType != OldManType)
                 continue;
+            // A town NPC playing a villager is talked to as that villager.
+            if (entity.Has(EntityFlags.Town) && Cast.Plays(entity.NpcType))
+                continue;
             (float x, float y) = WorldProjection.ToMap(world.RegionX, world.RegionY, entity.X, entity.Y);
             SpriteBox box = SpriteLayout.Hitbox(x, y, entity);
             bool pointed = box.Contains(cursor.X, cursor.Y);

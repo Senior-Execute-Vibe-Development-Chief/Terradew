@@ -1,0 +1,248 @@
+{
+  "npc": "Demolitionist",
+  "villager": "Kent",
+  "gender": "Male",
+  "child": false,
+  "romance": false,
+  "dialogue": {
+    "Introduction": "Well, hello there, @! I'm the Demolitionist, in charge of all the big booms around these parts.$h#$b#I came to Pelican Town with a crate of dynamite and a strong sense of optimism. Don't worry, I only blow up the things that need blowing up.$u",
+    "Mon": "Monday already? Every day is a good day for a little boom, if you ask me.",
+    "Tue": "Tuesday. I spent the morning testing a fresh batch of gunpowder. The chickens are still mad at me.",
+    "Wed": "Wednesday, and the Merchant says the general store has a new shipment of bombs. I already know where I'm spending my gold.",
+    "Thu": "Thursday. The mines have been quiet lately, which makes me nervous. Quiet mines usually mean something is about to go bang.",
+    "Fri": "Friday! Good day for a drink at the Stardrop Saloon. The Tavernkeep makes a fine ale, mostly because I keep buying it.",
+    "Sat": "Saturday. I'm thinking about rigging the fence in my yard to pop when a goblin walks by. Just kidding. Mostly.",
+    "Sun": "Sunday. Quiet day at home, just me, a pipe, and a bucket of blasting powder. Don't tell the Nurse.",
+    "Mon4": "Oh, @, you always stop by on Mondays. Gets me through the week, honest. Want to see my new fuse trick?$h",
+    "Tue4": "Tuesday with a friend is better than Tuesday with a fuse. Usually. Don't tell the Dryad I said that.$h",
+    "Wed4": "You know, @, when I first came to the valley I thought I'd never fit in. Then you showed up with a basket of fish and nobody got blown up. Progress!$h",
+    "Thu4": "Thursday, @. I tried to make a grenade that doesn't go off near my friends. Didn't work. Still, I'm glad you're here to see the failure.$l",
+    "Fri4": "Friday again! Come on, let's have one at the saloon. I'll buy the first round. I'll even try to only break one chair.$h",
+    "Sat4": "Saturday! I finally got my little cannon to fire without taking my eyebrows with it. You've got to see this.$h",
+    "Sun4": "Sunday, and you're here. That's a good way to start the week, @. Just don't stand behind me when I light something.$h",
+    "Mon8": "@, can I tell you something? Back in the old days, I blew up half a cave because I was lonely. Now I have friends. Hard to believe, isn't it?$l",
+    "Tue8": "I used to think everyone was looking for the next big explosion. Turns out most people want someone to share a quiet evening with. You're the first one who made me see that, @.$l",
+    "Wed8": "Wednesdays are when I miss my wandering days most. Nothing but dirt, bombs, and a sky full of stars. Now I've got a house on Willow Lane and you. Strange, but I'm happier.$h",
+    "Thu8": "I trust you with my secret, @. Sometimes I'm scared the next big blast will be the one that takes my home. But I'd rather go out with a bang with you around than quiet and alone.$s",
+    "Fri8": "Friday nights have been the best since you came along. I used to drink alone at the saloon. Now there's a friend with a glass ready. Cheers to that, @.$l",
+    "Sat8": "You know what I love about Saturdays now? Waking up without a fuse in my hand. It's the little things, @. I never thought I'd say that. Calm suits me.$h",
+    "Sun8": "On Sundays I think about how lucky I am. A town that didn't flinch when I showed up with my crates. Friends who don't mind the smoke. Thank you for being part of it, @.$l",
+    "Mon2": "Oh, it's you, @. Nice to see you. Just be careful, I'm building something in the yard. Don't look at the fuse.$u",
+    "Tue6": "Tuesday, and the Party Girl already has me planning a party. Fireworks are involved, naturally.$h",
+    "Tue2": "Tuesday. I wonder if the Wizard in the forest knows how to make a bomb that doesn't need a fuse. I'd pay good gold for that one.$u",
+    "Wed2": "I hear the Merchant has been complaining about my explosives again. Says they're bad for business. Says a lot, that one.$a",
+    "Mon6": "Monday, and I'm happy to see you, @, honestly. I know I'm loud and I know I'm a bit much, but you never seem to mind.$h",
+    "Thu6": "Thursday. The Guide keeps saying I should write down my explosive recipes. I told him a recipe is only good if it's still in one piece, and he gave me a look. Wise man, our Guide.$h",
+    "Fri6": "Friday. I think the Nurse might banish me from the clinic if I come in with singed eyebrows again. Good thing I came to see you instead.$s",
+    "Sat6": "Saturday, and the Tavernkeep says I can't bring my dynamite into the saloon anymore. Rude. Care to back me up?$a",
+    "Sun2": "Sunday morning, and the valley is peaceful. Feels a bit strange to be quiet. I'm still getting used to it, @.$u",
+    "Thu10": "Thursday with you is basically my favorite thing now, @. Let's make some memories that don't involve craters.$l",
+    "Fri10": "Friday, @. I've had a long week, but you always make the boom in my head go quiet. Let's sit a while.$l",
+    "Sat10": "Saturday night, @. I'd show you my favorite crater, but it's a bit far. Next time I'll take you there in a cart. A very safe cart.$l",
+    "summer_Wed": "Summer heat makes the powder sweat, you know. Keep your bombs in the cool cellar, @, or they'll go off on their own.$u",
+    "fall_15": "Fall is my favorite season for fireworks. The leaves get all crispy and the sky goes pink. Maybe we can watch the sparks together, @?$h",
+    "winter_Fri8": "Winter nights are cold, but a bonfire of old crates keeps the frost out. And you keep me warm too, @. Don't tell anyone I said that.$l",
+    "spring_3": "Spring rains wash the soot off my roof. Finally! I can see the sky again. The flowers are back too, which the Dryad will be thrilled about.$h",
+    "fall_Sat": "Autumn Saturdays are for fireworks at the Fair. I'll bring the big ones. Stand well back, @, the big ones are loud.$h",
+    "winter_Sun": "Winter Sunday. Snow on the roof and a warm kitchen. Nothing blows up in winter, mostly, so I get to rest.$h"
+  },
+  "rainy": "Rain again. Good for drowning my fuses, bad for my mood.$u",
+  "marriage": {},
+  "situations": {
+    "eye": "The Eye of Cthulhu is gone, @! That thing had a face like a squashed grape. Good riddance.$h",
+    "evilBoss": "The Eater of Worlds or the Brain of Cthulhu is gone. The valley is only a little less creepy now.$u",
+    "skeletron": "Skeletron is finally down, @. That old bone head rattled the dungeon for years. The Old Man is free too. Let's raise a glass to him.$h",
+    "queenBee": "The Queen Bee went down last night. Honey everywhere, buzzing everywhere. I'm getting a sticky rash just thinking about it.$s",
+    "hardmode": "Hardmode has started, @! The Wall of Flesh fell and the Hallow is spreading. The monsters are tougher now, so bring your biggest boom sticks.$u",
+    "mechs": "One of the mechanical bosses is in pieces now. Nice work! I was waiting for a good excuse to blow up something metal.$h",
+    "plantera": "Plantera is gone, and the jungle temple is open. The Dryad is fit to burst with joy, and so am I. Those vines were nasty.$h",
+    "golem": "The Golem is finally down. That temple guard had no sense of humor. Good thing we don't have to worry about him anymore.$h",
+    "cultist": "The Lunatic Cultist is defeated! Celestial pillars are popping up in the sky. I've never seen so many lights up there. Pretty, honest.$u",
+    "moonLord": "The Moon Lord fell last night. The sky is quiet at last. I'm a bit sad, honestly, because that thing was a real spectacle.$s",
+    "goblins": "We beat back a goblin army last night. The Goblin Tinkerer is going to be insufferable about it, but they did help, I suppose.$h",
+    "pirates": "The pirates were repelled last night, @. Their ship went down in a shower of sparks. I'd have liked to see the fireworks.$h",
+    "frostLegion": "The Frost Legion was sent packing last night. Ice everywhere, snowmen everywhere. Good thing I brought my warm socks.$u",
+    "martians": "A Martian Madness was repelled last night, @. Strange little ships, far too many lasers. I'm glad the town is still standing.$u",
+    "bloodMoon": "There was a blood moon last night, @. The whole valley looked red and the zombies came knocking. I had to be a real hero and stay inside.$u",
+    "eclipse": "The sun went dark last night in a solar eclipse. Eerie, but the lanterns still flickered. Kind of beautiful, really.$u",
+    "party": "The Party Girl is throwing a party today, @. Balloons, streamers, a cake with fuses in it. You're invited, so bring your dancing shoes.$h"
+  },
+  "festivals": {
+    "spring13": "Egg Festival, @! I hid a little firework in the egg hunt. Don't worry, it's only a small one, probably.$h",
+    "spring24": "The Flower Dance is always a blast, @. I'll try not to step on anyone's feet. I might end up dancing around a crater.$h",
+    "summer11": "Luau time! I brought a jar of spicy pepper for the community soup. Hope nobody blows up the pot like I usually do.$h",
+    "summer28": "The Dance of the Moonlight Jellies is tonight, @. The jellies glow so bright on the beach. Let's stand close and watch them twinkle.$l",
+    "fall16": "The Stardew Valley Fair! I'm running the fireworks booth this year. Watch out for the big one at sundown, @, it's a doozy.$h",
+    "fall27": "Spirit's Eve! The haunted maze is open, and I'm dressed as a bomb. Honestly, the costume was the easiest part to make.$h",
+    "winter8": "Festival of Ice, @. I'm trying to build a snow sculpture of a volcano, and it keeps melting. Maybe the sun is just jealous.$u",
+    "winter25": "Feast of the Winter Star! I drew your name in the gift exchange, @. I hope it isn't something that explodes. Probably.$h"
+  },
+  "gifts": {
+    "loved": {
+      "text": "Now that is a proper boom! You know exactly what makes my heart race.$h",
+      "stardew": ["286", "287", "288"],
+      "terraria": ["Dynamite", "Grenade", "StickyBomb"]
+    },
+    "liked": {
+      "text": "Ale and mead? Now we're talking. Cheers, @!$h",
+      "stardew": ["346", "303", "459"],
+      "terraria": ["Ale", "Cannon"]
+    },
+    "neutral": {
+      "text": "Mm, thanks, @. Not really my sort of thing, but I'll find a use for it. Probably a bang.$u",
+      "stardew": [],
+      "terraria": []
+    },
+    "disliked": {
+      "text": "Flowers and seeds? Smells like the Dryad's garden in here. Not my favorite, @.$a",
+      "stardew": ["-80", "-74"],
+      "terraria": ["#seed", "#plant"]
+    },
+    "hated": {
+      "text": "Trash? Junk? You want my boom sticks to rust, @? Take that back right now!$a",
+      "stardew": ["168", "-81"],
+      "terraria": ["#junk"]
+    }
+  },
+  "events": [
+    {
+      "id": "h2",
+      "hearts": 2,
+      "where": "home",
+      "time": "day",
+      "weather": "any",
+      "with": [],
+      "music": "playful",
+      "after": "Don't light anything in the house, @. Kidding. Mostly.",
+      "reward": "Bomb",
+      "rewardCount": 3,
+      "steps": [
+        { "say": "Oh! @, you scared me half to death. I was testing a fuse and the whole yard nearly went up.$u" },
+        { "emote": "exclamation" },
+        { "face": "self", "toward": "farmer" },
+        { "pause": 500 },
+        { "say": "Don't look so worried, I've got this under control. Mostly. Come in before the smoke gets in your hair.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "say": "Here is the fuse I've been working on. Ten seconds of fire, then a lovely bang. Want to try?$h" },
+        { "question": "Would you like to light it?", "answers": [
+            { "text": "Sure, let's do it!", "friendship": 30, "reply": "Ha! That's the spirit. Stand back, eh? Stand back!$h" },
+            { "text": "Maybe not.", "friendship": -5, "reply": "Fair enough. Smart folks don't light things in their own kitchen.$s" } ] },
+        { "emote": "happy" },
+        { "say": "You know, I never had a friend who would stick around for the smoke. Thanks for that, @.$l" },
+        { "pause": 400 },
+        { "say": "Now, I've got a little something for you. Bombs, of course. Be careful with them, I'm not paying for another roof.$h" },
+        { "emote": "heart", "who": "farmer" }
+      ]
+    },
+    {
+      "id": "h4",
+      "hearts": 4,
+      "where": "Town",
+      "time": "day",
+      "weather": "sunny",
+      "with": [],
+      "music": "jaunty",
+      "after": "Walk with me again sometime, @. Preferably where there's no dog to scare.",
+      "steps": [
+        { "say": "@! Perfect timing. I was wondering if anyone in this town would walk with me. Nobody else wants to be near my crates.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "face": "self", "toward": "farmer" },
+        { "say": "Back in the old days I wandered the caves all alone, bombs in my pack, talking to nobody but the slimes.$s" },
+        { "pause": 600 },
+        { "say": "Then the Merchant sold me my first crate and I thought, here is a town that might take me in. Hard to believe I was that bold.$h" },
+        { "question": "What did you think of me at first?", "answers": [
+            { "text": "You looked a bit dangerous.", "friendship": 10, "reply": "Dangerous? I'm adorable. Mostly. Thanks for the honesty, @.$h" },
+            { "text": "You still look dangerous.", "friendship": -10, "reply": "Hmph! Next time I'll wear a bow. See if you like that.$a" } ] },
+        { "emote": "happy" },
+        { "say": "Come on, let's go by the clinic. The Nurse will tell me off for something I didn't do, and you can laugh.$h" },
+        { "emote": "happy", "who": "farmer" },
+        { "jump": "self" },
+        { "sound": "dwop" },
+        { "say": "Oh, and @, thank you for not running. It means a lot to me.$l" }
+      ]
+    },
+    {
+      "id": "h6",
+      "hearts": 6,
+      "where": "Mountain",
+      "time": "night",
+      "weather": "any",
+      "with": [],
+      "music": "echos",
+      "after": "The stars are still up there, @. Go look before they fade.",
+      "reward": "Grenade",
+      "rewardCount": 2,
+      "steps": [
+        { "say": "@, you climbed the mountain at night? Brave, or foolish. Let's say brave. I come up here to look at the stars and think.$h" },
+        { "face": "self", "toward": "farmer" },
+        { "say": "The stars up here are better than any firework I ever lit. Watch closely, the little ones are shooting.$h" },
+        { "pause": 1000 },
+        { "emote": "happy", "who": "farmer" },
+        { "say": "I've been carrying a box of cannon fuses since the day I arrived. I always thought I'd be the one to burn out first.$s" },
+        { "move": "self", "dx": -1, "dy": 0 },
+        { "question": "Do you ever worry about the big fights?", "answers": [
+            { "text": "Every single night, honestly.", "friendship": 20, "reply": "Then you're wiser than most. Worry makes you careful, and careful keeps us all alive.$s" },
+            { "text": "Not really.", "friendship": -5, "reply": "Lucky you. I lie awake listening for the next horn blast.$u" } ] },
+        { "say": "Take these grenades, @. Keep them in your pack. They'll come in handy when the moon gets loud.$h" },
+        { "emote": "heart", "who": "farmer" },
+        { "pause": 400 },
+        { "say": "Now let's look at the stars without the sad talk. Deal?$h" }
+      ]
+    },
+    {
+      "id": "h8",
+      "hearts": 8,
+      "where": "Saloon",
+      "time": "night",
+      "weather": "any",
+      "with": [],
+      "music": "sweet",
+      "after": "Glad you came by, @. Save me a seat next time.",
+      "steps": [
+        { "say": "@! Over here. The Tavernkeep has been pouring my ale without a fight since you showed up. I might be learning manners.$h" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "face": "self", "toward": "farmer" },
+        { "emote": "happy" },
+        { "say": "Honestly, I don't drink to forget anymore. I drink because it's nice to share one with a friend.$l" },
+        { "pause": 500 },
+        { "say": "When I first came here every night ended in a smashed stool. Now it ends with you and me laughing about it. That's a big change, @.$h" },
+        { "question": "Should we make a toast?", "answers": [
+            { "text": "To the boom king!", "friendship": 30, "reply": "Ha! To the boom king. And to you, @, for putting up with me.$h" },
+            { "text": "Let's just sit quietly.", "friendship": 15, "reply": "Quiet is nice too. I can do quiet for you. Mostly.$l" } ] },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "Thank you, @. Another round and then home, eh? I'll walk you back without setting anything on fire.$h" },
+        { "pause": 300 },
+        { "sound": "coin" },
+        { "say": "Glad you came tonight. This has been the best hour of my week.$h" }
+      ]
+    },
+    {
+      "id": "h10",
+      "hearts": 10,
+      "where": "home",
+      "time": "night",
+      "weather": "any",
+      "with": [],
+      "music": "sweet",
+      "after": "Keep that box safe, @. It's the only one I ever bothered to label.",
+      "reward": "Dynamite",
+      "rewardCount": 1,
+      "steps": [
+        { "say": "@, you came in late. Come in, come in. I kept the fire low tonight. Nothing will explode, I promise.$l" },
+        { "move": "self", "dx": 1, "dy": 0 },
+        { "face": "self", "toward": "farmer" },
+        { "say": "I have something I wanted to show you. It's a box of old drawings. Every bomb I ever built, labeled and sketched, with notes on the ones that failed.$h" },
+        { "pause": 800 },
+        { "say": "This one is my first crater. Ugly thing. This one, I blew up the Merchant's shop roof by accident. I was very sorry.$s" },
+        { "question": "Do you miss your old life?", "answers": [
+            { "text": "Not one bit, you're here now.", "friendship": 40, "reply": "You're kind, @. Thank you. I think I'm finally home.$l" },
+            { "text": "A little, yes.", "friendship": 0, "reply": "That's fair. Old things are always a little bit sweet.$s" } ] },
+        { "move": "self", "dx": 0, "dy": 1 },
+        { "emote": "heart", "who": "farmer" },
+        { "say": "I want you to have one of my favorite dynamites, @. Keep it safe, and only light it when you really need to.$l" },
+        { "pause": 500 },
+        { "say": "I'm glad you're my friend. For a fellow with too much powder, that's a rare gift.$h" }
+      ]
+    }
+  ]
+}
