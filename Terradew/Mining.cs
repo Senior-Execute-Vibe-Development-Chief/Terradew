@@ -1,7 +1,11 @@
+using HarmonyLib;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using Terradew.Core.Protocol;
 using Terradew.Core.World;
 using SObject = StardewValley.Object;
@@ -13,6 +17,98 @@ internal sealed class Mining
 {
     // Bombs reach about five tiles; anything farther was not broken by the farmer.
     private const float ReachTiles = 6f;
+    // A rock breaks on the swing that hits it; a removal this long after a swing was not the farmer's.
+    private const int PickWindowTicks = 30;
+    // A felled tree drops its wood a few seconds later, and the farmer picks that up afterwards.
+    private const int ChopWindowTicks = 60 * 15;
+
+    private static Mining? instance;
+    // Each patch is only trusted once it installs. Without it, gains count as they always did.
+    private static bool pickTracked;
+    private static bool chopTracked;
+    private static int lastPickTick = int.MinValue / 2;
+    private static int lastChopTick = int.MinValue / 2;
+
+    private IMonitor? monitor;
+
+    public Mining()
+    {
+        instance = this;
+    }
+
+    public void Install(Harmony harmony, IMonitor monitor)
+    {
+        this.monitor = monitor;
+        try
+        {
+            var pick = AccessTools.Method(
+                typeof(Pickaxe),
+                nameof(Pickaxe.DoFunction),
+                new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(int), typeof(Farmer) });
+            if (pick == null)
+            {
+                monitor.Log("Terradew could not find Pickaxe.DoFunction; every rock broken counts as the farmer's.", LogLevel.Warn);
+            }
+            else
+            {
+                harmony.Patch(pick, postfix: new HarmonyMethod(typeof(Mining), nameof(AfterPickaxe)));
+                pickTracked = true;
+            }
+        }
+        catch (Exception error)
+        {
+            monitor.Log($"Terradew could not hook the pickaxe; every rock broken counts as the farmer's. {error.Message}", LogLevel.Warn);
+        }
+        try
+        {
+            var chop = AccessTools.Method(typeof(Tree), "performToolAction");
+            if (chop == null)
+            {
+                monitor.Log("Terradew could not find Tree.performToolAction; all wood gained counts as the farmer's.", LogLevel.Warn);
+            }
+            else
+            {
+                harmony.Patch(chop, postfix: new HarmonyMethod(typeof(Mining), nameof(AfterTreeToolAction)));
+                chopTracked = true;
+            }
+        }
+        catch (Exception error)
+        {
+            monitor.Log($"Terradew could not hook the axe; all wood gained counts as the farmer's. {error.Message}", LogLevel.Warn);
+        }
+    }
+
+    /// <summary>Notes the tick of each pickaxe swing the farmer makes.</summary>
+    private static void AfterPickaxe(Farmer who)
+    {
+        try
+        {
+            if (who == Game1.player)
+                lastPickTick = (int)Game1.ticks;
+        }
+        catch (Exception error)
+        {
+            instance?.monitor?.Log($"Terradew could not note a pickaxe swing. {error.Message}", LogLevel.Warn);
+        }
+    }
+
+    /// <summary>Notes the tick of each axe hit the farmer lands on a tree.</summary>
+    private static void AfterTreeToolAction(Tool t)
+    {
+        try
+        {
+            if (t is Axe && t.getLastFarmerToUse() == Game1.player)
+                lastChopTick = (int)Game1.ticks;
+        }
+        catch (Exception error)
+        {
+            instance?.monitor?.Log($"Terradew could not note an axe hit. {error.Message}", LogLevel.Warn);
+        }
+    }
+
+    private static bool RecentPick => !pickTracked || (int)Game1.ticks - lastPickTick <= PickWindowTicks;
+
+    private static bool RecentChop => !chopTracked || (int)Game1.ticks - lastChopTick <= ChopWindowTicks;
 
     public void OnObjectListChanged(ObjectListChangedEventArgs e, Bridge bridge)
     {
@@ -23,7 +119,7 @@ internal sealed class Mining
         int mineLevel = e.Location is MineShaft shaft && shaft.mineLevel < Places.QuarryMineLevel ? shaft.mineLevel : 0;
         foreach (var (tile, obj) in e.Removed)
         {
-            if (Vector2.Distance(tile, farmer) > ReachTiles || !obj.IsBreakableStone())
+            if (Vector2.Distance(tile, farmer) > ReachTiles || !obj.IsBreakableStone() || !RecentPick)
                 continue;
             bridge.Send(new Gathered { Kind = KindOf(obj), PlaceKey = placeKey, MineLevel = mineLevel, Count = 1 });
         }
@@ -50,7 +146,7 @@ internal sealed class Mining
             "(O)709" => GatherKind.Hardwood,
             _ => null,
         };
-        if (kind == null)
+        if (kind == null || !RecentChop)
             return;
         bridge.Send(new Gathered { Kind = kind.Value, PlaceKey = Maps.PlaceOf(Game1.currentLocation).Key, Count = gained });
     }

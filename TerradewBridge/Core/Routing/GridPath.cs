@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Terradew.Core.Routing;
 
-/// <summary>Grid A* over eight directions. Diagonal moves never cut the corner between two blocked tiles.</summary>
+/// <summary>Grid A* over eight directions. Diagonals are not taken when either of the two orthogonal neighbours is blocked.</summary>
 public static class GridPath
 {
     private const int StraightCost = 10;

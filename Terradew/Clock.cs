@@ -18,6 +18,9 @@ internal sealed class Clock
     /// <summary>Stardew's pass-out entry points, most likely first. Only the first one found is patched.</summary>
     private static readonly string[] PassOutMethods = { "passOutFromTired", "startToPassOut" };
 
+    /// <summary>True from the bedtime until the new day starts, so a second pass-out in between is skipped.</summary>
+    private static bool dayEnding;
+
     public void Install(Harmony harmony, IMonitor monitor)
     {
         foreach (string name in PassOutMethods)
@@ -40,13 +43,21 @@ internal sealed class Clock
         monitor.Log("Terradew could not find Stardew's pass-out method; the farmer may still pass out at 2:00 AM.", LogLevel.Warn);
     }
 
+    /// <summary>Called when a new day starts. The bedtime is over, so the next pass-out may run again.</summary>
+    public static void OnDayStarted() => dayEnding = false;
+
     /// <summary>
     /// Runs before Stardew's pass-out. Returning false skips it. Only the 2:00 AM case is taken over;
     /// anything earlier (for example running out of energy) keeps Stardew's own behaviour.
     /// </summary>
-    private static bool BeforePassOut()
+    private static bool BeforePassOut(Farmer __instance)
     {
-        if (!Context.IsWorldReady || !Context.IsMainPlayer || Game1.timeOfDay < PassOutTime || Game1.eventUp)
+        if (!Context.IsWorldReady || !Context.IsMainPlayer || __instance != Game1.player)
+            return true;
+        // The day is already ending: NewDay is queued, so skip the pass-out rather than end the day twice.
+        if (dayEnding)
+            return false;
+        if (Game1.timeOfDay < PassOutTime || Game1.eventUp)
             return true;
         try
         {
@@ -54,6 +65,7 @@ internal sealed class Clock
             // and no pass-out letter, so the farmer wakes at home.
             Game1.player.isInBed.Value = true;
             Game1.NewDay(0f);
+            dayEnding = true;
             return false;
         }
         catch (Exception)

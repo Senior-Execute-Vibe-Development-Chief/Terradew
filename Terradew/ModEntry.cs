@@ -31,7 +31,7 @@ public sealed class ModEntry : Mod
     private Hud hud = null!;
     private bool helloSent;
     private int tick;
-    private NpcChat? pendingChat;
+    private readonly Queue<NpcChat> pendingChats = new();
 
     public override void Entry(IModHelper helper)
     {
@@ -48,10 +48,11 @@ public sealed class ModEntry : Mod
         wallClimb = new WallClimb(bridge);
         houses = new Houses();
         bundles = new Bundles(Monitor);
-        draw = new Draw(bridge, sprites, hand, helper);
+        draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper);
         var harmony = new Harmony(ModManifest.UniqueID);
         draw.Install(harmony, Monitor);
+        mining.Install(harmony, Monitor);
         wallClimb.Install(harmony, Monitor);
         new Clock().Install(harmony, Monitor);
 
@@ -60,10 +61,10 @@ public sealed class ModEntry : Mod
         {
             if (!Context.IsWorldReady)
                 return;
-            if (Context.IsPlayerFree || Game1.activeClickableMenu is ChatMenu)
+            if ((Context.IsPlayerFree && pendingChats.Count == 0) || Game1.activeClickableMenu is ChatMenu)
                 Game1.activeClickableMenu = new ChatMenu(bridge, sprites, chat);
             else
-                pendingChat = chat;
+                pendingChats.Enqueue(chat);
         };
         bridge.Died += died => vitals.OnDied(died, bridge);
         bridge.CoinAck += ack => money.Ack(ack);
@@ -86,7 +87,7 @@ public sealed class ModEntry : Mod
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.Content.AssetRequested += (_, e) => houses.OnAssetRequested(e);
         helper.Events.Content.AssetRequested += (_, e) => bundles.OnAssetRequested(e);
-        helper.Events.World.ObjectListChanged += (_, e) => { if (Context.IsWorldReady) mining.OnObjectListChanged(e, bridge); };
+        helper.Events.World.ObjectListChanged += (_, e) => { if (Leading) mining.OnObjectListChanged(e, bridge); };
         helper.Events.World.BuildingListChanged += (_, _) => { if (Context.IsWorldReady) houses.Publish(bridge); };
         helper.ConsoleCommands.Add("terradew", "terradew status | terradew <command for Terraria>, such as: summon, boss EyeofCthulhu, give CopperShortsword", OnCommand);
         Monitor.Log($"Terradew will connect to Terraria on 127.0.0.1:{config.Port}.", LogLevel.Info);
@@ -101,6 +102,7 @@ public sealed class ModEntry : Mod
         vitals.Reset();
         routes.Reset();
         hand.Reset();
+        wallClimb.Reset();
         helloSent = false;
     }
 
@@ -110,7 +112,8 @@ public sealed class ModEntry : Mod
         routes.Reset();
         hand.Reset();
         fishing.Reset();
-        pendingChat = null;
+        wallClimb.Reset();
+        pendingChats.Clear();
         helloSent = false;
     }
 
@@ -148,11 +151,8 @@ public sealed class ModEntry : Mod
         }
         tick++;
         bridge.Pump();
-        if (pendingChat != null && Context.IsPlayerFree)
-        {
-            Game1.activeClickableMenu = new ChatMenu(bridge, sprites, pendingChat);
-            pendingChat = null;
-        }
+        if (pendingChats.Count > 0 && Context.IsPlayerFree)
+            Game1.activeClickableMenu = new ChatMenu(bridge, sprites, pendingChats.Dequeue());
         if (bridge.IsConnected && !helloSent)
             SendHello();
         Farmer player = Game1.player;
@@ -215,6 +215,7 @@ public sealed class ModEntry : Mod
 
     private void OnDayStarted()
     {
+        Clock.OnDayStarted();
         if (!Context.IsMainPlayer)
             return;
         houses.Publish(bridge);
@@ -241,7 +242,8 @@ public sealed class ModEntry : Mod
             return;
         fishing.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
         vitals.OnItemsAdded(e.Added);
-        mining.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
+        if (Leading)
+            mining.OnInventoryChanged(e.Added, e.QuantityChanged, bridge);
     }
 
     private void OnCommand(string name, string[] args)

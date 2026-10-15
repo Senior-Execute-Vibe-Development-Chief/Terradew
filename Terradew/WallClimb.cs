@@ -50,6 +50,11 @@ internal sealed class WallClimb
                 monitor.Log("Terradew could not find MineShaft.checkAction; the wall will not block the mine ladder.", LogLevel.Warn);
                 return;
             }
+            if (target.DeclaringType != typeof(MineShaft))
+            {
+                monitor.Log($"Terradew found checkAction on {target.DeclaringType?.Name}, not MineShaft; the wall will not block the mine ladder.", LogLevel.Warn);
+                return;
+            }
             harmony.Patch(target, prefix: new HarmonyMethod(typeof(WallClimb), nameof(CheckActionPrefix)));
         }
         catch (Exception error)
@@ -58,10 +63,20 @@ internal sealed class WallClimb
         }
     }
 
+    /// <summary>Forgets a ladder climb that has not landed yet, when the farmer leaves the game.</summary>
+    public void Reset()
+    {
+        pendingFloor = null;
+    }
+
     /// <summary>Stops the elevator while the wall hunts the farmer.</summary>
     public void OnMenuChanged(IClickableMenu? menu)
     {
-        if (menu is not MineElevatorMenu || bridge.Wall == null || !Context.IsWorldReady)
+        WallFight? wall = bridge.Wall;
+        if (menu is not MineElevatorMenu || wall == null || !Context.IsWorldReady || Game1.currentLocation == null)
+            return;
+        // The wall only blocks the floor it is on.
+        if (wall.PlaceKey != Maps.PlaceOf(Game1.currentLocation).Key)
             return;
         menu.exitThisMenu(playSound: false);
         if (Game1.activeClickableMenu == menu)
@@ -104,7 +119,8 @@ internal sealed class WallClimb
     /// <summary>Returns false when the ladder was handled here and vanilla should be skipped.</summary>
     private bool OnLadderAction(MineShaft shaft, xTile.Dimensions.Location tileLocation, Farmer who, ref bool result)
     {
-        if (who != Game1.player || bridge.Wall == null)
+        WallFight? wall = bridge.Wall;
+        if (who != Game1.player || wall == null || wall.PlaceKey != Maps.PlaceOf(shaft).Key)
             return true;
         if (shaft.mineLevel < BlockedFloor || shaft.mineLevel > LastFloor)
             return true;

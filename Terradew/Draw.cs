@@ -34,14 +34,17 @@ internal sealed class Draw
     private readonly SpriteBook sprites;
     private readonly Hand hand;
     private readonly IModHelper helper;
+    private readonly IMonitor monitor;
     private bool drewSorted;
+    private bool loggedDrawError;
 
-    public Draw(Bridge bridge, SpriteBook sprites, Hand hand, IModHelper helper)
+    public Draw(Bridge bridge, SpriteBook sprites, Hand hand, IModHelper helper, IMonitor monitor)
     {
         this.bridge = bridge;
         this.sprites = sprites;
         this.hand = hand;
         this.helper = helper;
+        this.monitor = monitor;
         instance = this;
     }
 
@@ -72,8 +75,13 @@ internal sealed class Draw
             instance.World(b, sorted: true);
             instance.drewSorted = true;
         }
-        catch (Exception)
+        catch (Exception error)
         {
+            // Logged once: a fault here would otherwise repeat every frame.
+            if (instance.loggedDrawError)
+                return;
+            instance.loggedDrawError = true;
+            instance.monitor.Log($"Terradew could not draw the sorted creatures; they fall back to drawing over the world. {error.Message}", LogLevel.Warn);
         }
     }
 
