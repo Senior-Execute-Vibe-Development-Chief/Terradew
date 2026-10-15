@@ -96,6 +96,7 @@ public sealed class BridgeSystem : ModSystem
         Stamp.Clear();
         Town.Clear();
         Invasions.Reset();
+        Celestial.Reset();
     }
 
     public override void SaveWorldData(TagCompound tag)
@@ -189,6 +190,7 @@ public sealed class BridgeSystem : ModSystem
         Town.Watch(Stamp.Current);
         Town.KeepOldMan(Stamp);
         Invasions.Watch(Stamp);
+        Celestial.Watch(Stamp);
         Inventory.Publish(link, player, worldTicks);
         if (worldTicks % 120 == 0)
             Town.SendFacts(link);

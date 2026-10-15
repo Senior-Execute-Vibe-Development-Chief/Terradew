@@ -120,6 +120,14 @@ Keys can be changed in `Mods/Terradew/config.json`.
   Skull Cavern entrance at night for Skeletron. Use the Guide Voodoo Doll on an underworld mine floor for the
   Wall of Flesh. Plantera can wake on a jungle mine floor once the three mechanical bosses are beaten, and a
   Lihzahrd Power Cell wakes Golem in the temple floors.
+- **The Wall of Flesh climbs.** On an underworld mine floor it rises from the south edge and creeps north across
+  the whole map, faster as it weakens. The ladder up takes you to the bottom of the floor above, where it starts
+  again; the elevator is shut, and floor 91 is the top. Start deep (floor 110 or lower) to have room to fight.
+- **After Golem**, the Lunatic Cultist waits at the Skull Cavern entrance. Beat it and the Lunar Pillars rise,
+  one in each place: Solar on the Farm, Vortex in Town, Nebula on the Beach, Stardust on the Mountain. When all
+  four fall, Moon Lord comes to the Farm. The Celestial Sigil works only on the Farm.
+- **No passing out.** At 2:00 AM the day simply ends, as if you had gone to bed, with no money lost.
+- **Community Center bundles** ask for minerals instead of monster drops, since Stardew's monsters are gone.
 - **Saving:** Terraria saves its world and character whenever Stardew saves at bedtime.
 
 Test helpers, in the SMAPI console: `terradew status`, `terradew summon`, `terradew summon BlueSlime`,
