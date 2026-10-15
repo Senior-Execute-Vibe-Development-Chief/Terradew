@@ -122,7 +122,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   Lihzahrd Power Cell wakes Golem in the temple floors.
 - **The Wall of Flesh climbs.** On an underworld mine floor it rises from the south edge and creeps north across
   the whole map, faster as it weakens. The ladder up takes you to the bottom of the floor above, where it starts
-  again; the elevator is shut, and floor 91 is the top. Start deep (floor 110 or lower) to have room to fight.
+  again; the elevator is shut, and floor 91 is the top. Start deep (floor 110 or deeper) to have room to fight.
 - **After Golem**, the Lunatic Cultist waits at the Skull Cavern entrance. Beat it and the Lunar Pillars rise,
   one in each place: Solar on the Farm, Vortex in Town, Nebula on the Beach, Stardust on the Mountain. When all
   four fall, Moon Lord comes to the Farm. The Celestial Sigil works only on the Farm.
