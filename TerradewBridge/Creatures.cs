@@ -29,10 +29,25 @@ public sealed class Creatures : GlobalNPC
     private Vector2 plane;
     private int fitWidth = -1;
     private int fitHeight = -1;
+    /// <summary>Ticks into the current hop, or -1 while a slime rests on the ground.</summary>
+    private int hopTick = -1;
+    private int restTicks;
+    /// <summary>How high a slime is in its hop this tick: 0 on the ground, 1 at the top.</summary>
+    private float hopArc;
+
+    /// <summary>A slime rests this many ticks between hops, and each hop lasts <see cref="SlimeHopTicks"/>.</summary>
+    private const int SlimeHopTicks = 24;
+    private const int SlimeRestMin = 18;
+    private const int SlimeRestMax = 30;
+    /// <summary>A slime's speed in the air, in Terraria pixels per tick. A whole hop covers about 29 Terraria pixels.</summary>
+    private const float SlimeHopSpeed = 1.2f;
 
     public static bool IsFlyer(NPC npc) => npc.TryGetGlobalNPC(out Creatures self) && self.ready && self.flyer;
 
     public static bool IsChasing(NPC npc) => npc.TryGetGlobalNPC(out Creatures self) && self.chasing;
+
+    /// <summary>How high a slime is in its hop this tick, from 0 on the ground to 1 at the top. Zero for anything else.</summary>
+    public static float HopArc(NPC npc) => npc.TryGetGlobalNPC(out Creatures self) && self.ready ? self.hopArc : 0f;
 
     /// <summary>
     /// A worm segment inside a solid block is underground: Stardew draws it faded, and it neither takes
@@ -54,6 +69,7 @@ public sealed class Creatures : GlobalNPC
             away = false;
             chasing = false;
             plane = Vector2.Zero;
+            Land();
             return;
         }
         bool worm = npc.aiStyle == NPCAIStyleID.Worm;
@@ -65,6 +81,9 @@ public sealed class Creatures : GlobalNPC
             wander = npc.position;
             pace = 40;
             patience = PlaneMotion.WanderPatience;
+            hopTick = -1;
+            restTicks = 0;
+            hopArc = 0f;
         }
 
         BridgeSystem bridge = BridgeSystem.Instance;
@@ -79,6 +98,7 @@ public sealed class Creatures : GlobalNPC
             chasing = false;
             plane = Vector2.Zero;
             npc.velocity = Vector2.Zero;
+            Land();
             return;
         }
 
@@ -103,6 +123,7 @@ public sealed class Creatures : GlobalNPC
         {
             stagger--;
             plane *= 0.85f;
+            Land();
             Collide(npc, plane);
             return;
         }
@@ -138,7 +159,13 @@ public sealed class Creatures : GlobalNPC
         }
 
         // Terraria pixels per tick; one is four Stardew pixels. The farmer walks about 1.25 and Stardew's people 0.5.
-        float speed = npc.townNPC ? 0.5f : npc.aiStyle == NPCAIStyleID.Slime ? 0.6f : npc.boss ? 1.6f : npc.damage <= 0 ? 0.5f : 0.8f;
+        float speed = npc.townNPC ? 0.5f : npc.aiStyle == NPCAIStyleID.Slime ? SlimeHopSpeed : npc.boss ? 1.6f : npc.damage <= 0 ? 0.5f : 0.8f;
+        // A slime only moves while it is in the air. Between hops it sits still on the ground.
+        if (npc.aiStyle == NPCAIStyleID.Slime && !Hop(npc))
+        {
+            npc.velocity = Vector2.Zero;
+            return;
+        }
         PlaneMotion.PlaneStep aim = PlaneMotion.Aim(feet.X, feet.Y, goal.X, goal.Y, speed, arrive);
         Vector2 move = new(aim.X, aim.Y);
         if (chasing)
@@ -149,6 +176,40 @@ public sealed class Creatures : GlobalNPC
             npc.direction = aim.X < 0f ? -1 : 1;
             npc.spriteDirection = npc.direction;
         }
+    }
+
+    /// <summary>
+    /// A slime rests on the ground for a while, then makes one hop: for its length it moves towards its goal and
+    /// its arc rises and falls. Returns false while it rests.
+    /// </summary>
+    private bool Hop(NPC npc)
+    {
+        if (hopTick < 0)
+        {
+            if (restTicks > 0)
+            {
+                restTicks--;
+                hopArc = 0f;
+                return false;
+            }
+            hopTick = 0;
+        }
+        hopTick++;
+        hopArc = MathF.Sin(MathF.PI * hopTick / SlimeHopTicks);
+        if (hopTick >= SlimeHopTicks)
+        {
+            hopTick = -1;
+            hopArc = 0f;
+            restTicks = Main.rand.Next(SlimeRestMin, SlimeRestMax + 1);
+        }
+        return true;
+    }
+
+    /// <summary>A slime that is pushed, held or left in another place lands and starts its next rest.</summary>
+    private void Land()
+    {
+        hopTick = -1;
+        hopArc = 0f;
     }
 
     /// <summary>

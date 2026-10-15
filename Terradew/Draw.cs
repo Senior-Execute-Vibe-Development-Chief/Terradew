@@ -25,10 +25,8 @@ internal sealed class Draw
     /// <summary>The crystal leaf's laser shot, which Terraria draws as a beam along its flight rather than from its sprite.</summary>
     private const int CrystalLeafShotType = 227;
 
-    /// <summary>A hopping slime's height at its jump's peak, in Stardew pixels, before its size scales it.</summary>
-    private const float HopHeight = 14f;
-    /// <summary>How far a slime travels, in Terraria pixels, for each hop. Walking it on from one hop to the next.</summary>
-    private const float HopTerrariaPixels = 32f;
+    /// <summary>The least a slime's hop rises at its peak, in Stardew pixels. Larger slimes rise by half their body instead.</summary>
+    private const float HopHeight = 16f;
     /// <summary>The crystal leaf's laser, as Terraria pixels long and Stardew pixels thick.</summary>
     private const float LaserTerrariaLength = 12f;
     private const float LaserThickness = 6f;
@@ -49,17 +47,6 @@ internal sealed class Draw
     private bool drewSorted;
     private bool loggedDrawError;
     /// <summary>Hop state by entity id. Rebuilt from each new world state, so slimes that left the world drop out.</summary>
-    private Dictionary<int, HopState> hops = new();
-    private WorldState? hopWorld;
-
-    /// <summary>A hopping slime's position in the last world state, and its phase through its hops (radians; each half turn is one hop).</summary>
-    private sealed class HopState
-    {
-        public float X;
-        public float Y;
-        public float Phase;
-    }
-
     public Draw(Bridge bridge, SpriteBook sprites, Hand hand, IModHelper helper, IMonitor monitor)
     {
         this.bridge = bridge;
@@ -112,6 +99,32 @@ internal sealed class Draw
         if (!drewSorted)
             World(b, sorted: false);
         drewSorted = false;
+        DrawEmissive(b);
+        TerrariaBody.DrawGlow(b);
+    }
+
+    /// <summary>
+    /// Shots that glow on their own, such as the crystal leaf's crystal, are drawn over the finished world at full
+    /// brightness, so the night and caves do not dim them. They are left out of the world pass (see World).
+    /// </summary>
+    private void DrawEmissive(SpriteBatch b)
+    {
+        Farmer player = Game1.player;
+        if (player.currentLocation == null)
+            return;
+        WorldState? world = bridge.World;
+        if (world == null || !bridge.WorldIsFor(Maps.PlaceOf(player.currentLocation).Key))
+            return;
+        foreach (ProjectileState projectile in world.Projectiles)
+        {
+            if (!projectile.Emissive)
+                continue;
+            (float x, float y) = projectile.Attached
+                ? AttachedAt(player, projectile)
+                : WorldProjection.ToMap(world.RegionX, world.RegionY, projectile.X, projectile.Y);
+            if (Utility.isOnScreen(new Vector2(x, y), 64 * 4))
+                DrawProjectile(b, projectile, x, y, sorted: false, emissive: true);
+        }
     }
 
     private void World(SpriteBatch b, bool sorted)
@@ -128,13 +141,6 @@ internal sealed class Draw
         WorldState? world = bridge.World;
         if (world == null || !bridge.WorldIsFor(key))
             return;
-        // Hops advance once per new world state, so drawing the same state again (or twice in a frame) does not hop it further.
-        if (!ReferenceEquals(world, hopWorld))
-        {
-            hopWorld = world;
-            AdvanceHops(world);
-        }
-
         foreach (EntityState entity in world.Entities)
         {
             // A town NPC playing a villager is drawn as that villager, by Stardew.
@@ -155,6 +161,9 @@ internal sealed class Draw
         }
         foreach (ProjectileState projectile in world.Projectiles)
         {
+            // Glowing shots are drawn over the world instead (see DrawEmissive).
+            if (projectile.Emissive)
+                continue;
             (float x, float y) = projectile.Attached
                 ? AttachedAt(player, projectile)
                 : WorldProjection.ToMap(world.RegionX, world.RegionY, projectile.X, projectile.Y);
@@ -190,47 +199,6 @@ internal sealed class Draw
     /// </summary>
     private static bool IsComposite(int type) => type is >= 127 and <= 131 or >= 246 and <= 249 or >= 396 and <= 398;
 
-    /// <summary>
-    /// Moves each slime's hop on from its last position. A slime that moved walks its phase on by the distance it
-    /// travelled, so it hops as it goes; one that stood still settles onto the ground at the nearest landing.
-    /// </summary>
-    private void AdvanceHops(WorldState world)
-    {
-        var next = new Dictionary<int, HopState>();
-        foreach (EntityState entity in world.Entities)
-        {
-            if (!entity.Has(EntityFlags.Hopper))
-                continue;
-            if (!hops.TryGetValue(entity.Id, out HopState? hop))
-                hop = new HopState { X = entity.X, Y = entity.Y };
-            float dx = entity.X - hop.X;
-            float dy = entity.Y - hop.Y;
-            float moved = MathF.Sqrt(dx * dx + dy * dy);
-            if (moved > 0.05f)
-                hop.Phase = (hop.Phase + moved * MathF.PI / HopTerrariaPixels) % MathF.PI;
-            else
-            {
-                // Each landing is a multiple of pi; ease towards the nearest one.
-                float landing = MathF.Round(hop.Phase / MathF.PI) * MathF.PI;
-                hop.Phase += (landing - hop.Phase) * 0.25f;
-            }
-            hop.X = entity.X;
-            hop.Y = entity.Y;
-            next[entity.Id] = hop;
-        }
-        hops = next;
-    }
-
-    /// <summary>How far a slime is lifted off the ground right now, in Stardew pixels. Zero for one that is not hopping.</summary>
-    private float HopLift(EntityState entity)
-    {
-        if (!hops.TryGetValue(entity.Id, out HopState? hop))
-            return 0f;
-        // The lift is HopHeight scaled by the slime's size, and follows |sin| so each hop rises and lands.
-        float height = HopHeight * Math.Clamp(entity.Height / 24f, 0.5f, 2.5f);
-        return height * MathF.Abs(MathF.Sin(hop.Phase));
-    }
-
     private void DrawEntity(SpriteBatch b, EntityState entity, float x, float y, bool sorted, WallFight? wall)
     {
         Texture2D? sheet = sprites.Load(SpriteNames.NpcSheet(entity.NpcType, entity.Look)) ?? sprites.Load(SpriteNames.Npc(entity.NpcType));
@@ -252,9 +220,9 @@ internal sealed class Draw
         // quarter clockwise so the mouth and eyes face north.
         float rotation = onWall ? MathF.PI / 2f : entity.Rotation;
         bool airborne = entity.Has(EntityFlags.Flyer) || entity.Has(EntityFlags.Worm) || IsComposite(entity.NpcType) || Math.Abs(rotation) > 0.01f;
-        // A hopping slime is lifted by its hop, and its shadow stays on the ground, shrinking and fading as it rises.
-        float lift = entity.Has(EntityFlags.Hopper) && !airborne && !onWall ? HopLift(entity) : 0f;
-        float aloft = lift / (HopHeight * Math.Clamp(entity.Height / 24f, 0.5f, 2.5f));
+        // A hopping slime is lifted by the arc Terraria sends for this tick, and its shadow stays on the ground, shrinking and fading as it rises.
+        float aloft = entity.Has(EntityFlags.Hopper) && !airborne && !onWall ? entity.Hop / 255f : 0f;
+        float lift = aloft * Math.Max(HopHeight, bodyHeight * 0.5f);
         Rectangle? source = sheet != null && entity.FrameW > 0 && entity.FrameH > 0
             ? Clamp(new Rectangle(entity.FrameX, entity.FrameY, entity.FrameW, entity.FrameH), sheet)
             : null;
@@ -369,7 +337,7 @@ internal sealed class Draw
         return (box.Center.X + projectile.OffsetX * SpriteLayout.DrawScale, box.Bottom + projectile.OffsetY * SpriteLayout.DrawScale);
     }
 
-    private void DrawProjectile(SpriteBatch b, ProjectileState projectile, float x, float y, bool sorted)
+    private void DrawProjectile(SpriteBatch b, ProjectileState projectile, float x, float y, bool sorted, bool emissive = false)
     {
         Texture2D? sheet = sprites.Load(SpriteNames.Projectile(projectile.ProjType));
         if (sheet == null)
@@ -378,7 +346,9 @@ internal sealed class Draw
         int height = Math.Max(1, sheet.Height / frames);
         int frame = Math.Clamp((int)projectile.Frame, 0, frames - 1);
         var source = new Rectangle(0, frame * height, sheet.Width, height);
-        Color color = projectile.Color != 0 ? new Color { PackedValue = projectile.Color } : Color.White * ((255 - projectile.Alpha) / 255f);
+        // A glowing shot is full brightness, whatever light Terraria gave it where it is.
+        Color color = emissive ? Color.White * ((255 - projectile.Alpha) / 255f)
+            : projectile.Color != 0 ? new Color { PackedValue = projectile.Color } : Color.White * ((255 - projectile.Alpha) / 255f);
         var effects = projectile.Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         // Whole screen pixels for attached shots, which move with the farmer, so the crystal does not shimmer.
         var position = projectile.Attached
@@ -390,7 +360,9 @@ internal sealed class Draw
             DrawLaser(b, sheet, source, position, projectile.Rotation, projectile.Scale <= 0f ? 1f : projectile.Scale, Depth(y, sorted, 32f));
             return;
         }
-        b.Draw(sheet, position, source, color, projectile.Rotation, new Vector2(source.Width / 2f, source.Height / 2f), scale, effects, Depth(y, sorted, 32f));
+        // Over the world, a glowing shot sits in front of everything, as the body does when it flies.
+        float depth = emissive ? 1f : Depth(y, sorted, 32f);
+        b.Draw(sheet, position, source, color, projectile.Rotation, new Vector2(source.Width / 2f, source.Height / 2f), scale, effects, depth);
     }
 
     /// <summary>

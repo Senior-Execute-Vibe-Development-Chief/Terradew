@@ -605,6 +605,11 @@ public sealed class PlayerLook : Message
     public short FeetX;
     public short FeetY;
     public byte[] Rgba = Array.Empty<byte>();
+    /// <summary>
+    /// The parts of the picture that glow on their own, such as glowing wings, as RGBA over the same rectangle as
+    /// <see cref="Rgba"/>. Stardew draws them again over the finished world so darkness does not dim them. Empty when none.
+    /// </summary>
+    public byte[] GlowRgba = Array.Empty<byte>();
 
     public override MsgType Type => MsgType.PlayerLook;
 
@@ -616,6 +621,8 @@ public sealed class PlayerLook : Message
         w.Write(FeetY);
         w.Write(Rgba.Length);
         w.Write(Rgba);
+        w.Write(GlowRgba.Length);
+        w.Write(GlowRgba);
     }
 
     public static PlayerLook ReadFrom(BinaryReader r)
@@ -626,6 +633,12 @@ public sealed class PlayerLook : Message
             throw new InvalidDataException("Bad Terradew player picture.");
         look.Rgba = r.ReadBytes(length);
         if (look.Rgba.Length != length)
+            throw new EndOfStreamException();
+        int glowLength = r.ReadInt32();
+        if (glowLength < 0 || (glowLength != 0 && glowLength != length))
+            throw new InvalidDataException("Bad Terradew player glow picture.");
+        look.GlowRgba = r.ReadBytes(glowLength);
+        if (look.GlowRgba.Length != glowLength)
             throw new EndOfStreamException();
         return look;
     }
@@ -1015,7 +1028,7 @@ public enum EntityFlags : ushort
     Friendly = 32,
     Hostile = 64,
     Chasing = 128,
-    /// <summary>A slime, which hops as it moves rather than sliding. Drawn with a hop arc while it travels.</summary>
+    /// <summary>A slime, which hops as it moves rather than sliding. Drawn lifted by its <see cref="EntityState.Hop"/> arc.</summary>
     Hopper = 256,
 }
 
@@ -1044,6 +1057,8 @@ public struct EntityState
     public uint Color;
     /// <summary>Packed colour of the second, tinted pass Terraria draws over NPCs with a colour, such as slimes. 0 when there is none.</summary>
     public uint Tint;
+    /// <summary>How high a hopping slime is lifted this tick: 0 on the ground, 255 at the top of its hop. Zero for everything else.</summary>
+    public byte Hop;
     /// <summary>The exported sheet a town NPC currently wears (its profile texture), or empty for the plain NPC sheet.</summary>
     public string Look;
 
@@ -1071,6 +1086,7 @@ public struct EntityState
         w.Write(Name ?? "");
         w.Write(Color);
         w.Write(Tint);
+        w.Write(Hop);
         w.Write(Look ?? "");
     }
 
@@ -1096,6 +1112,7 @@ public struct EntityState
         Name = r.ReadString(),
         Color = r.ReadUInt32(),
         Tint = r.ReadUInt32(),
+        Hop = r.ReadByte(),
         Look = r.ReadString(),
     };
 }
@@ -1125,6 +1142,8 @@ public struct ProjectileState
     public byte Light;
     /// <summary>Packed colour of that light, as Terraria sees it. 0 when the shot gives no light.</summary>
     public uint LightColor;
+    /// <summary>True when the shot glows on its own, such as the crystal leaf's floating crystal. Stardew draws it bright, unaffected by darkness, and it gives no map light.</summary>
+    public bool Emissive;
 
     public void Write(BinaryWriter w)
     {
@@ -1145,6 +1164,7 @@ public struct ProjectileState
         w.Write(Wire.Finite(OffsetY));
         w.Write(Light);
         w.Write(LightColor);
+        w.Write(Emissive);
     }
 
     public static ProjectileState ReadFrom(BinaryReader r) => new()
@@ -1166,6 +1186,7 @@ public struct ProjectileState
         OffsetY = r.ReadSingle(),
         Light = r.ReadByte(),
         LightColor = r.ReadUInt32(),
+        Emissive = r.ReadBoolean(),
     };
 }
 

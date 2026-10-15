@@ -62,7 +62,8 @@ internal static class ShotLights
         candidates.Clear();
         foreach (ProjectileState shot in world.Projectiles)
         {
-            if (shot.Light == 0)
+            // A shot that glows on its own (the crystal leaf) is drawn bright by Draw, and does not light the map.
+            if (shot.Light == 0 || shot.Emissive)
                 continue;
             // Same placement as the shot itself: a riding shot floats from the farmer's feet, the rest sit on the map.
             (float x, float y) = shot.Attached

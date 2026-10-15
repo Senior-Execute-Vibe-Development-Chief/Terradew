@@ -20,6 +20,8 @@ internal sealed class TerrariaBody
     private readonly Bridge bridge;
     private readonly IMonitor monitor;
     private Texture2D? texture;
+    /// <summary>The glowing parts of the picture (Fairy Wings), drawn again over the world. Null when there are none.</summary>
+    private Texture2D? glow;
     private PlayerLook? shown;
     private bool showing;
 
@@ -73,6 +75,7 @@ internal sealed class TerrariaBody
             for (int i = 0; i < colors.Length; i++)
                 colors[i] = new Color(look.Rgba[i * 4], look.Rgba[i * 4 + 1], look.Rgba[i * 4 + 2], look.Rgba[i * 4 + 3]);
             texture.SetData(colors);
+            UploadGlow(look);
             shown = look;
         }
         catch (Exception error)
@@ -80,6 +83,26 @@ internal sealed class TerrariaBody
             showing = false;
             monitor.Log($"Terradew could not show your Terraria character. {error.Message}", LogLevel.Trace);
         }
+    }
+
+    /// <summary>Uploads the glowing parts of the picture, or drops them when the picture has none.</summary>
+    private void UploadGlow(PlayerLook look)
+    {
+        if (look.GlowRgba.Length == 0)
+        {
+            glow?.Dispose();
+            glow = null;
+            return;
+        }
+        if (glow == null || glow.Width != look.Width || glow.Height != look.Height)
+        {
+            glow?.Dispose();
+            glow = new Texture2D(Game1.graphics.GraphicsDevice, look.Width, look.Height);
+        }
+        var colors = new Color[look.Width * look.Height];
+        for (int i = 0; i < colors.Length; i++)
+            colors[i] = new Color(look.GlowRgba[i * 4], look.GlowRgba[i * 4 + 1], look.GlowRgba[i * 4 + 2], look.GlowRgba[i * 4 + 3]);
+        glow.SetData(colors);
     }
 
     private static bool BeforeFarmerDraw(Farmer __instance)
@@ -115,5 +138,22 @@ internal sealed class TerrariaBody
         Vector2 feet = Game1.GlobalToLocal(Game1.viewport, new Vector2(box.Center.X, box.Bottom));
         feet = new Vector2(MathF.Round(feet.X), MathF.Round(feet.Y - MathF.Round(Flight.Lift)));
         b.Draw(body.texture, feet, null, Color.White, 0f, new Vector2(body.shown.FeetX, body.shown.FeetY), SpriteLayout.DrawScale * Flight.Grow, SpriteEffects.None, 1f);
+    }
+
+    /// <summary>
+    /// Draws the glowing parts (Fairy Wings) again over the finished world, so night and caves do not dim them. Terraria
+    /// draws them bright, so the world's lighting is not applied to them here. Flying draws the whole body after the world
+    /// (see DrawAirborne), so nothing is added then.
+    /// </summary>
+    public static void DrawGlow(SpriteBatch b)
+    {
+        TerrariaBody? body = instance;
+        if (Flight.Airborne || body == null || !body.showing || body.glow == null || body.shown == null)
+            return;
+        Rectangle box = Game1.player.GetBoundingBox();
+        Vector2 feet = Game1.GlobalToLocal(Game1.viewport, new Vector2(box.Center.X, box.Bottom));
+        // The same placement as DrawOver, so the glow sits exactly on the body.
+        feet = new Vector2(MathF.Round(feet.X), MathF.Round(feet.Y)) - new Vector2(0f, MathF.Round(Flight.Lift));
+        b.Draw(body.glow, feet, null, Color.White, 0f, new Vector2(body.shown.FeetX, body.shown.FeetY), SpriteLayout.DrawScale * Flight.Grow, SpriteEffects.None, 1f);
     }
 }

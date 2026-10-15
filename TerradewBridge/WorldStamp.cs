@@ -131,6 +131,9 @@ public sealed class WorldStamp
     /// </summary>
     private static readonly HashSet<int> AttachedAiStyles = new() { 19, 20, 42, 75 };
 
+    /// <summary>The crystal leaf's floating crystal (ProjAIStyleID.CrystalLeaf). It glows on its own, so Stardew draws it bright.</summary>
+    private const int CrystalLeafAiStyle = 42;
+
     /// <summary>
     /// The Dryad's Ward is drawn by Terraria's own code, not from its sprite, so Stardew would see nothing.
     /// It goes over as a spinning ring of leaves around the Dryad instead.
@@ -549,6 +552,7 @@ public sealed class WorldStamp
                     // Terraria keeps no shot light colour, so every glowing shot gives off the same sensible warm white.
                     Light = (byte)Math.Clamp(projectile.light * 170f, 0f, 255f),
                     LightColor = projectile.light > 0f ? new Microsoft.Xna.Framework.Color(255, 230, 180).PackedValue : 0u,
+                    Emissive = projectile.aiStyle == CrystalLeafAiStyle,
                 });
                 SpriteDump.Projectile(projectile.type);
             }
@@ -627,6 +631,7 @@ public sealed class WorldStamp
             // As Terraria draws it in full light: GetAlpha for the body, then GetColor for the tinted pass of coloured NPCs like slimes.
             Color = npc.GetAlpha(Microsoft.Xna.Framework.Color.White).PackedValue,
             Tint = npc.color == default ? 0u : npc.GetColor(Microsoft.Xna.Framework.Color.White).PackedValue,
+            Hop = (byte)Math.Round(Creatures.HopArc(npc) * 255f),
             Look = npc.townNPC || NPCID.Sets.ActsLikeTownNPC[npc.type] ? SpriteDump.Look(npc) : "",
         };
     }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terradew.Core.Protocol;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,14 +28,21 @@ internal static class Body
     /// <summary>An unchanged picture is still sent this often, so Stardew knows the bridge is alive.</summary>
     private const int ResendTicks = 30;
 
+    /// <summary>How many accessory and armor slots are checked for glowing wings, as in <see cref="Glow"/>.</summary>
+    private const int GlowSlots = 10;
+
     private static RenderTarget2D? target;
     private static Color[]? pixels;
+    private static Color[]? glowPixels;
     private static ulong lastHash;
     private static int lastSent = int.MinValue / 2;
     private static bool failed;
 
     /// <summary>True while the player is being drawn for Stardew; Puppet.DrawEffects then lights it fully.</summary>
     public static bool Capturing { get; private set; }
+
+    /// <summary>True while only the wings are drawn, for the glowing copy (see <see cref="WingGlowPlayer"/>).</summary>
+    public static bool WingsOnly { get; private set; }
 
     public static void Publish(Link link, Player player, int tick)
     {
@@ -60,9 +68,25 @@ internal static class Body
 
     private static PlayerLook Capture(Player player)
     {
+        Draw(player, wingsOnly: false);
+        target!.GetData(pixels!);
+        // The glowing wings are a second picture of the same canvas, so they are cut to the same rectangle.
+        bool glowing = GlowingWings(player);
+        if (glowing)
+        {
+            Draw(player, wingsOnly: true);
+            target.GetData(glowPixels!);
+        }
+        return Crop(pixels, glowing ? glowPixels : null);
+    }
+
+    /// <summary>Draws the player onto the canvas, fully lit. With <paramref name="wingsOnly"/>, nothing but the wings.</summary>
+    private static void Draw(Player player, bool wingsOnly)
+    {
         GraphicsDevice device = Main.instance.GraphicsDevice;
         target ??= new RenderTarget2D(device, Size, Size, false, SurfaceFormat.Color, DepthFormat.None);
         pixels ??= new Color[Size * Size];
+        glowPixels ??= new Color[Size * Size];
         RenderTargetBinding[] previous = device.GetRenderTargets();
         bool begun = false;
         try
@@ -77,12 +101,15 @@ internal static class Body
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, shift);
             begun = true;
             Capturing = true;
+            WingsOnly = wingsOnly;
             Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, player.fullRotation, player.fullRotationOrigin, 0f, 1f);
-            DrawDust(player);
+            if (!wingsOnly)
+                DrawDust(player);
         }
         finally
         {
             Capturing = false;
+            WingsOnly = false;
             if (begun)
                 Main.spriteBatch.End();
             if (previous.Length == 0)
@@ -90,8 +117,21 @@ internal static class Body
             else
                 device.SetRenderTargets(previous);
         }
-        target.GetData(pixels);
-        return Crop(pixels);
+    }
+
+    /// <summary>
+    /// Whether the equipped wings are Fairy Wings or Tattered Fairy Wings. Terraria draws these bright rather than lit,
+    /// so Stardew draws their picture again over the finished world. The vanity slots are not checked, as in Glow.
+    /// </summary>
+    private static bool GlowingWings(Player player)
+    {
+        for (int i = 0; i < GlowSlots; i++)
+        {
+            Item item = player.armor[i];
+            if ((item.type == ItemID.FairyWings || item.type == ItemID.TatteredFairyWings) && item.wingSlot > 0 && item.wingSlot == player.wings)
+                return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -114,8 +154,8 @@ internal static class Body
         }
     }
 
-    /// <summary>Cuts the canvas down to what was drawn.</summary>
-    private static PlayerLook Crop(Color[] canvas)
+    /// <summary>Cuts the canvas down to what was drawn. The glowing parts, if any, are cut to the same rectangle.</summary>
+    private static PlayerLook Crop(Color[] canvas, Color[]? glow)
     {
         int left = Size, right = -1, top = Size, bottom = -1;
         for (int y = 0; y < Size; y++)
@@ -134,6 +174,19 @@ internal static class Body
             return new PlayerLook();
         int width = right - left + 1;
         int height = bottom - top + 1;
+        return new PlayerLook
+        {
+            Width = (short)width,
+            Height = (short)height,
+            FeetX = (short)(FeetX - left),
+            FeetY = (short)(FeetY - top),
+            Rgba = CutRgba(canvas, left, top, width, height),
+            GlowRgba = glow == null ? Array.Empty<byte>() : CutRgba(glow, left, top, width, height),
+        };
+    }
+
+    private static byte[] CutRgba(Color[] canvas, int left, int top, int width, int height)
+    {
         var rgba = new byte[width * height * 4];
         for (int y = 0; y < height; y++)
         {
@@ -147,14 +200,7 @@ internal static class Body
                 rgba[i + 3] = c.A;
             }
         }
-        return new PlayerLook
-        {
-            Width = (short)width,
-            Height = (short)height,
-            FeetX = (short)(FeetX - left),
-            FeetY = (short)(FeetY - top),
-            Rgba = rgba,
-        };
+        return rgba;
     }
 
     /// <summary>FNV-1a over the picture and its placement, to skip sending a picture that has not changed.</summary>
@@ -175,6 +221,30 @@ internal static class Body
             hash ^= b;
             hash *= 1099511628211UL;
         }
+        Mix(look.GlowRgba.Length);
+        foreach (byte b in look.GlowRgba)
+        {
+            hash ^= b;
+            hash *= 1099511628211UL;
+        }
         return hash;
+    }
+}
+
+/// <summary>
+/// While Body draws the glowing copy, hides every player draw layer but the wings, so that the picture holds only the
+/// wings. Terraria's own layers are the only ones hidden; nothing else about the player changes.
+/// </summary>
+internal sealed class WingGlowPlayer : ModPlayer
+{
+    public override void HideDrawLayers(PlayerDrawSet drawInfo)
+    {
+        if (!Body.WingsOnly)
+            return;
+        foreach (PlayerDrawLayer layer in PlayerDrawLayerLoader.Layers)
+        {
+            if (layer != PlayerDrawLayers.Wings)
+                layer.Hide();
+        }
     }
 }

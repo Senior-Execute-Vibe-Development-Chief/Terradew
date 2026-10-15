@@ -14,7 +14,7 @@ namespace TerradewBridge;
 /// <remarks>
 /// Strengths are 0 to 255 and are the largest of the active sources, not a sum: two glows do not make a brighter one.
 /// The table is from memory of vanilla, not measured. Unsure: the wing and necklace strengths and colours, and the
-/// helmet and Shine strengths. Light pets use Main.lightPet, so any modded light pet counts too.
+/// helmet and Shine strengths. Fairy Wings give no light (vanilla draws them bright, not lit). Light pets use Main.lightPet, so any modded light pet counts too.
 /// </remarks>
 internal static class Glow
 {
@@ -29,14 +29,11 @@ internal static class Glow
     private const int MiningHelmetLight = 120;
     /// <summary>The Ultrabright Helmet, the brightest helmet lamp.</summary>
     private const int UltraBrightHelmetLight = 200;
-    /// <summary>Fairy Wings and Tattered Fairy Wings, which shine while flying.</summary>
-    private const int FairyWingsLight = 90;
     /// <summary>The Jellyfish Necklace and Jellyfish Diving Gear, which glow underwater.</summary>
     private const int JellyfishLight = 60;
 
     private static readonly Color Warm = new(255, 230, 180);
     private static readonly Color White = new(255, 255, 255);
-    private static readonly Color Fairy = new(255, 190, 230);
     private static readonly Color Water = new(120, 190, 255);
 
     /// <summary>How many accessory and armor slots are checked for glowing gear. Vanity slots are not checked.</summary>
@@ -86,9 +83,8 @@ internal static class Glow
 
         for (int i = 0; i < EquipSlots; i++)
         {
+            // Fairy Wings do not light their surroundings in Terraria. They are drawn bright instead (see Body).
             int type = player.armor[i].type;
-            if (type == ItemID.FairyWings || type == ItemID.TatteredFairyWings)
-                Offer(FairyWingsLight, Fairy);
             if (player.wet && (type == ItemID.JellyfishNecklace || type == ItemID.JellyfishDivingGear))
                 Offer(JellyfishLight, Water);
         }
