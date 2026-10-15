@@ -316,6 +316,24 @@ internal sealed class Draw
         DrawPiece(b, feet, "legs", gear.LegSlot, Shown(2, 12), 0, 0f, away, front, flip, Math.Min(1f, depth));
         DrawPiece(b, feet, "body", gear.BodySlot, Shown(1, 11), gear.Male ? 0 : 1, 40f, away, front, flip, Math.Min(1f, depth + 0.0001f));
         DrawPiece(b, feet, "head", gear.HeadSlot, Shown(0, 10), 0, 72f, away, front, flip, Math.Min(1f, depth + 0.0002f));
+        // Accessories: wings and back behind the body, shoes just over the legs, shield and front over the head.
+        DrawAccessory(b, feet, "wings", gear.WingsSlot, away, flip, Math.Clamp(depth - 0.0001f, 0f, 1f));
+        DrawAccessory(b, feet, "back", gear.BackSlot, away, flip, Math.Clamp(depth - 0.0001f, 0f, 1f));
+        DrawAccessory(b, feet, "shoe", gear.ShoeSlot, away, flip, Math.Clamp(depth + 0.00005f, 0f, 1f));
+        DrawAccessory(b, feet, "shield", gear.ShieldSlot, away, flip, Math.Clamp(depth + 0.0003f, 0f, 1f));
+        DrawAccessory(b, feet, "front", gear.FrontSlot, away, flip, Math.Clamp(depth + 0.0003f, 0f, 1f));
+    }
+
+    /// <summary>A worn Terraria accessory drawn at the feet like armor, with no item icon fallback. A missing sprite file is skipped.</summary>
+    private void DrawAccessory(SpriteBatch b, Vector2 feet, string part, int slot, bool away, SpriteEffects flip, float depth)
+    {
+        if (slot <= 0)
+            return;
+        string file = SpriteNames.Accessory(part, slot);
+        Texture2D? texture = away ? sprites.BackView(file) : sprites.Load(file);
+        if (texture == null)
+            return;
+        b.Draw(texture, feet, null, Color.White, 0f, new Vector2(texture.Width / 2f, texture.Height), 2f, flip, depth);
     }
 
     private void DrawPiece(SpriteBatch b, Vector2 feet, string part, int slot, int item, int variant, float lift, bool away, bool front, SpriteEffects flip, float depth)

@@ -49,6 +49,11 @@ public static class Inventory
             BodySlot = player.body,
             LegSlot = player.legs,
             Male = player.Male,
+            WingsSlot = player.wings,
+            ShieldSlot = player.shield,
+            BackSlot = player.back,
+            FrontSlot = player.front,
+            ShoeSlot = player.shoe,
         };
         for (int i = 0; i < InventoryState.InventorySlots && i < player.inventory.Length; i++)
             state.Items.Add(Describe(player.inventory[i]));
@@ -64,6 +69,11 @@ public static class Inventory
         SpriteDump.Head(player.head);
         SpriteDump.Body(player.body, player.Male);
         SpriteDump.Legs(player.legs);
+        SpriteDump.Wings(player.wings);
+        SpriteDump.Shield(player.shield);
+        SpriteDump.Back(player.back);
+        SpriteDump.Front(player.front);
+        SpriteDump.Shoe(player.shoe);
     }
 
     public static ItemStack Describe(Item? item)
@@ -91,6 +101,7 @@ public static class Inventory
         foreach (Item item in player.armor)
             hash = unchecked(hash * 31 + item.type * 7919L + item.stack);
         hash = unchecked(hash * 31 + player.head * 13 + player.body * 17 + player.legs * 19);
+        hash = unchecked(hash * 31 + player.wings * 23 + player.shield * 29 + player.back * 37 + player.front * 41 + player.shoe * 43);
         return hash;
     }
 

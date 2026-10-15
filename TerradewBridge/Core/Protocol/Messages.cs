@@ -97,7 +97,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 2;
+    public const int CurrentProtocol = 3;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -830,6 +830,12 @@ public sealed class InventoryState : Message
     public int BodySlot;
     public int LegSlot;
     public bool Male = true;
+    /// <summary>The accessory sprite slots worn: wings, shield, back, front and shoes. Zero means none.</summary>
+    public int WingsSlot;
+    public int ShieldSlot;
+    public int BackSlot;
+    public int FrontSlot;
+    public int ShoeSlot;
 
     public override MsgType Type => MsgType.InventoryState;
 
@@ -842,6 +848,11 @@ public sealed class InventoryState : Message
         w.Write(BodySlot);
         w.Write(LegSlot);
         w.Write(Male);
+        w.Write(WingsSlot);
+        w.Write(ShieldSlot);
+        w.Write(BackSlot);
+        w.Write(FrontSlot);
+        w.Write(ShoeSlot);
     }
 
     public static InventoryState ReadFrom(BinaryReader r) => new()
@@ -853,6 +864,11 @@ public sealed class InventoryState : Message
         BodySlot = r.ReadInt32(),
         LegSlot = r.ReadInt32(),
         Male = r.ReadBoolean(),
+        WingsSlot = r.ReadInt32(),
+        ShieldSlot = r.ReadInt32(),
+        BackSlot = r.ReadInt32(),
+        FrontSlot = r.ReadInt32(),
+        ShoeSlot = r.ReadInt32(),
     };
 }
 

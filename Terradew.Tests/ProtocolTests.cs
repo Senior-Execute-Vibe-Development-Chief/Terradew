@@ -46,10 +46,12 @@ internal static class ProtocolTests
             T.Assert(stateCopy.Projectiles[0].ProjType == 14 && stateCopy.Drops[0].Stack == 30 && stateCopy.Buffs[0].Time == 600, "lists");
             T.Assert(stateCopy.RegionX == 400 && stateCopy.Life == 80, "state fields");
 
-            var inventory = new InventoryState { Coins = 123456 };
+            var inventory = new InventoryState { Coins = 123456, HeadSlot = 2, Male = false, WingsSlot = 7, ShieldSlot = 8, BackSlot = 9, FrontSlot = 10, ShoeSlot = 11 };
             inventory.Items.Add(new ItemStack { ItemType = 3507, Stack = 1, Name = "Copper Shortsword", Damage = 5 });
             var inventoryCopy = (InventoryState)Roundtrip(inventory);
             T.Assert(inventoryCopy.Items[0].Name == "Copper Shortsword" && inventoryCopy.Coins == 123456, "inventory");
+            T.Assert(inventoryCopy.HeadSlot == 2 && !inventoryCopy.Male, "armor slots still round-trip");
+            T.Assert(inventoryCopy.WingsSlot == 7 && inventoryCopy.ShieldSlot == 8 && inventoryCopy.BackSlot == 9 && inventoryCopy.FrontSlot == 10 && inventoryCopy.ShoeSlot == 11, "accessory slots");
 
             var recipes = new RecipeList();
             recipes.Recipes.Add(new RecipeEntry { RecipeIndex = 2, Result = new ItemStack { ItemType = 36, Stack = 1 }, Ingredients = new List<ItemStack> { new ItemStack { ItemType = 9, Stack = 10 } }, CanCraft = true });

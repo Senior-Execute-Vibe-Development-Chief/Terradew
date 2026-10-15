@@ -26,6 +26,11 @@ internal static class SpriteDump
     private static readonly HashSet<int> headDone = new();
     private static readonly HashSet<int> bodyDone = new();
     private static readonly HashSet<int> legsDone = new();
+    private static readonly HashSet<int> wingsDone = new();
+    private static readonly HashSet<int> shieldDone = new();
+    private static readonly HashSet<int> backDone = new();
+    private static readonly HashSet<int> frontDone = new();
+    private static readonly HashSet<int> shoeDone = new();
 
     /// <summary>Ticks to wait before trying a failed sheet again, so assets still loading get time to finish.</summary>
     private const uint RetryDelay = 300;
@@ -90,6 +95,41 @@ internal static class SpriteDump
         ExportLegs(slot);
     }
 
+    public static void Wings(int slot)
+    {
+        if (slot <= 0 || !wingsDone.Add(slot))
+            return;
+        ExportWings(slot);
+    }
+
+    public static void Shield(int slot)
+    {
+        if (slot <= 0 || !shieldDone.Add(slot))
+            return;
+        ExportShield(slot);
+    }
+
+    public static void Back(int slot)
+    {
+        if (slot <= 0 || !backDone.Add(slot))
+            return;
+        ExportBack(slot);
+    }
+
+    public static void Front(int slot)
+    {
+        if (slot <= 0 || !frontDone.Add(slot))
+            return;
+        ExportFront(slot);
+    }
+
+    public static void Shoe(int slot)
+    {
+        if (slot <= 0 || !shoeDone.Add(slot))
+            return;
+        ExportShoe(slot);
+    }
+
     private static void ExportNpc(int type)
     {
         string file = SpriteNames.Npc(type);
@@ -140,6 +180,41 @@ internal static class SpriteDump
         Failed(legsDone, slot, file, error);
     }
 
+    private static void ExportWings(int slot)
+    {
+        string file = SpriteNames.Accessory("wings", slot);
+        string? error = Frame(file, $"Images/Wings_{slot}", () => { Main.instance.LoadWings(slot); return TextureAssets.Wings[slot]; }, WingsFrame);
+        Failed(wingsDone, slot, file, error);
+    }
+
+    private static void ExportShield(int slot)
+    {
+        string file = SpriteNames.Accessory("shield", slot);
+        string? error = Frame(file, $"Images/Acc_Shield_{slot}", () => { Main.instance.LoadAccShield(slot); return TextureAssets.AccShield[slot]; });
+        Failed(shieldDone, slot, file, error);
+    }
+
+    private static void ExportBack(int slot)
+    {
+        string file = SpriteNames.Accessory("back", slot);
+        string? error = Frame(file, $"Images/Acc_Back_{slot}", () => { Main.instance.LoadAccBack(slot); return TextureAssets.AccBack[slot]; });
+        Failed(backDone, slot, file, error);
+    }
+
+    private static void ExportFront(int slot)
+    {
+        string file = SpriteNames.Accessory("front", slot);
+        string? error = Frame(file, $"Images/Acc_Front_{slot}", () => { Main.instance.LoadAccFront(slot); return TextureAssets.AccFront[slot]; });
+        Failed(frontDone, slot, file, error);
+    }
+
+    private static void ExportShoe(int slot)
+    {
+        string file = SpriteNames.Accessory("shoe", slot);
+        string? error = Frame(file, $"Images/Acc_Shoes_{slot}", () => { Main.instance.LoadAccShoes(slot); return TextureAssets.AccShoes[slot]; });
+        Failed(shoeDone, slot, file, error);
+    }
+
     /// <summary>Lets failed sheets whose wait is over be requested again. Call once per bridge tick.</summary>
     public static void Tick()
     {
@@ -166,16 +241,23 @@ internal static class SpriteDump
         return Export(texture, new Rectangle(0, 0, texture.Width, texture.Height), file);
     }
 
-    /// <summary>Armor sheets hold many frames; the first 40 by 56 frame is the standing pose.</summary>
-    private static string? Frame(string file, string assetPath, Func<Asset<Texture2D>> fallback)
+    /// <summary>
+    /// Armor sheets hold many frames; the first 40 by 56 frame is the standing pose. <paramref name="pick"/> chooses
+    /// another frame when a sheet's size is not 40 by 56, such as wings.
+    /// </summary>
+    private static string? Frame(string file, string assetPath, Func<Asset<Texture2D>> fallback, Func<Texture2D, Rectangle>? pick = null)
     {
         if (SpriteFiles.Exists(file))
             return null;
         Texture2D? texture = Load(assetPath, fallback);
         if (texture == null)
             return $"no texture at {assetPath}";
-        return Export(texture, new Rectangle(0, 0, Math.Min(40, texture.Width), Math.Min(56, texture.Height)), file);
+        Rectangle frame = pick?.Invoke(texture) ?? new Rectangle(0, 0, Math.Min(40, texture.Width), Math.Min(56, texture.Height));
+        return Export(texture, frame, file);
     }
+
+    /// <summary>Wings sheets stack their frames vertically, four to a sheet: the first frame is the full width and a quarter of the height.</summary>
+    private static Rectangle WingsFrame(Texture2D texture) => new(0, 0, texture.Width, Math.Max(1, texture.Height / 4));
 
     private static Texture2D? Load(string assetPath, Func<Asset<Texture2D>> fallback)
     {

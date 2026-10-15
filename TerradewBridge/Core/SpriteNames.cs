@@ -17,4 +17,7 @@ public static class SpriteNames
 
     public static string Armor(string part, int slot, int variant = 0)
         => variant == 0 ? $"armor-{part}-{slot}.png" : $"armor-{part}-{slot}-{variant}.png";
+
+    /// <summary>An accessory sprite the farmer wears: part is wings, shield, back, front or shoe.</summary>
+    public static string Accessory(string part, int slot) => $"acc-{part}-{slot}.png";
 }
