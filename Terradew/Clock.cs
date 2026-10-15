@@ -63,13 +63,14 @@ internal sealed class Clock
         {
             // Go to bed where you stand: the same day change a normal bedtime makes, with no money penalty
             // and no pass-out letter, so the farmer wakes at home.
+            dayEnding = true;
             Game1.player.isInBed.Value = true;
             Game1.NewDay(0f);
-            dayEnding = true;
             return false;
         }
         catch (Exception)
         {
+            dayEnding = false;
             return true;
         }
     }

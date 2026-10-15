@@ -344,7 +344,8 @@ internal sealed class ChatMenu : IClickableMenu
         int textX = xPositionOnScreen + 32;
         int textWidth = Width - 72;
         Texture2D? head = chat.HeadIndex >= 0 ? sprites.Load(SpriteNames.NpcHead(chat.HeadIndex)) : null;
-        if (head != null)
+        // A portrait needs a real image and must leave the text a usable width.
+        if (head != null && head.Width > 0 && head.Height > 0 && Width - 72 - Math.Min(PortraitSize, Math.Max(head.Width, head.Height) * 4) - PortraitPad * 2 - 24 >= 160)
         {
             // The portrait sits in its own frame on the left, like Stardew's, at the largest whole scale up to 4 that keeps it inside the menu.
             int scale = Math.Clamp(PortraitSize / Math.Max(head.Width, head.Height), 1, 4);

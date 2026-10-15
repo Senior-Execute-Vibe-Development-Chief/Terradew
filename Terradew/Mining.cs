@@ -20,7 +20,7 @@ internal sealed class Mining
     // A rock breaks on the swing that hits it; a removal this long after a swing was not the farmer's.
     private const int PickWindowTicks = 30;
     // A felled tree drops its wood a few seconds later, and the farmer picks that up afterwards.
-    private const int ChopWindowTicks = 60 * 15;
+    private const int ChopWindowTicks = 60 * 60;
 
     private static Mining? instance;
     // Each patch is only trusted once it installs. Without it, gains count as they always did.
@@ -71,10 +71,25 @@ internal sealed class Mining
                 harmony.Patch(chop, postfix: new HarmonyMethod(typeof(Mining), nameof(AfterTreeToolAction)));
                 chopTracked = true;
             }
+            // Large stumps and logs are resource clumps, and they give the hardwood.
+            var clump = AccessTools.Method(typeof(ResourceClump), "performToolAction");
+            if (clump != null)
+                harmony.Patch(clump, postfix: new HarmonyMethod(typeof(Mining), nameof(AfterTreeToolAction)));
         }
         catch (Exception error)
         {
             monitor.Log($"Terradew could not hook the axe; all wood gained counts as the farmer's. {error.Message}", LogLevel.Warn);
+        }
+        try
+        {
+            // The farmer's own bombs break rocks too.
+            var explode = AccessTools.Method(typeof(GameLocation), "explode");
+            if (explode != null)
+                harmony.Patch(explode, postfix: new HarmonyMethod(typeof(Mining), nameof(AfterPickaxe)));
+        }
+        catch (Exception error)
+        {
+            monitor.Log($"Terradew could not hook bombs; rocks the farmer blows up give no Terraria ore. {error.Message}", LogLevel.Warn);
         }
     }
 
@@ -106,9 +121,16 @@ internal sealed class Mining
         }
     }
 
-    private static bool RecentPick => !pickTracked || (int)Game1.ticks - lastPickTick <= PickWindowTicks;
+    /// <summary>Forgets the last swing and chop, so nothing from the last save counts on this one.</summary>
+    public void Reset()
+    {
+        lastPickTick = int.MinValue / 2;
+        lastChopTick = int.MinValue / 2;
+    }
 
-    private static bool RecentChop => !chopTracked || (int)Game1.ticks - lastChopTick <= ChopWindowTicks;
+    private static bool RecentPick => !pickTracked || (long)Game1.ticks - lastPickTick is >= 0 and <= PickWindowTicks;
+
+    private static bool RecentChop => !chopTracked || (long)Game1.ticks - lastChopTick is >= 0 and <= ChopWindowTicks;
 
     public void OnObjectListChanged(ObjectListChangedEventArgs e, Bridge bridge)
     {

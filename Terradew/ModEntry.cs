@@ -31,6 +31,7 @@ public sealed class ModEntry : Mod
     private Hud hud = null!;
     private bool helloSent;
     private int tick;
+    private const int MaxPendingChats = 8;
     private readonly Queue<NpcChat> pendingChats = new();
 
     public override void Entry(IModHelper helper)
@@ -61,10 +62,16 @@ public sealed class ModEntry : Mod
         {
             if (!Context.IsWorldReady)
                 return;
+            // A reply to the open chat box replaces it; otherwise the chat waits its turn.
             if ((Context.IsPlayerFree && pendingChats.Count == 0) || Game1.activeClickableMenu is ChatMenu)
+            {
                 Game1.activeClickableMenu = new ChatMenu(bridge, sprites, chat);
-            else
-                pendingChats.Enqueue(chat);
+                return;
+            }
+            // A few chats are kept for when the farmer is free; older ones give way past that.
+            pendingChats.Enqueue(chat);
+            while (pendingChats.Count > MaxPendingChats)
+                pendingChats.Dequeue();
         };
         bridge.Died += died => vitals.OnDied(died, bridge);
         bridge.CoinAck += ack => money.Ack(ack);
@@ -103,6 +110,7 @@ public sealed class ModEntry : Mod
         routes.Reset();
         hand.Reset();
         wallClimb.Reset();
+        mining.Reset();
         helloSent = false;
     }
 
@@ -114,6 +122,8 @@ public sealed class ModEntry : Mod
         fishing.Reset();
         wallClimb.Reset();
         pendingChats.Clear();
+        mining.Reset();
+        Clock.OnDayStarted();
         helloSent = false;
     }
 
