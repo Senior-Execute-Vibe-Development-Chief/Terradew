@@ -23,6 +23,8 @@ internal static class Reach
         public int Width;
         public int Height;
         public bool[] Reached = System.Array.Empty<bool>();
+        /// <summary>Tiles the map itself lets the farmer through, reached or not.</summary>
+        public bool[] Open = System.Array.Empty<bool>();
         public readonly HashSet<Point> Seeds = new();
     }
 
@@ -36,6 +38,19 @@ internal static class Reach
         if (fill == null || x < 0 || y < 0 || x >= fill.Width || y >= fill.Height)
             return false;
         return !fill.Reached[y * fill.Width + x];
+    }
+
+    /// <summary>
+    /// True for open floor that no path reaches: the hidden space behind walls. Walls and cliffs themselves are not
+    /// hidden, so the farmer can still fly over them; only coming down into the space behind is refused.
+    /// </summary>
+    public static bool Hidden(GameLocation location, int x, int y)
+    {
+        Fill? fill = Of(location);
+        if (fill == null || x < 0 || y < 0 || x >= fill.Width || y >= fill.Height)
+            return false;
+        int i = y * fill.Width + x;
+        return fill.Open[i] && !fill.Reached[i];
     }
 
     /// <summary>
@@ -64,7 +79,12 @@ internal static class Reach
         int height = map.Layers[0].LayerHeight;
         if (width <= 0 || height <= 0 || width > 400 || height > 400)
             return null;
-        var fill = new Fill { Name = location.NameOrUniqueName, Width = width, Height = height, Reached = new bool[width * height] };
+        var fill = new Fill { Name = location.NameOrUniqueName, Width = width, Height = height, Reached = new bool[width * height], Open = new bool[width * height] };
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+                fill.Open[y * width + x] = Passable(location, fill, x, y);
+        }
         foreach (Warp warp in location.warps)
             fill.Seeds.Add(new Point(warp.X, warp.Y));
         foreach (Point door in location.doors.Keys)
@@ -91,7 +111,7 @@ internal static class Reach
                 {
                     int x = System.Math.Clamp(seed.X, 0, fill.Width - 1) + dx;
                     int y = System.Math.Clamp(seed.Y, 0, fill.Height - 1) + dy;
-                    if (Passable(location, fill, x, y) && !fill.Reached[y * fill.Width + x])
+                    if (OpenAt(fill, x, y) && !fill.Reached[y * fill.Width + x])
                     {
                         fill.Reached[y * fill.Width + x] = true;
                         open.Enqueue(new Point(x, y));
@@ -111,11 +131,14 @@ internal static class Reach
 
     private static void Visit(GameLocation location, Fill fill, Queue<Point> open, int x, int y)
     {
-        if (!Passable(location, fill, x, y) || fill.Reached[y * fill.Width + x])
+        if (!OpenAt(fill, x, y) || fill.Reached[y * fill.Width + x])
             return;
         fill.Reached[y * fill.Width + x] = true;
         open.Enqueue(new Point(x, y));
     }
+
+    private static bool OpenAt(Fill fill, int x, int y)
+        => x >= 0 && y >= 0 && x < fill.Width && y < fill.Height && fill.Open[y * fill.Width + x];
 
     /// <summary>A tile with floor under it that the map's own tiles let the farmer through. Water counts as open.</summary>
     private static bool Passable(GameLocation location, Fill fill, int x, int y)

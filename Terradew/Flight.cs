@@ -243,7 +243,7 @@ internal sealed class Flight
     };
 
     /// <summary>
-    /// Moves the farmer through the air, over walls but not off the map or into floor no path reaches (Reach), and
+    /// Moves the farmer through the air, over walls but not off the map or into hidden floor behind them (Reach), and
     /// through any exit touched. Each axis is tried on its own, so the farmer slides along a sealed edge.
     /// </summary>
     private void Glide(Farmer player, GameLocation location, Vector2 step)
@@ -267,18 +267,28 @@ internal sealed class Flight
         }
     }
 
-    /// <summary>True when the farmer's box at this position touches a sealed tile it is not already over.</summary>
+    /// <summary>
+    /// True when the farmer's box at this position would reach hidden floor behind a wall (Reach.Hidden) from outside
+    /// it. Walls themselves are free to fly over, and a farmer already over hidden floor may move any way, so it can
+    /// always get back out.
+    /// </summary>
     private static bool IntoSealed(GameLocation location, Farmer player, Vector2 position)
     {
         Rectangle now = player.GetBoundingBox();
+        if (TouchesHidden(location, now))
+            return false;
         Rectangle box = now;
         box.Offset((int)(position.X - player.Position.X), (int)(position.Y - player.Position.Y));
+        return TouchesHidden(location, box);
+    }
+
+    private static bool TouchesHidden(GameLocation location, Rectangle box)
+    {
         for (int y = box.Top / 64; y <= (box.Bottom - 1) / 64; y++)
         {
             for (int x = box.Left / 64; x <= (box.Right - 1) / 64; x++)
             {
-                bool already = x >= now.Left / 64 && x <= (now.Right - 1) / 64 && y >= now.Top / 64 && y <= (now.Bottom - 1) / 64;
-                if (!already && Reach.Sealed(location, x, y))
+                if (Reach.Hidden(location, x, y))
                     return true;
             }
         }
