@@ -206,6 +206,7 @@ public sealed class BridgeSystem : ModSystem
             Body.Publish(link, player, worldTicks);
             Motion.Publish(link, player, worldTicks);
             Glow.Publish(link, player, worldTicks);
+            Dusts.Publish(link, Stamp.Current, player);
         }
         Courage.Publish(link, worldTicks);
         if (worldTicks % 120 == 0)

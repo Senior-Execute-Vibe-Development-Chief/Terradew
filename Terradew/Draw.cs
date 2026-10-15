@@ -170,6 +170,10 @@ internal sealed class Draw
             if (Utility.isOnScreen(new Vector2(x, y), 64 * 4))
                 DrawProjectile(b, projectile, x, y, sorted);
         }
+        // Dust is sent with the place it is in, so it shows only while the farmer is in that place.
+        DustFrame? dust = bridge.Dust;
+        if (dust != null && dust.PlaceKey == key)
+            DustDraw.Draw(b, sprites, dust, sorted);
         DrawSwings(b, key, sorted);
         // The Terraria character already wears its armor and holds its item.
         if (TerrariaBody.Showing)

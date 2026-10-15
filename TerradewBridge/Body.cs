@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terradew.Core.Protocol;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -105,8 +104,6 @@ internal static class Body
             Capturing = true;
             WingsOnly = wingsOnly;
             Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, player.fullRotation, player.fullRotationOrigin, 0f, 1f);
-            if (!wingsOnly)
-                DrawDust(player);
         }
         finally
         {
@@ -147,26 +144,6 @@ internal static class Body
                 return true;
         }
         return false;
-    }
-
-    /// <summary>
-    /// The dust around the player, such as the sparks of a fiery swing, fully lit. Stardew draws no Terraria dust of its
-    /// own, so this is the only way it shows.
-    /// </summary>
-    private static void DrawDust(Player player)
-    {
-        // The renderer may leave a dye shader applied.
-        Main.pixelShader.CurrentTechnique.Passes[0].Apply();
-        Vector2 middle = player.Center;
-        float reach = Size / 2f;
-        for (int i = 0; i < Main.maxDust; i++)
-        {
-            Dust dust = Main.dust[i];
-            if (dust == null || !dust.active || dust.scale <= 0f || Vector2.DistanceSquared(dust.position, middle) > reach * reach)
-                continue;
-            Texture2D texture = (dust.type >= DustID.Count ? ModContent.GetModDust(dust.type)?.Texture2D?.Value : null) ?? TextureAssets.Dust.Value;
-            Main.spriteBatch.Draw(texture, dust.position - Main.screenPosition, dust.frame, dust.GetAlpha(Color.White), dust.rotation, new Vector2(4f, 4f), dust.scale, SpriteEffects.None, 0f);
-        }
     }
 
     /// <summary>Cuts the canvas down to what was drawn. The glowing parts, if any, are cut to the same rectangle.</summary>

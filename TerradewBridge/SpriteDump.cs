@@ -38,6 +38,7 @@ internal static class SpriteDump
     private static readonly HashSet<int> frontDone = new();
     private static readonly HashSet<int> shoeDone = new();
     private static readonly HashSet<int> potDone = new();
+    private static readonly HashSet<int> dustDone = new();
 
     /// <summary>Pot styles run from 0 to this, the last style of the Pots tile sheet.</summary>
     private const int LastPotStyle = 36;
@@ -192,6 +193,14 @@ internal static class SpriteDump
         ExportPot(style);
     }
 
+    /// <summary>Exports Terraria's dust sheet, once. Cheap after the first call.</summary>
+    public static void DustSheet()
+    {
+        if (!dustDone.Add(0))
+            return;
+        ExportDust();
+    }
+
     /// <summary>Exports every Terraria pot style, once each. Cheap after the first call.</summary>
     public static void Pots()
     {
@@ -325,6 +334,13 @@ internal static class SpriteDump
         string file = SpriteNames.Accessory("shoe", slot);
         string? error = Frame(file, $"Images/Acc_Shoes_{slot}", () => { Main.instance.LoadAccShoes(slot); return TextureAssets.AccShoes[slot]; });
         Failed(shoeDone, slot, file, error);
+    }
+
+    private static void ExportDust()
+    {
+        string file = SpriteNames.Dust;
+        string? error = Sheet(file, "Images/Dust", () => TextureAssets.Dust);
+        Failed(dustDone, 0, file, error);
     }
 
     private static void ExportPot(int style)

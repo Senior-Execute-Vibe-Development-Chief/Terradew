@@ -155,6 +155,33 @@ internal static class ProtocolTests
             T.Assert(glowRefused, "mismatched glow pixels");
         });
 
+        failed += T.Check("dust motes survive a roundtrip", () =>
+        {
+            var frame = new DustFrame { PlaceKey = "Farm" };
+            frame.Dusts.Add(new DustMote(12.5f, -3f, 6, 0, 10, 10, 10, 255, 128, 0, 200, 1.5f, 0.25f));
+            frame.Dusts.Add(new DustMote(float.NaN, 4f, 2000, 30, 40, 8, 8, 1, 2, 3, 4, 0.5f, 0f));
+            var copy = (DustFrame)Roundtrip(frame);
+            T.Assert(copy.PlaceKey == "Farm" && copy.Dusts.Count == 2, "frame fields");
+            DustMote first = copy.Dusts[0];
+            T.Assert(first.X == 12.5f && first.Y == -3f && first.Type == 6, "position and type");
+            T.Assert(first.FrameX == 0 && first.FrameY == 10 && first.FrameWidth == 10 && first.FrameHeight == 10, "sheet cell");
+            T.Assert(first.R == 255 && first.G == 128 && first.B == 0 && first.A == 200, "colour");
+            T.Assert(first.Scale == 1.5f && first.Rotation == 0.25f, "scale and rotation");
+            T.Assert(copy.Dusts[1].X == 0f && copy.Dusts[1].Type == 2000, "NaN becomes zero, large types kept");
+            var cleared = (DustFrame)Roundtrip(new DustFrame { PlaceKey = "Farm" });
+            T.Assert(cleared.Dusts.Count == 0, "an empty frame clears");
+            bool refused = false;
+            try
+            {
+                var crowd = new DustFrame { PlaceKey = "Farm" };
+                for (int i = 0; i <= DustFrame.MaxDusts; i++)
+                    crowd.Dusts.Add(new DustMote(0f, 0f, 1, 0, 0, 10, 10, 0, 0, 0, 255, 1f, 0f));
+                Roundtrip(crowd);
+            }
+            catch (Exception) { refused = true; }
+            T.Assert(refused, "more than the cap is refused");
+        });
+
         failed += T.Check("a disconnected link drops sends instead of blocking", () =>
         {
             using var lonely = Link.Connect(1);

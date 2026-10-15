@@ -56,6 +56,7 @@ public enum MsgType : byte
     Recall = 55,
     Explosion = 56,
     PlayerGlow = 57,
+    DustFrame = 58,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -114,6 +115,7 @@ public abstract class Message
             MsgType.GiftTaken => GiftTaken.ReadFrom(r),
             MsgType.VillagerMoves => VillagerMoves.ReadFrom(r),
             MsgType.PlayerLook => PlayerLook.ReadFrom(r),
+            MsgType.DustFrame => DustFrame.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
     }
@@ -707,6 +709,70 @@ public sealed class PlayerGlow : Message
     {
         Light = r.ReadByte(),
         Color = r.ReadUInt32(),
+    };
+}
+
+/// <summary>One Terraria dust mote in the farmer's place, for Stardew to draw from its own sheet cell.</summary>
+/// <param name="X">Where the mote's centre is, in Stardew map pixels.</param>
+/// <param name="Y">Where the mote's centre is, in Stardew map pixels.</param>
+/// <param name="Type">Terraria's dust type (a DustID).</param>
+/// <param name="FrameX">The mote's cell in Terraria's dust sheet, in sheet pixels.</param>
+/// <param name="FrameY">The mote's cell in Terraria's dust sheet, in sheet pixels.</param>
+/// <param name="FrameWidth">The mote's cell in Terraria's dust sheet, in sheet pixels.</param>
+/// <param name="FrameHeight">The mote's cell in Terraria's dust sheet, in sheet pixels.</param>
+/// <param name="R">The colour Terraria draws the mote in, as GetAlpha gives it.</param>
+/// <param name="G">The colour Terraria draws the mote in, as GetAlpha gives it.</param>
+/// <param name="B">The colour Terraria draws the mote in, as GetAlpha gives it.</param>
+/// <param name="A">The colour Terraria draws the mote in, as GetAlpha gives it.</param>
+/// <param name="Scale">Terraria's dust scale.</param>
+/// <param name="Rotation">Terraria's dust rotation, in radians.</param>
+public readonly record struct DustMote(
+    float X, float Y, ushort Type, short FrameX, short FrameY, short FrameWidth, short FrameHeight,
+    byte R, byte G, byte B, byte A, float Scale, float Rotation);
+
+/// <summary>
+/// The Terraria dust inside the farmer's place. Dust used to show only in the farmer's picture, so dust from creatures,
+/// shots and explosions never reached Stardew. Sent every tick while any dust is in the place, and once with no motes
+/// when the last of it goes, so Stardew clears it.
+/// </summary>
+public sealed class DustFrame : Message
+{
+    /// <summary>Most motes one frame may hold. Terraria keeps the ones nearest the farmer when there are more.</summary>
+    public const int MaxDusts = 400;
+
+    /// <summary>The Stardew place the dust is in. Stardew shows it only while the farmer is in that place.</summary>
+    public string PlaceKey = "";
+    public List<DustMote> Dusts = new();
+
+    public override MsgType Type => MsgType.DustFrame;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.WriteList(Dusts, (x, d) =>
+        {
+            x.Write(Wire.Finite(d.X));
+            x.Write(Wire.Finite(d.Y));
+            x.Write(d.Type);
+            x.Write(d.FrameX);
+            x.Write(d.FrameY);
+            x.Write(d.FrameWidth);
+            x.Write(d.FrameHeight);
+            x.Write(d.R);
+            x.Write(d.G);
+            x.Write(d.B);
+            x.Write(d.A);
+            x.Write(Wire.Finite(d.Scale));
+            x.Write(Wire.Finite(d.Rotation));
+        });
+    }
+
+    public static DustFrame ReadFrom(BinaryReader r) => new()
+    {
+        PlaceKey = r.ReadString(),
+        Dusts = r.ReadList(x => new DustMote(
+            x.ReadSingle(), x.ReadSingle(), x.ReadUInt16(), x.ReadInt16(), x.ReadInt16(), x.ReadInt16(), x.ReadInt16(),
+            x.ReadByte(), x.ReadByte(), x.ReadByte(), x.ReadByte(), x.ReadSingle(), x.ReadSingle()), MaxDusts),
     };
 }
 

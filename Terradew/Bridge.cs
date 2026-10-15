@@ -38,6 +38,15 @@ internal sealed class Bridge : IDisposable
     /// <summary>How the Terraria character moves: speed, wings and mount. Null once Terraria stops sending.</summary>
     public Movement? Movement => movement != null && Link.NowMs() - movementAtMs < 3000 ? movement : null;
 
+    private DustFrame? dust;
+    private long dustAtMs;
+
+    /// <summary>Ten Terraria ticks at 60 a second: Terraria sends the dust every tick, so older dust has gone.</summary>
+    private const long DustStaleMs = 170;
+
+    /// <summary>The Terraria dust in the farmer's place. Null when none is in it, or once Terraria stops sending.</summary>
+    public DustFrame? Dust => dust != null && Link.NowMs() - dustAtMs < DustStaleMs ? dust : null;
+
     private PlayerGlow? glow;
     private long glowAtMs;
 
@@ -104,6 +113,7 @@ internal sealed class Bridge : IDisposable
             Shops.Clear();
             TerrariaHello = null;
             wall = null;
+            dust = null;
             Connected?.Invoke();
         }
     }
@@ -170,6 +180,11 @@ internal sealed class Bridge : IDisposable
             case Movement moving:
                 movement = moving;
                 movementAtMs = Link.NowMs();
+                break;
+            case DustFrame motes:
+                // An empty frame clears the dust: Terraria sends one when the last mote in the place goes.
+                dust = motes.Dusts.Count == 0 ? null : motes;
+                dustAtMs = Link.NowMs();
                 break;
             case PlayerGlow playerGlow:
                 glow = playerGlow;

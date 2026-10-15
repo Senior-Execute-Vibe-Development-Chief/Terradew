@@ -40,6 +40,9 @@ public static class SpriteNames
 
     public static string Buff(int type) => $"buff-{type}.png";
 
+    /// <summary>Terraria's dust sheet, which dust motes are drawn from by their frame.</summary>
+    public static string Dust => "dust.png";
+
     public static string Armor(string part, int slot, int variant = 0)
         => variant == 0 ? $"armor-{part}-{slot}.png" : $"armor-{part}-{slot}-{variant}.png";
 
