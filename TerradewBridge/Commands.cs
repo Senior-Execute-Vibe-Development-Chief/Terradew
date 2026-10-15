@@ -9,7 +9,7 @@ namespace TerradewBridge;
 /// <summary>Test helpers, typed in Terraria chat or in the SMAPI console as "terradew &lt;command&gt;".</summary>
 public static class Commands
 {
-    public const string Help = "summon [npc] | boss <npc> | give <item> [count] | heal";
+    public const string Help = "summon [npc] | boss <npc> | give <item> [count] | wear <item> [item...] | bring [npc] | heal";
 
     public static string Run(Player player, string text)
     {
@@ -42,6 +42,45 @@ public static class Commands
                 Inventory.Give(player, type, count);
                 Inventory.ForceResend();
                 return $"Gave {count} {parts[1]}.";
+            }
+            case "wear":
+            {
+                if (parts.Length < 2)
+                    return "Usage: wear <item> [item...], for example wear CopperHelmet CopperChainmail CopperGreaves.";
+                var worn = new System.Collections.Generic.List<string>();
+                foreach (string name in parts[1..])
+                {
+                    if (!ItemID.Search.TryGetId(name, out int type))
+                        return $"No item called {name}.";
+                    Inventory.Give(player, type, 1);
+                    int slot = Array.FindIndex(player.inventory, 0, 50, i => i.type == type);
+                    if (slot < 0)
+                        return $"No room in the inventory for {name}.";
+                    Inventory.Equip(player, slot);
+                    worn.Add(name);
+                }
+                Inventory.ForceResend();
+                return "Wearing " + string.Join(", ", worn) + ".";
+            }
+            case "bring":
+            {
+                int type = NPCID.Guide;
+                if (parts.Length > 1 && !NPCID.Search.TryGetId(parts[1], out type))
+                    return $"No NPC called {parts[1]}.";
+                int x = (int)player.Center.X + player.direction * 16 * 3;
+                int y = (int)(player.position.Y + player.height);
+                int who = NPC.FindFirstNPC(type);
+                if (who < 0)
+                {
+                    who = NPC.NewNPC(new EntitySource_Misc("Terradew bring"), x, y, type);
+                    if (who < 0 || who >= Main.maxNPCs)
+                        return "Nothing came.";
+                    return $"The {Main.npc[who].FullName} came.";
+                }
+                NPC npc = Main.npc[who];
+                npc.position = new Microsoft.Xna.Framework.Vector2(x - npc.width / 2f, y - npc.height);
+                npc.velocity = Microsoft.Xna.Framework.Vector2.Zero;
+                return $"Brought {npc.FullName}. Right-click to talk; they wander home later.";
             }
             case "heal":
                 player.statLife = player.statLifeMax2;

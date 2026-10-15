@@ -109,7 +109,8 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **Saving:** Terraria saves its world and character whenever Stardew saves at bedtime.
 
 Test helpers, in the SMAPI console: `terradew status`, `terradew summon`, `terradew summon BlueSlime`,
-`terradew boss EyeofCthulhu`, `terradew give CopperShortsword`, `terradew heal`. The same commands work in
+`terradew boss EyeofCthulhu`, `terradew give CopperShortsword`, `terradew wear CopperHelmet CopperChainmail CopperGreaves`,
+`terradew bring Guide` (moves a townsperson next to you, or spawns one), `terradew heal`. The same commands work in
 Terraria chat as `/terradew ...`.
 
 ## Status

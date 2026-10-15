@@ -235,7 +235,7 @@ public static class Inventory
         ForceResend();
     }
 
-    private static void Equip(Player player, int slot)
+    public static void Equip(Player player, int slot)
     {
         if (slot < 0 || slot >= 50)
             return;
