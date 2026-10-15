@@ -198,6 +198,7 @@ public sealed class BridgeSystem : ModSystem
             Celestial.Watch(Stamp);
         }
         Inventory.Publish(link, player, worldTicks);
+        Courage.Publish(link, worldTicks);
         if (worldTicks % 120 == 0)
             Town.SendFacts(link);
     }

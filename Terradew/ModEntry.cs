@@ -33,6 +33,7 @@ public sealed class ModEntry : Mod
     private Villagers villagers = null!;
     private NpcStories stories = null!;
     private Cast cast = null!;
+    private Bravery bravery = null!;
     private Draw draw = null!;
     private Hud hud = null!;
     private bool helloSent;
@@ -60,6 +61,7 @@ public sealed class ModEntry : Mod
         stories = new NpcStories(helper, Monitor, bridge);
         cast = new Cast(helper, sprites, Monitor, stories.ContentOf);
         villagers = new Villagers(stories, backpack, hand);
+        bravery = new Bravery(bridge, stories, Monitor);
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper, backpack);
@@ -138,6 +140,7 @@ public sealed class ModEntry : Mod
         mining.Reset();
         cast.Reset();
         stories.Reset();
+        bravery.Reset();
         helloSent = false;
     }
 
@@ -152,6 +155,7 @@ public sealed class ModEntry : Mod
         mining.Reset();
         cast.Reset();
         stories.Reset();
+        bravery.Reset();
         Clock.Reset();
         helloSent = false;
     }
@@ -211,6 +215,7 @@ public sealed class ModEntry : Mod
         if (e.Ticks % 30 == 0)
             cast.Update(bridge.Facts);
         stories.Update(e.Ticks);
+        bravery.Update((uint)e.Ticks);
     }
 
     private void SendPulse(Farmer player, GameLocation location)
@@ -267,6 +272,7 @@ public sealed class ModEntry : Mod
         bridge.Send(new DayStarted { TotalDays = Game1.Date.TotalDays });
         cast.Update(bridge.Facts);
         stories.OnDayStarted();
+        bravery.Reset();
     }
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)

@@ -197,11 +197,13 @@ internal sealed class Cast
 
     private const int FrameWidth = 16;
     private const int FrameHeight = 32;
-    private const int Frames = 64;
+    /// <summary>Stardew's own frames. Terraria's whole sheet follows, facing right and then left, for attacks.</summary>
+    public const int Frames = 64;
 
     /// <summary>
     /// A Stardew walking sheet (four 16x32 frames per row: down, right, up, left) from a Terraria town NPC sheet:
-    /// one tall column of frames drawn at double size, facing left. The rest of the 64 frames stand still.
+    /// one tall column of frames drawn at double size, facing left. The rest of the 64 frames stand still. After
+    /// them come every Terraria frame facing right, then every one facing left, so attacks can be shown.
     /// </summary>
     private static Texture2D Walker(Texture2D source, TownResident resident)
     {
@@ -218,15 +220,28 @@ internal sealed class Cast
         for (int i = 1; i < 4; i++)
             columns[i] = walkFirst + (walkLast - walkFirst) * (i - 1) / 2;
 
-        var sheet = new Color[FrameWidth * 4 * FrameHeight * (Frames / 4)];
+        int total = Frames + count * 2;
+        int rows = (total + 3) / 4;
         int sheetWidth = FrameWidth * 4;
-        for (int frame = 0; frame < Frames; frame++)
+        var sheet = new Color[sheetWidth * FrameHeight * rows];
+        for (int frame = 0; frame < total; frame++)
         {
             int row = frame / 4;
             int column = frame % 4;
-            // Rows past the four walking ones are copies of the standing frame facing down.
-            int sourceFrame = row < 4 ? columns[column] : 0;
-            bool flip = row is 0 or 1 || row >= 4;
+            int sourceFrame;
+            bool flip;
+            if (frame < Frames)
+            {
+                // Rows past the four walking ones are copies of the standing frame facing down.
+                sourceFrame = row < 4 ? columns[column] : 0;
+                flip = row is 0 or 1 || row >= 4;
+            }
+            else
+            {
+                int extra = frame - Frames;
+                sourceFrame = extra % count;
+                flip = extra < count;
+            }
             int destX = column * FrameWidth;
             int destY = row * FrameHeight;
             for (int y = 0; y < FrameHeight; y++)
@@ -252,7 +267,7 @@ internal sealed class Cast
                 }
             }
         }
-        var texture = new Texture2D(Game1.graphics.GraphicsDevice, sheetWidth, FrameHeight * (Frames / 4));
+        var texture = new Texture2D(Game1.graphics.GraphicsDevice, sheetWidth, FrameHeight * rows);
         texture.SetData(sheet);
         return texture;
     }

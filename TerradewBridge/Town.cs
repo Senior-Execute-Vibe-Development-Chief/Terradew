@@ -30,6 +30,7 @@ public sealed class Town
         visitedOcean = false;
         sawBloodMoon = sawEclipse = sawParty = false;
         Followers.Clear();
+        Courage.Clear();
     }
 
     public void Load(string savedHomes, string savedResidents)
@@ -97,6 +98,7 @@ public sealed class Town
     public void NewDay(Link link, Player player)
     {
         Watch(BridgeSystem.Instance.Stamp.Current);
+        Courage.NewDay();
         Respawn();
         AdoptStrays();
         TownFacts facts = Facts(player);

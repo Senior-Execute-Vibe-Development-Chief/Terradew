@@ -131,6 +131,7 @@ internal sealed class Draw
                 DrawProjectile(b, projectile, x, y, sorted);
         }
         DrawHeld(b, world, sorted);
+        DrawSwings(b, key, sorted);
         DrawGear(b, sorted);
     }
 
@@ -279,6 +280,33 @@ internal sealed class Draw
     }
 
     /// <summary>The Terraria item in the farmer's hand while it is being used, swung or aimed toward the cursor.</summary>
+    /// <summary>A villager fighting with a blade swings it in front of them, sweeping from overhead down to the ground.</summary>
+    private void DrawSwings(SpriteBatch b, string placeKey, bool sorted)
+    {
+        VillagerMoves? moves = bridge.Moves;
+        if (moves == null)
+            return;
+        foreach (VillagerMove move in moves.Moves)
+        {
+            if (move.SwingItem <= 0 || move.PlaceKey != placeKey || Bravery.VillagerFor(move.NpcType) is not string name)
+                continue;
+            NPC? villager = Game1.getCharacterFromName(name);
+            Texture2D? icon = villager == null ? null : sprites.Load(SpriteNames.Item(move.SwingItem));
+            if (villager == null || icon == null || villager.currentLocation != Game1.player.currentLocation)
+                continue;
+            Rectangle box = villager.GetBoundingBox();
+            var shoulder = new Vector2(box.Center.X, box.Bottom - 72f);
+            var position = Game1.GlobalToLocal(Game1.viewport, shoulder);
+            float depth = Depth(box.Bottom, sorted, 2f);
+            float sweep = -1.75f + 2.8f * move.Swing;
+            const float scale = 3f;
+            if (move.Facing == 1)
+                b.Draw(icon, position, null, Color.White, sweep + MathF.PI / 4f, new Vector2(0f, icon.Height), scale, SpriteEffects.None, depth);
+            else
+                b.Draw(icon, position, null, Color.White, -sweep - MathF.PI / 4f, new Vector2(icon.Width, icon.Height), scale, SpriteEffects.FlipHorizontally, depth);
+        }
+    }
+
     private void DrawHeld(SpriteBatch b, WorldState world, bool sorted)
     {
         HeldState held = world.Held;

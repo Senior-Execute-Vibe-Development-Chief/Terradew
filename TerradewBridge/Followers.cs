@@ -48,6 +48,21 @@ public static class Followers
         return Math.Max(1, (long)Math.Round(price * (1.0 - GiftJudge.Discount(points))));
     }
 
+    /// <summary>Where a followed town NPC's villager stands, as feet in the Terraria world, and in which place.</summary>
+    public static bool TrySpot(NPC npc, out VillagerSpot spot, out WorldStamp.PlaceState place, out Vector2 feet)
+    {
+        spot = default;
+        place = null!;
+        feet = Vector2.Zero;
+        if (!npc.townNPC || !spots.TryGetValue(npc.type, out var entry) || Link.NowMs() - entry.AtMs > StaleMs)
+            return false;
+        spot = entry.Spot;
+        if (!BridgeSystem.Instance.Stamp.TryGet(spot.PlaceKey, out place))
+            return false;
+        feet = place.ToWorld(spot.TileX * WorldProjection.StardewTilePixels, spot.TileY * WorldProjection.StardewTilePixels);
+        return true;
+    }
+
     /// <summary>
     /// Puts a followed town NPC where its villager stands. True when it is followed, so its own AI should not move it.
     /// </summary>

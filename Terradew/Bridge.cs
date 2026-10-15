@@ -26,6 +26,12 @@ internal sealed class Bridge : IDisposable
     /// <summary>The Wall of Flesh fight, while it runs. Null when there is none.</summary>
     public WallFight? Wall => wall != null && Link.NowMs() - wallAtMs < 2500 ? wall : null;
 
+    private VillagerMoves? moves;
+    private long movesAtMs;
+
+    /// <summary>What busy villagers are doing about enemies, and today's danger. Null once Terraria stops sending.</summary>
+    public VillagerMoves? Moves => moves != null && Link.NowMs() - movesAtMs < 3000 ? moves : null;
+
     public event Action? Connected;
     public event Action<NpcChat>? Chat;
     public event Action<PlayerDied>? Died;
@@ -127,6 +133,10 @@ internal sealed class Bridge : IDisposable
             case Core.Protocol.GiftTaken taken:
                 // Always raised: Terraria already took the item, so the villager must still get it.
                 GiftTaken?.Invoke(taken);
+                break;
+            case VillagerMoves moves:
+                this.moves = moves;
+                movesAtMs = Link.NowMs();
                 break;
             case Core.Protocol.Notice notice:
                 if (raiseEvents)

@@ -137,6 +137,16 @@ Keys can be changed in `Mods/Terradew/config.json`.
   can be dated and married, with a 14-heart event after the wedding. Villagers with no Terraria NPC (Abigail,
   Caroline, George, Jas, Jodi, Maru, Penny, Sam, Shane, Vincent) are gone, as is any villager whose NPC has not
   moved in yet. Characters outside the town roster (the Dwarf, Gil, Mr. Qi and the like) stay as they are.
+- **Townsfolk have courage.** Heroes (Arms Dealer, Pirate, Guide, Demolitionist, Steampunker, Cyborg, Wizard,
+  Dryad, Witch Doctor, Tavernkeep) go after enemies they see nearby, up to 20 tiles from where they were, and answer
+  calls for help. Guards (Goblin Tinkerer, Mechanic, Dye Trader, Nurse, Zoologist) stop and fight what comes close
+  but never chase. Cowards (Merchant, Angler, Princess, Stylist, Tax Collector, Party Girl, Painter, Clothier,
+  Golfer, Truffle) run away with a "!", shout for help and the nearest hero comes; they thank whoever saved them.
+  Heroes hit harder and take more, cowards hit half as hard, and the Angler, Princess, Stylist, Tax Collector,
+  Party Girl and Truffle have no attack at all. Nobody dies: a beaten NPC faints, goes home hurt, and is back the
+  next morning. During a boss, an invasion, a pumpkin or frost moon, an eclipse or a blood moon, heroes wait
+  outside their front door and everyone else stays home, and each has a line about it. Attacks show their
+  Terraria frames, and the Dye Trader swings a scimitar.
 - **What you wear shows.** Terraria armor, wings, shields, back and front accessories and shoes are drawn on the
   farmer. Basic dyes tint them by colour; fancy shader dyes are shown undyed. Townspeople show their Terraria
   head portrait when you talk to them.
@@ -172,4 +182,7 @@ or run against, so expect a round of compile fixes on the first build, then play
 - The villagers' own heart events are removed. Other cutscenes and festivals leave out the absent villagers,
   so some of their lines and steps are skipped.
 - An NPC whose villager home is on Ginger Island (the Witch Doctor) is only met there.
+- Courage only plays out where the farmer is, since creatures elsewhere stand still. After a danger ends,
+  villagers pick their schedule up from wherever they are, so some may take odd routes for the rest of the day.
+- The harmless cowards lose their attack in every world while Terradew Bridge is loaded.
 - Multiplayer is not supported yet; the protocol is ready for one Terraria character per farmer.

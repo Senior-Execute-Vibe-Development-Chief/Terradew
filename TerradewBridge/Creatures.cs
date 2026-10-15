@@ -48,6 +48,13 @@ public sealed class Creatures : GlobalNPC
         if (WallOfFlesh.Owns(npc))
             return;
         Fit(npc);
+        if (Courage.Steer(npc))
+        {
+            away = false;
+            chasing = false;
+            plane = Vector2.Zero;
+            return;
+        }
         if (Followers.Hold(npc))
         {
             away = false;
@@ -158,7 +165,7 @@ public sealed class Creatures : GlobalNPC
     /// would freeze on one frame. The speed goes into velocity.X, as if walking along the ground, and the
     /// rest of the step moves the body directly.
     /// </summary>
-    private static void Show(NPC npc, Vector2 step)
+    internal static void Show(NPC npc, Vector2 step)
     {
         float speed = step.Length();
         if (speed < 0.01f)
