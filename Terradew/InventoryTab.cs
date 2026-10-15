@@ -86,7 +86,7 @@ internal sealed class InventoryTab : InventoryPage
 
     /// <summary>
     /// Main slots in rows of ten, then coins and ammo beside them. Then equipment from 100: armor left of the
-    /// portrait, vanity right of it, and accessories in the bottom right.
+    /// portrait, vanity right of it, and accessories in the bottom right. The trash slot comes last.
     /// </summary>
     private IEnumerable<(int Slot, Rectangle Area)> Slots()
     {
@@ -107,6 +107,8 @@ internal sealed class InventoryTab : InventoryPage
             int column = row == 0 ? i : i - 4 + 1;
             yield return (InventoryAction.EquipmentBase + 3 + i, new Rectangle(right - (4 - column) * GearPitch + 4, GearTop + GearPitch + row * GearPitch, GearCell, GearCell));
         }
+        // The trash slot holds the item Terraria last threw away, so it can be taken back out.
+        yield return (InventoryAction.TrashSlot, Trash);
     }
 
     /// <summary>What an empty slot is for.</summary>
@@ -121,6 +123,7 @@ internal sealed class InventoryTab : InventoryPage
         InventoryAction.EquipmentBase + 10 => "Vanity helmet",
         InventoryAction.EquipmentBase + 11 => "Vanity shirt",
         InventoryAction.EquipmentBase + 12 => "Vanity pants",
+        InventoryAction.TrashSlot => "Trash",
         _ => "",
     };
 
@@ -166,9 +169,10 @@ internal sealed class InventoryTab : InventoryPage
     public override void performHoverAction(int x, int y)
     {
         hover = "";
-        if (Trash.Contains(x, y))
+        // With something picked up, the trash slot throws it away rather than showing what it holds.
+        if (slots.Selected >= 0 && Trash.Contains(x, y))
         {
-            hover = slots.Selected >= 0 ? "Throw away" : "Trash";
+            hover = "Throw away";
             return;
         }
         foreach ((int slot, Rectangle area) in Slots())
@@ -188,23 +192,41 @@ internal sealed class InventoryTab : InventoryPage
             b.Draw(Game1.menuTexture, area, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, SlotTile), Color.White);
             if (!slots.Filled(slot) && Icon(slot) >= 0)
                 b.Draw(Game1.menuTexture, area, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, Icon(slot)), Color.White);
+            if (!slots.Filled(slot) && slot == InventoryAction.TrashSlot)
+                DrawTrashCan(b, area);
             if (sprites != null)
                 slots.DrawItem(b, sprites, slot, area);
             if (slot == slots.Selected)
                 b.Draw(Game1.staminaRect, area, Color.Gold * 0.35f);
         }
         DrawPortrait(b);
-        Rectangle trash = Trash;
-        b.Draw(Game1.menuTexture, trash, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, SlotTile), Color.White);
-        b.DrawString(Game1.tinyFont, "TRASH", new Vector2(trash.X + 4, trash.Center.Y - 8), Game1.textColor);
-        int infoX = trash.X;
+        int infoX = Trash.X;
         b.DrawString(Game1.smallFont, Game1.player.Name, new Vector2(infoX, GearTop), Game1.textColor);
         InventoryState? inventory = bridge?.Inventory;
         string coins = inventory == null ? "Waiting for Terraria…" : Coins.Format(inventory.Coins);
-        b.DrawString(Game1.smallFont, Game1.parseText(coins, Game1.smallFont, 150), new Vector2(infoX, GearTop + 40), Game1.textColor);
-        b.DrawString(Game1.tinyFont, "Accessories", new Vector2(Left + Pitch * 10 + 16 + Pitch * 2 - 4 - GearPitch * 4 + 4, GearTop + GearPitch - 24), Game1.textColor);
+        string coinsText = Game1.parseText(coins, Game1.smallFont, 150);
+        b.DrawString(Game1.smallFont, coinsText, new Vector2(infoX, GearTop + 40), Game1.textColor);
+        if (bridge?.World is WorldState world)
+        {
+            float defenseY = GearTop + 40 + Game1.smallFont.MeasureString(coinsText).Y + 4;
+            b.DrawString(Game1.smallFont, "Defense " + world.Defense, new Vector2(infoX, defenseY), Game1.textColor);
+        }
         if (hover.Length > 0)
             drawHoverText(b, hover, Game1.smallFont);
+    }
+
+    /// <summary>Stardew's trash can with its lid, at twice their size and centred in the trash slot.</summary>
+    private static void DrawTrashCan(SpriteBatch b, Rectangle area)
+    {
+        const int Scale = 2;
+        int level = Game1.player.trashCanLevel;
+        int width = 18 * Scale;
+        int lidHeight = 10 * Scale;
+        int canHeight = 26 * Scale;
+        int x = area.Center.X - width / 2;
+        int top = area.Center.Y - (lidHeight + canHeight) / 2;
+        b.Draw(Game1.mouseCursors, new Rectangle(x, top, width, lidHeight), new Rectangle(564 + level * 18, 129, 18, 10), Color.White);
+        b.Draw(Game1.mouseCursors, new Rectangle(x, top + lidHeight, width, canHeight), new Rectangle(564 + level * 18, 102, 18, 26), Color.White);
     }
 
     /// <summary>The Terraria character, at the largest whole scale that fits, on Stardew's day or night backdrop.</summary>

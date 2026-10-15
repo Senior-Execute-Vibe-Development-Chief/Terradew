@@ -50,6 +50,7 @@ public enum MsgType : byte
     GiftTaken = 51,
     VillagerMoves = 52,
     PlayerLook = 53,
+    Movement = 54,
 }
 
 /// <summary>A message on the Terradew socket. Each type writes and reads its own payload.</summary>
@@ -87,6 +88,7 @@ public abstract class Message
             MsgType.SlotMask => SlotMask.ReadFrom(r),
             MsgType.StationPlaced => StationPlaced.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
+            MsgType.Movement => Movement.ReadFrom(r),
             MsgType.InventoryState => InventoryState.ReadFrom(r),
             MsgType.CoinAck => CoinAck.ReadFrom(r),
             MsgType.RecipeList => RecipeList.ReadFrom(r),
@@ -115,7 +117,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 15;
+    public const int CurrentProtocol = 17;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -162,6 +164,8 @@ public enum PulseFlags : byte
     Sleeping = 16,
     /// <summary>The Stardew window has focus, so Stardew drives the Terraria body.</summary>
     Focused = 32,
+    /// <summary>The farmer is flying or jumping: walking enemies cannot reach them, flying ones and shots still can.</summary>
+    Airborne = 64,
 }
 
 /// <summary>Sent every Stardew tick. Positions are Stardew world pixels.</summary>
@@ -322,10 +326,13 @@ public enum InventoryKind : byte
 /// <summary>
 /// Inventory slots: 0-49 main (0-9 hotbar), 50-53 coins, 54-57 ammo.
 /// Equipment slots are 100 + Terraria armor index (0-2 armor, 3-9 accessories, 10-19 vanity).
+/// The trash slot is <see cref="TrashSlot"/>: Terraria's last thrown-away item, <c>player.trashItem</c>.
 /// </summary>
 public sealed class InventoryAction : Message
 {
     public const int EquipmentBase = 100;
+    /// <summary>The trash slot, which holds the item Terraria last threw away.</summary>
+    public const int TrashSlot = 999;
     public InventoryKind Kind;
     public int A;
     public int B;
@@ -561,6 +568,46 @@ public sealed class PlayerLook : Message
             throw new EndOfStreamException();
         return look;
     }
+}
+
+/// <summary>
+/// How the Terraria character moves, from its accessories, buffs and mount: Stardew walks, flies and jumps with it.
+/// Sent when it changes and about once a second.
+/// </summary>
+public sealed class Movement : Message
+{
+    /// <summary>Walking speed against an unequipped character: Hermes Boots, Swiftness and the like raise it.</summary>
+    public float Speed = 1f;
+    /// <summary>How long the wings and rocket boots keep the character up, in ticks. Zero means it cannot fly.</summary>
+    public short FlightTicks;
+    /// <summary>The fastest the character flies, in Terraria pixels a tick.</summary>
+    public float FlySpeed;
+    /// <summary>Terraria's mount type, or -1 on foot.</summary>
+    public short MountType = -1;
+    /// <summary>A mount that can jump, such as the Slime Mount.</summary>
+    public bool MountJumps;
+
+    public override MsgType Type => MsgType.Movement;
+
+    public bool Mounted => MountType >= 0;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Wire.Finite(Speed));
+        w.Write(FlightTicks);
+        w.Write(Wire.Finite(FlySpeed));
+        w.Write(MountType);
+        w.Write(MountJumps);
+    }
+
+    public static Movement ReadFrom(BinaryReader r) => new()
+    {
+        Speed = r.ReadSingle(),
+        FlightTicks = r.ReadInt16(),
+        FlySpeed = r.ReadSingle(),
+        MountType = r.ReadInt16(),
+        MountJumps = r.ReadBoolean(),
+    };
 }
 
 /// <summary>
@@ -952,6 +999,11 @@ public struct ProjectileState
     public bool Hostile;
     /// <summary>Packed colour Terraria draws it with (Projectile.GetAlpha in full light). 0 means plain, faded by <see cref="Alpha"/>.</summary>
     public uint Color;
+    /// <summary>True when the shot rides on its owner (a crystal, spear or drill). Stardew then places it from the farmer's feet.</summary>
+    public bool Attached;
+    /// <summary>For an attached shot: its centre minus the owner's feet, in Terraria pixels.</summary>
+    public float OffsetX;
+    public float OffsetY;
 
     public void Write(BinaryWriter w)
     {
@@ -967,6 +1019,9 @@ public struct ProjectileState
         w.Write(Wire.Finite(Scale));
         w.Write(Hostile);
         w.Write(Color);
+        w.Write(Attached);
+        w.Write(Wire.Finite(OffsetX));
+        w.Write(Wire.Finite(OffsetY));
     }
 
     public static ProjectileState ReadFrom(BinaryReader r) => new()
@@ -983,6 +1038,9 @@ public struct ProjectileState
         Scale = r.ReadSingle(),
         Hostile = r.ReadBoolean(),
         Color = r.ReadUInt32(),
+        Attached = r.ReadBoolean(),
+        OffsetX = r.ReadSingle(),
+        OffsetY = r.ReadSingle(),
     };
 }
 
@@ -1181,6 +1239,8 @@ public sealed class InventoryState : Message
     public uint ShoeTint = DyeTint.None;
     /// <summary>The last <see cref="InventoryAction.Seq"/> applied before this state was taken.</summary>
     public int AckSeq;
+    /// <summary>The item in Terraria's trash slot, the last thing it threw away. It is slot <see cref="InventoryAction.TrashSlot"/>.</summary>
+    public ItemStack Trash;
 
     public override MsgType Type => MsgType.InventoryState;
 
@@ -1207,6 +1267,7 @@ public sealed class InventoryState : Message
         w.Write(FrontTint);
         w.Write(ShoeTint);
         w.Write(AckSeq);
+        Trash.Write(w);
     }
 
     public static InventoryState ReadFrom(BinaryReader r) => new()
@@ -1232,6 +1293,7 @@ public sealed class InventoryState : Message
         FrontTint = r.ReadUInt32(),
         ShoeTint = r.ReadUInt32(),
         AckSeq = r.ReadInt32(),
+        Trash = ItemStack.ReadFrom(r),
     };
 }
 

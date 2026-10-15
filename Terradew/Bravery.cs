@@ -18,7 +18,7 @@ internal sealed class Bravery
     private sealed class Brave
     {
         public VillagerMode Mode;
-        public PathFindController? Saved;
+        public bool Gliding;
         public Point Start;
         public int StartFacing = 2;
         public bool Returning;
@@ -116,9 +116,13 @@ internal sealed class Bravery
                     During(v, state, move, resident, lines, heroFighting, ticks);
                 if (state.Returning && v.controller == null)
                 {
-                    v.controller = state.Saved;
-                    state.Saved = null;
+                    // Back where trouble started: Stardew's schedule picks the day up again (unless danger is still on).
                     state.Returning = false;
+                    if (danger.Length == 0)
+                    {
+                        v.followSchedule = true;
+                        v.TryLoadSchedule();
+                    }
                 }
             }
         }
@@ -136,6 +140,8 @@ internal sealed class Bravery
         {
             case VillagerMode.Fleeing:
                 Save(v, state);
+                // Only this class moves them now: Stardew's schedule would keep re-issuing its own paths and fight the run.
+                v.followSchedule = false;
                 state.Helped = false;
                 state.NextFlee = 0;
                 v.addedSpeed = 2f;
@@ -145,12 +151,12 @@ internal sealed class Bravery
             case VillagerMode.Defending:
             case VillagerMode.Fighting:
                 Save(v, state);
+                v.followSchedule = false;
                 v.controller = null;
                 v.Halt();
                 Shout(v, lines?.Courage.Battle);
                 break;
             case VillagerMode.KnockedOut:
-                state.Saved = null;
                 state.Returning = false;
                 v.controller = null;
                 v.addedSpeed = 0f;
@@ -210,7 +216,7 @@ internal sealed class Bravery
             case VillagerMode.Defending:
                 v.controller = null;
                 if (here)
-                    v.faceGeneralDirection(threat);
+                    TurnToward(v, threat - v.Position);
                 ShowFrame(v, move, resident);
                 break;
             case VillagerMode.Fighting:
@@ -218,15 +224,23 @@ internal sealed class Bravery
                 if (!here)
                     break;
                 var target = new Vector2(move.TileX * 64f - 32f, move.TileY * 64f - 48f);
-                bool moved = Vector2.Distance(target, v.Position) > 0.5f;
-                v.Position = target;
-                v.faceDirection(move.Facing);
+                bool moved = Glide(v, target);
                 if (move.Frame >= 0)
+                {
+                    // An attack pose: the sheet already shows which way they face.
+                    if (v.FacingDirection != move.Facing)
+                        v.faceDirection(move.Facing);
                     ShowFrame(v, move, resident);
-                else if (moved)
-                    v.animateInFacingDirection(Game1.currentGameTime);
+                }
                 else
-                    v.Halt();
+                {
+                    TurnToward(v, target - v.Position);
+                    if (moved)
+                        v.animateInFacingDirection(Game1.currentGameTime);
+                    else if (state.Gliding)
+                        v.Halt();
+                }
+                state.Gliding = moved;
                 if (ticks >= state.NextShout)
                 {
                     state.NextShout = ticks + 300;
@@ -273,6 +287,47 @@ internal sealed class Bravery
     private static int Facing(Vector2 dir)
         => Math.Abs(dir.X) > Math.Abs(dir.Y) ? (dir.X > 0 ? 1 : 3) : (dir.Y > 0 ? 2 : 0);
 
+    private const float TeleportDistance = 256f;
+
+    /// <summary>
+    /// Terraria reports a hero's spot only a few times a second, so ease toward it each tick rather than snapping.
+    /// Stardew's collision decides the way: a blocked step is tried one axis at a time, and dropped if both are blocked.
+    /// Returns true when they moved.
+    /// </summary>
+    private static bool Glide(NPC v, Vector2 target)
+    {
+        Vector2 delta = target - v.Position;
+        float distance = delta.Length();
+        if (distance < 0.5f)
+            return false;
+        // Far off (a long jump): cover it in one go. Otherwise ease in, at least at a walking pace.
+        float length = distance > TeleportDistance ? distance : MathF.Min(distance, MathF.Max(distance * 0.2f, 2.5f));
+        Vector2 step = delta / distance * length;
+        foreach (Vector2 part in new[] { step, new Vector2(step.X, 0f), new Vector2(0f, step.Y) })
+        {
+            if (part.LengthSquared() < 0.25f)
+                continue;
+            Rectangle box = v.GetBoundingBox();
+            box.X += (int)MathF.Round(part.X);
+            box.Y += (int)MathF.Round(part.Y);
+            if (v.currentLocation.isCollidingPosition(box, Game1.viewport, false, 0, false, v))
+                continue;
+            v.Position += part;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Turns toward a spot, but only once it is clearly on another side: near a diagonal it would flip every tick.</summary>
+    private static void TurnToward(NPC v, Vector2 toward)
+    {
+        if (toward.LengthSquared() < 64f)
+            return;
+        int facing = Facing(toward);
+        if (facing != v.FacingDirection && MathF.Abs(MathF.Abs(toward.X) - MathF.Abs(toward.Y)) >= 12f)
+            v.faceDirection(facing);
+    }
+
     /// <summary>Terraria attack frames sit after Stardew's 64 in the villager's sheet: facing right first, then left.</summary>
     private static void ShowFrame(NPC v, VillagerMove move, TownResident resident)
     {
@@ -285,13 +340,12 @@ internal sealed class Bravery
 
     private static void Save(NPC v, Brave state)
     {
-        // Already away from the schedule: keep the first saved controller and spot.
+        // Already away from the schedule: keep the first spot.
         if (state.Returning || state.Mode != VillagerMode.Following)
         {
             state.Returning = false;
             return;
         }
-        state.Saved = v.controller;
         state.Start = v.TilePoint;
         state.StartFacing = v.FacingDirection;
     }

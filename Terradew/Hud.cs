@@ -35,7 +35,7 @@ internal sealed class Hud
 
     public void Notice(string text, Color color)
     {
-        notices.Add(new Line(text, color, Game1.ticks + 60 * 6));
+        notices.Add(new Line(text, color, (int)Game1.ticks + 60 * 6));
         if (notices.Count > 6)
             notices.RemoveAt(0);
     }
@@ -92,35 +92,68 @@ internal sealed class Hud
             return;
         }
 
-        // Life and mana sit where Stardew's health and energy bars are, so the vanilla bars never show.
+        // Life and mana use Stardew's own health and energy bar spots, so the vanilla bars never show.
         Rectangle safe = Utility.getSafeArea();
-        int barTop = safe.Bottom - 240;
         int manaX = safe.Right - 48 - 8;
         int lifeX = manaX - 56;
-        DrawBar(b, lifeX, barTop, world.Life, world.LifeMax, new Color(220, 40, 60), $"Life {world.Life}/{world.LifeMax}");
-        DrawBar(b, manaX, barTop, world.Mana, world.ManaMax, new Color(60, 110, 240), world.ManaMax > 0 ? $"Mana {world.Mana}/{world.ManaMax}" : null);
+        DrawLife(b, lifeX, safe, world.Life, world.LifeMax);
+        DrawMana(b, manaX, safe, world.Mana, world.ManaMax);
 
         int x = 16;
         int y = 16;
-        b.DrawString(Game1.smallFont, $"Defense {world.Defense}", new Vector2(x, y), Color.White);
-        y += 32;
         y = DrawBuffs(b, world, x, y);
         DrawNotices(b, y + 8);
         DrawHotbar(b);
     }
 
-    /// <summary>A Stardew-style vertical bar: an opaque frame over the vanilla bar, filled from the bottom. Hover names the value.</summary>
-    private static void DrawBar(SpriteBatch b, int x, int top, int value, int max, Color fill, string? label)
+    /// <summary>
+    /// Stardew's energy bar, filled with mana. The vanilla frame stays; the mana is drawn over its fill column, from the bottom.
+    /// Hover names the value.
+    /// </summary>
+    private static void DrawMana(SpriteBatch b, int frameX, Rectangle safe, int mana, int manaMax)
     {
-        Rectangle frame = new(x, top, 48, 240);
-        float part = max <= 0 ? 0f : Math.Clamp(value / (float)max, 0f, 1f);
-        b.Draw(Game1.staminaRect, frame, new Color(30, 24, 28));
-        Rectangle inner = new(x + 6, top + 6, 36, 228);
-        int height = (int)(inner.Height * part);
+        int top = safe.Bottom - 240;
+        const int fillHeight = 168;
+        Rectangle column = new(frameX + 12, top + 48, 24, fillHeight);
+        b.Draw(Game1.staminaRect, column, new Color(60, 40, 40));
+        float part = manaMax <= 0 ? 0f : Math.Clamp(mana / (float)manaMax, 0f, 1f);
+        int height = (int)(fillHeight * part);
         if (height > 0)
-            b.Draw(Game1.staminaRect, new Rectangle(inner.X, inner.Bottom - height, inner.Width, height), fill);
-        if (label != null && frame.Contains(Game1.getMouseX(), Game1.getMouseY()))
-            IClickableMenu.drawHoverText(b, label, Game1.smallFont);
+        {
+            Rectangle fill = new(column.X, column.Bottom - height, column.Width, height);
+            b.Draw(Game1.staminaRect, fill, new Color(60, 110, 240));
+            b.Draw(Game1.staminaRect, new Rectangle(fill.X, fill.Y, 4, height), new Color(140, 180, 255));
+        }
+        Rectangle frame = new(frameX, top, 48, safe.Bottom - 16 - top);
+        if (manaMax > 0 && frame.Contains(Game1.getMouseX(), Game1.getMouseY()))
+            IClickableMenu.drawHoverText(b, $"Mana {mana}/{manaMax}", Game1.smallFont);
+    }
+
+    /// <summary>
+    /// Stardew's health bar, drawn the way vanilla draws it (Terraria's life is the same bar, redrawn here since vanilla's is hidden).
+    /// The bar grows taller with max life, as vanilla does. Hover names the value.
+    /// </summary>
+    private static void DrawLife(SpriteBatch b, int x, Rectangle safe, int life, int lifeMax)
+    {
+        int extra = Math.Clamp((lifeMax - 100) / 4, 0, 120);
+        int top = safe.Bottom - 224 - 16 - extra;
+        const int full = 168;
+        int barFull = full + extra;
+
+        b.Draw(Game1.mouseCursors, new Rectangle(x, top, 48, 64), new Rectangle(268, 408, 12, 16), Color.White);
+        b.Draw(Game1.mouseCursors, new Rectangle(x, top + 64, 48, safe.Bottom - 64 - 16 - (top + 64 - 8)), new Rectangle(268, 424, 12, 16), Color.White);
+        b.Draw(Game1.mouseCursors, new Rectangle(x, top + 224 + extra - 64, 48, 64), new Rectangle(268, 448, 12, 16), Color.White);
+
+        Rectangle column = new(x + 12, top + 48, 24, barFull);
+        b.Draw(Game1.staminaRect, column, new Color(60, 40, 40));
+        float part = lifeMax <= 0 ? 0f : Math.Clamp(life / (float)lifeMax, 0f, 1f);
+        int height = (int)(barFull * part);
+        if (height > 0)
+            b.Draw(Game1.staminaRect, new Rectangle(column.X, column.Bottom - height, column.Width, height), new Color(220, 40, 60));
+
+        Rectangle frame = new(x, top, 48, safe.Bottom - 16 - top);
+        if (frame.Contains(Game1.getMouseX(), Game1.getMouseY()))
+            IClickableMenu.drawHoverText(b, $"Life {life}/{lifeMax}", Game1.smallFont);
     }
 
     private int DrawBuffs(SpriteBatch b, WorldState world, int x, int y)
@@ -192,43 +225,28 @@ internal sealed class Hud
                 b.Draw(Game1.menuTexture, position, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, 56), Color.White);
             b.DrawString(Game1.tinyFont, ((i + 1) % 10).ToString(), new Vector2(slot.X + 4, slot.Y + 2), Color.White);
         }
-
-        var parts = new List<string>();
-        if (bridge.Inventory != null)
-            parts.Add(Coins.Format(bridge.Inventory.Coins));
-        string? name = SelectedName(selected);
-        if (name != null)
-            parts.Add(name);
-        if (parts.Count > 0)
-            b.DrawString(Game1.smallFont, string.Join(" · ", parts), new Vector2(bar.X + 8, bar.Y - 30), Color.White);
     }
 
-    /// <summary>The name of the item in a hotbar slot: its Terraria name, or its Stardew display name. Null when the slot is empty.</summary>
-    private string? SelectedName(int slot)
-    {
-        if (backpack.TerrariaOwns(slot))
-        {
-            ItemStack item = backpack.TerrariaItem(slot);
-            return item.IsEmpty ? null : item.Name;
-        }
-        return backpack.StardewItem(slot)?.DisplayName;
-    }
-
-    public static void DrawItem(SpriteBatch b, SpriteBook sprites, ItemStack item, int centerX, int centerY, int box, float alpha = 1f)
+    /// <summary>
+    /// Draws an item's icon centred on a point. Icons are pixel art, so the scale is always whole: 2x when the icon fits
+    /// the box, else 1x. Callers that draw their own stack count pass <paramref name="count"/> as false.
+    /// </summary>
+    public static void DrawItem(SpriteBatch b, SpriteBook sprites, ItemStack item, int centerX, int centerY, int box, float alpha = 1f, bool count = true)
     {
         if (item.IsEmpty)
             return;
         Texture2D? icon = sprites.Load(SpriteNames.Item(item.ItemType));
         if (icon != null)
         {
-            float scale = Math.Min(2f, box / (float)Math.Max(icon.Width, icon.Height));
+            int scale = Math.Max(icon.Width, icon.Height) * 2 <= box ? 2 : 1;
+            // The centre is already whole pixels, and the origin is in half pixels so odd sizes still centre.
             b.Draw(icon, new Vector2(centerX, centerY), null, Color.White * alpha, 0f, new Vector2(icon.Width / 2f, icon.Height / 2f), scale, SpriteEffects.None, 1f);
         }
         else
         {
             b.DrawString(Game1.tinyFont, item.Name.Length > 4 ? item.Name[..4] : item.Name, new Vector2(centerX - box / 2, centerY - 8), Color.White * alpha);
         }
-        if (item.Stack > 1)
+        if (item.Stack > 1 && count)
             Utility.drawTinyDigits(item.Stack, b, new Vector2(centerX + box / 2 - 12 - (item.Stack >= 100 ? 12 : item.Stack >= 10 ? 6 : 0), centerY + box / 2 - 12), 2f, 1f, Color.White * alpha);
     }
 }

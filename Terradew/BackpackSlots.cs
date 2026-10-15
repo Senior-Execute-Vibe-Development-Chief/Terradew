@@ -7,7 +7,8 @@ namespace Terradew;
 
 /// <summary>
 /// The clicks shared by every menu that shows the Terraria character's slots: main slots 0-49, coins and ammo
-/// 50-57, and equipment numbered from <see cref="InventoryAction.EquipmentBase"/>. A first click picks an item up
+/// 50-57, equipment numbered from <see cref="InventoryAction.EquipmentBase"/>, and the trash slot
+/// <see cref="InventoryAction.TrashSlot"/>. A first click picks an item up
 /// and a second click puts it down.
 /// </summary>
 internal sealed class BackpackSlots
@@ -35,6 +36,8 @@ internal sealed class BackpackSlots
         InventoryState? inventory = bridge.Inventory;
         if (inventory == null)
             return default;
+        if (slot == InventoryAction.TrashSlot)
+            return inventory.Trash;
         if (slot >= InventoryAction.EquipmentBase)
         {
             int index = slot - InventoryAction.EquipmentBase;
@@ -151,6 +154,15 @@ internal sealed class BackpackSlots
         if (stardew != null)
             stardew.drawInMenu(b, new Vector2(area.X, area.Y), area.Width / 64f);
         else
-            Hud.DrawItem(b, sprites, Item(slot), area.Center.X, area.Center.Y, area.Width - 12);
+        {
+            ItemStack item = Item(slot);
+            Hud.DrawItem(b, sprites, item, area.Center.X, area.Center.Y, area.Width - 12, count: false);
+            if (!item.IsEmpty && item.Stack > 1)
+            {
+                // Like Stardew's own stack count: tiny digits at scale 3, in the bottom-right corner of the slot.
+                float width = Utility.getWidthOfTinyDigitString(item.Stack, 3f);
+                Utility.drawTinyDigits(item.Stack, b, new Vector2(area.Right - 4 - width, area.Bottom - 17), 3f, 1f, Color.White);
+            }
+        }
     }
 }

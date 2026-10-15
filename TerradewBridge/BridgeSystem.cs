@@ -202,7 +202,10 @@ public sealed class BridgeSystem : ModSystem
         }
         Inventory.Publish(link, player, worldTicks);
         if (Linked)
+        {
             Body.Publish(link, player, worldTicks);
+            Motion.Publish(link, player, worldTicks);
+        }
         Courage.Publish(link, worldTicks);
         if (worldTicks % 120 == 0)
             Town.SendFacts(link);

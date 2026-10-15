@@ -127,7 +127,9 @@ internal sealed class Draw
         }
         foreach (ProjectileState projectile in world.Projectiles)
         {
-            (float x, float y) = WorldProjection.ToMap(world.RegionX, world.RegionY, projectile.X, projectile.Y);
+            (float x, float y) = projectile.Attached
+                ? AttachedAt(player, projectile)
+                : WorldProjection.ToMap(world.RegionX, world.RegionY, projectile.X, projectile.Y);
             if (Utility.isOnScreen(new Vector2(x, y), 64 * 4))
                 DrawProjectile(b, projectile, x, y, sorted);
         }
@@ -189,11 +191,11 @@ internal sealed class Draw
         float depth = onWall ? (sorted ? WallPartDepth : 0f) : Depth(y, sorted);
         var effects = entity.Direction == 1 && !onWall ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
+        float drawnWidth = source.HasValue ? source.Value.Width * scale : entity.Width * WorldProjection.Scale;
         if (!entity.Has(EntityFlags.Flyer) && !onWall)
         {
             var shadow = Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y)));
             // Stardew's shadow is 12 pixels across: as wide as the body is drawn, a little narrower for big ones.
-            float drawnWidth = source.HasValue ? source.Value.Width * scale : entity.Width * WorldProjection.Scale;
             float shadowScale = Math.Clamp(drawnWidth * 0.7f / Game1.shadowTexture.Width, 2f, 12f);
             b.Draw(Game1.shadowTexture, shadow, Game1.shadowTexture.Bounds, Color.Black * 0.6f * alpha, 0f,
                 new Vector2(Game1.shadowTexture.Width / 2f, Game1.shadowTexture.Height / 2f), shadowScale, SpriteEffects.None, Math.Max(0f, depth - 0.0001f));
@@ -227,19 +229,40 @@ internal sealed class Draw
             b.Draw(Game1.staminaRect, new Rectangle((int)local.X - size / 2, top, size, size), null, color * alpha, 0f, Vector2.Zero, SpriteEffects.None, depth);
         }
 
-        var head = Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y - bodyHeight - 12f));
-        if (entity.Has(EntityFlags.Hostile) && entity.LifeMax > 0 && entity.Life < entity.LifeMax && !entity.Has(EntityFlags.Boss))
+        if (entity.LifeMax > 0 && entity.Life > 0 && entity.Life < entity.LifeMax && !entity.Has(EntityFlags.Town))
         {
-            int width = 48;
-            float fill = Math.Clamp(entity.Life / (float)entity.LifeMax, 0f, 1f);
-            b.Draw(Game1.staminaRect, new Rectangle((int)head.X - width / 2, (int)head.Y, width, 6), null, Color.Black * 0.6f, 0f, Vector2.Zero, SpriteEffects.None, Math.Min(1f, depth + 0.0002f));
-            b.Draw(Game1.staminaRect, new Rectangle((int)head.X - width / 2 + 1, (int)head.Y + 1, (int)((width - 2) * fill), 4), null, Color.Lerp(Color.Red, Color.LimeGreen, fill), 0f, Vector2.Zero, SpriteEffects.None, Math.Min(1f, depth + 0.0003f));
+            // The lower edge of the drawn body: the feet when grounded, the bottom of the picture when centred or flying.
+            float halfHeight = source.HasValue ? (onWall ? thickness : source.Value.Height * scale) / 2f : bodyHeight / 2f;
+            float bottom = centred ? local.Y + halfHeight : local.Y;
+            DrawHealthBar(b, entity, local.X, bottom, drawnWidth, depth);
         }
+        var head = Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y - bodyHeight - 12f));
         if (entity.Has(EntityFlags.Town) || entity.NpcType == Hand.OldManType)
         {
             Vector2 size = Game1.smallFont.MeasureString(entity.Name);
             b.DrawString(Game1.smallFont, entity.Name, head - new Vector2(size.X / 2f, size.Y), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Math.Min(1f, depth + 0.0003f));
         }
+    }
+
+    /// <summary>
+    /// Terraria's health bar: a thin bar just below the creature, under its feet when it stands and under its body
+    /// when it is centred or flying. It is as wide as the body, within 36 to 96 pixels, and its fill goes green,
+    /// yellow, then red as the creature loses life.
+    /// </summary>
+    private static void DrawHealthBar(SpriteBatch b, EntityState entity, float centreX, float bottom, float drawnWidth, float depth)
+    {
+        int width = Math.Clamp((int)(drawnWidth * 0.8f), 36, 96);
+        float fill = Math.Clamp(entity.Life / (float)entity.LifeMax, 0f, 1f);
+        Color colour = fill >= 0.66f ? Color.Lerp(Color.Yellow, Color.LimeGreen, (fill - 0.66f) / 0.34f)
+            : fill >= 0.33f ? Color.Lerp(Color.Red, Color.Yellow, (fill - 0.33f) / 0.33f)
+            : Color.Red;
+        int left = (int)MathF.Round(centreX) - width / 2;
+        int top = (int)MathF.Round(bottom) + 4;
+        b.Draw(Game1.staminaRect, new Rectangle(left, top, width, 8), null, Color.Black * 0.7f, 0f, Vector2.Zero, SpriteEffects.None, Math.Min(1f, depth + 0.0002f));
+        b.Draw(Game1.staminaRect, new Rectangle(left + 1, top + 1, width - 2, 6), null, Color.Black * 0.4f, 0f, Vector2.Zero, SpriteEffects.None, Math.Min(1f, depth + 0.0003f));
+        int filled = (int)((width - 2) * fill);
+        if (filled > 0)
+            b.Draw(Game1.staminaRect, new Rectangle(left + 1, top + 1, filled, 6), null, colour, 0f, Vector2.Zero, SpriteEffects.None, Math.Min(1f, depth + 0.0004f));
     }
 
     /// <summary>
@@ -264,6 +287,16 @@ internal sealed class Draw
             b.Draw(Game1.staminaRect, new Rectangle(left + vein, edge, 3, 8), null, new Color(90, 10, 20) * 0.9f, 0f, Vector2.Zero, SpriteEffects.None, depth);
     }
 
+    /// <summary>
+    /// Where an attached shot sits in Stardew world pixels: the farmer's feet plus its Terraria offset, scaled to
+    /// the half-size sprites. Following the farmer's feet keeps it on the picture, not on the Terraria body.
+    /// </summary>
+    private static (float x, float y) AttachedAt(Farmer player, ProjectileState projectile)
+    {
+        Rectangle box = player.GetBoundingBox();
+        return (box.Center.X + projectile.OffsetX * SpriteLayout.DrawScale, box.Bottom + projectile.OffsetY * SpriteLayout.DrawScale);
+    }
+
     private void DrawProjectile(SpriteBatch b, ProjectileState projectile, float x, float y, bool sorted)
     {
         Texture2D? sheet = sprites.Load(SpriteNames.Projectile(projectile.ProjType));
@@ -275,7 +308,10 @@ internal sealed class Draw
         var source = new Rectangle(0, frame * height, sheet.Width, height);
         Color color = projectile.Color != 0 ? new Color { PackedValue = projectile.Color } : Color.White * ((255 - projectile.Alpha) / 255f);
         var effects = projectile.Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-        var position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y));
+        // Whole screen pixels for attached shots, which move with the farmer, so the crystal does not shimmer.
+        var position = projectile.Attached
+            ? Snap(Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y)))
+            : Game1.GlobalToLocal(Game1.viewport, new Vector2(x, y));
         float scale = SpriteLayout.DrawScale * (projectile.Scale <= 0f ? 1f : projectile.Scale);
         b.Draw(sheet, position, source, color, projectile.Rotation, new Vector2(source.Width / 2f, source.Height / 2f), scale, effects, Depth(y, sorted, 32f));
     }

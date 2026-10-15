@@ -122,6 +122,12 @@ public sealed class WorldStamp
     private const int WardLeaves = 12;
 
     /// <summary>
+    /// Terraria AI styles of shots that ride on their owner: spears (19), drills and chainsaws (20), crystal leaf (43)
+    /// and held guns and bows (75).
+    /// </summary>
+    private static readonly HashSet<int> AttachedAiStyles = new() { 19, 20, 43, 75 };
+
+    /// <summary>
     /// The Dryad's Ward is drawn by Terraria's own code, not from its sprite, so Stardew would see nothing.
     /// It goes over as a spinning ring of leaves around the Dryad instead.
     /// </summary>
@@ -515,6 +521,10 @@ public sealed class WorldStamp
                     AddWardLeaves(state, projectile, i);
                     continue;
                 }
+                // Held and riding shots (crystal leaf, spears, drills, held guns) float a fixed Terraria offset from their owner.
+                // Stardew draws the farmer at half size, so the offset is sent from the owner's feet for Stardew to scale.
+                bool attached = projectile.owner == Main.myPlayer && AttachedAiStyles.Contains(projectile.aiStyle);
+                Vector2 offset = attached ? projectile.Center - Puppet.FeetOf(player) : Vector2.Zero;
                 state.Projectiles.Add(new ProjectileState
                 {
                     Id = i,
@@ -529,6 +539,9 @@ public sealed class WorldStamp
                     Scale = projectile.scale,
                     Hostile = projectile.hostile,
                     Color = projectile.GetAlpha(Microsoft.Xna.Framework.Color.White).PackedValue,
+                    Attached = attached,
+                    OffsetX = offset.X,
+                    OffsetY = offset.Y,
                 });
                 SpriteDump.Projectile(projectile.type);
             }

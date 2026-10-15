@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -40,6 +41,8 @@ internal sealed class Hand
     private const int ShortestUse = 4;
     private int heldTicks;
     private bool released;
+    /// <summary>The button that started the hold, read straight from the device each tick.</summary>
+    private SButton holdButton;
 
     public void Reset()
     {
@@ -74,6 +77,7 @@ internal sealed class Hand
             UseHeld = true;
             heldTicks = 0;
             released = false;
+            holdButton = e.Button;
         }
     }
 
@@ -87,17 +91,33 @@ internal sealed class Hand
         return !held.IsEmpty && held.Station && stations.TryPlace(bridge, Slot, held);
     }
 
+    /// <summary>
+    /// The release is read from the device in <see cref="Update"/>: SMAPI can report a suppressed button as released
+    /// while it is still held, which ended a hold after one use.
+    /// </summary>
     public void OnButtonReleased(ButtonReleasedEventArgs e)
     {
-        if (e.Button.IsUseToolButton() && UseHeld)
+        if (e.Button.IsUseToolButton() && UseHeld && Active)
+            helper.Input.Suppress(e.Button);
+    }
+
+    /// <summary>Whether a button is really down, ignoring SMAPI's suppression.</summary>
+    private static bool IsDown(SButton button)
+    {
+        switch (button)
         {
-            if (heldTicks < ShortestUse)
-                released = true;
-            else
-                UseHeld = false;
-            if (Active)
-                helper.Input.Suppress(e.Button);
+            case SButton.MouseLeft:
+                return Mouse.GetState().LeftButton == ButtonState.Pressed;
+            case SButton.MouseRight:
+                return Mouse.GetState().RightButton == ButtonState.Pressed;
+            case SButton.MouseMiddle:
+                return Mouse.GetState().MiddleButton == ButtonState.Pressed;
         }
+        if (button.TryGetKeyboard(out Keys key))
+            return Keyboard.GetState().IsKeyDown(key);
+        if (button.TryGetController(out Buttons pad))
+            return GamePad.GetState(PlayerIndex.One).IsButtonDown(pad);
+        return false;
     }
 
     public void Update()
@@ -106,7 +126,7 @@ internal sealed class Hand
         if (!Game1.game1.IsActive)
             UseHeld = false;
         WrapToolIndex();
-        if (UseHeld && ++heldTicks >= ShortestUse && released)
+        if (UseHeld && ++heldTicks >= ShortestUse && (released || !IsDown(holdButton)))
         {
             UseHeld = false;
             released = false;

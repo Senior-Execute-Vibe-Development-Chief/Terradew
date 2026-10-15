@@ -135,6 +135,7 @@ public static class Inventory
             state.Items.Add(Describe(player.inventory[i]));
         for (int i = 0; i < InventoryState.EquipmentSlots && i < player.armor.Length; i++)
             state.Equipment.Add(Describe(player.armor[i]));
+        state.Trash = Describe(player.trashItem);
         link.Send(state);
         link.Send(new CoinAck { Seq = lastCoinSeq, Total = state.Coins });
         ExportGear(player);
@@ -293,6 +294,7 @@ public static class Inventory
             hash = unchecked(hash * 31 + item.type * 7919L + item.stack * 31L + item.prefix);
         foreach (Item item in player.armor)
             hash = unchecked(hash * 31 + item.type * 7919L + item.stack);
+        hash = unchecked(hash * 31 + player.trashItem.type * 7919L + player.trashItem.stack);
         hash = unchecked(hash * 31 + player.head * 13 + player.body * 17 + player.legs * 19);
         hash = unchecked(hash * 31 + player.wings * 23 + player.shield * 29 + player.back * 37 + player.front * 41 + player.shoe * 43);
         foreach (Item dye in player.dye)
@@ -374,6 +376,8 @@ public static class Inventory
     private static ref Item Slot(Player player, int slot, out bool valid)
     {
         valid = true;
+        if (slot == InventoryAction.TrashSlot)
+            return ref player.trashItem;
         if (slot >= InventoryAction.EquipmentBase)
         {
             int index = slot - InventoryAction.EquipmentBase;
@@ -422,7 +426,9 @@ public static class Inventory
             case InventoryKind.Unequip:
             {
                 ref Item worn = ref Slot(player, action.A, out bool ok);
-                if (!ok || worn.IsAir || StardewSlot.Is(worn) || action.A < InventoryAction.EquipmentBase)
+                // Only equipment and the trash slot give their item back to the main slots.
+                bool gives = action.A >= InventoryAction.EquipmentBase || action.A == InventoryAction.TrashSlot;
+                if (!ok || worn.IsAir || StardewSlot.Is(worn) || !gives)
                     break;
                 for (int i = 0; i < 50; i++)
                 {
@@ -438,7 +444,13 @@ public static class Inventory
             {
                 ref Item doomed = ref Slot(player, action.A, out bool ok);
                 if (ok && !doomed.favorited && !StardewSlot.Is(doomed))
+                {
+                    // Terraria keeps the last item thrown away in its trash slot, so it can be taken back out.
+                    // Throwing away what is already in the trash slot just deletes it.
+                    if (action.A != InventoryAction.TrashSlot)
+                        player.trashItem = doomed.Clone();
                     doomed.TurnToAir();
+                }
                 break;
             }
             case InventoryKind.Use:

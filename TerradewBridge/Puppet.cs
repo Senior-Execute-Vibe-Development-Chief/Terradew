@@ -408,9 +408,15 @@ public sealed class Puppet : ModPlayer
         return new Rectangle(feetX - SpriteLayout.FarmerWidth / 2, feetY - SpriteLayout.FarmerHeight, SpriteLayout.FarmerWidth, SpriteLayout.FarmerHeight);
     }
 
-    /// <summary>A buried worm segment is underground, so it cannot touch the farmer.</summary>
+    /// <summary>
+    /// A buried worm segment is underground, so it cannot touch the farmer, and walking creatures cannot reach a
+    /// flying or jumping farmer. Flying creatures and shots still can.
+    /// </summary>
     public override bool CanBeHitByNPC(NPC npc, ref int cooldownSlot)
-        => !BridgeSystem.Active || (!Creatures.IsBuried(npc) && npc.Hitbox.Intersects(FarmerBody()));
+        => !BridgeSystem.Active || (!Creatures.IsBuried(npc) && !(Airborne && !Creatures.IsFlyer(npc) && npc.aiStyle != NPCAIStyleID.Worm && !npc.boss) && npc.Hitbox.Intersects(FarmerBody()));
+
+    /// <summary>Stardew says the farmer is in the air.</summary>
+    private static bool Airborne => BridgeSystem.Instance.Pulse is { } pulse && pulse.Has(PulseFlags.Airborne);
 
     public override bool CanBeHitByProjectile(Projectile proj)
         => !BridgeSystem.Active || proj.Colliding(proj.Hitbox, FarmerBody());
@@ -486,8 +492,8 @@ public sealed class Melee : GlobalItem
     {
         if (!BridgeSystem.Active || player.whoAmI != Main.myPlayer || !Puppet.TryAim(out _))
             return null;
-        bool swung = item.useStyle == ItemUseStyleID.Swing || item.useStyle == ItemUseStyleID.Thrust || item.useStyle == ItemUseStyleID.Rapier;
-        return swung && (item.damage > 0 || item.pick > 0 || item.axe > 0 || item.hammer > 0) ? true : null;
+        // Weapons of every kind (swords, guns, bows, staffs) and tools; potions, summons and the like stay one use a click.
+        return item.damage > 0 || item.pick > 0 || item.axe > 0 || item.hammer > 0 ? true : null;
     }
 
     public override bool? CanHitNPC(Item item, Player player, NPC target)
