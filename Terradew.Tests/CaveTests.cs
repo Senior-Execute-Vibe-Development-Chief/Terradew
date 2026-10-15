@@ -13,7 +13,7 @@ internal static class CaveTests
         failed += T.Check("every fifth mine floor is safe, and the entrance is not a mine floor", () =>
         {
             T.Assert(CaveRules.IsSafeFloor(5) && CaveRules.IsSafeFloor(10) && CaveRules.IsSafeFloor(120), "fives are safe");
-            T.Assert(!CaveRules.IsSafeFloor(0) && !CaveRules.IsSafeFloor(4) && !CaveRules.IsSafeFloor(11), "other floors are not");
+            T.Assert(!CaveRules.IsSafeFloor(0) && !CaveRules.IsSafeFloor(4) && !CaveRules.IsSafeFloor(11) && !CaveRules.IsSafeFloor(125), "other floors and the Skull Cavern are not");
         });
         failed += T.Check("creatures follow the floor's biome and band", () =>
         {

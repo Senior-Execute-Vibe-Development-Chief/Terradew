@@ -20,6 +20,8 @@ public static class CaveRules
 {
     /// <summary>Every fifth mine floor is a safe floor, where Terraria creatures never spawn.</summary>
     public const int SafeEvery = 5;
+    /// <summary>The mines' last floor. The Skull Cavern below it (and the Quarry Mine) has no safe floors.</summary>
+    public const int LastMineFloor = 120;
     /// <summary>Most Terraria creatures alive in one floor's place at a time, so a long stay cannot fill it.</summary>
     public const int SpawnCap = 6;
     /// <summary>Terraria ticks between spawn attempts on a mine floor: five seconds.</summary>
@@ -28,7 +30,7 @@ public static class CaveRules
     public const float SpawnChance = 0.5f;
 
     /// <summary>Whether the floor is a safe floor. The mine entrance (floor 0) is never a mine floor, so it is not counted here.</summary>
-    public static bool IsSafeFloor(int floor) => floor > 0 && floor % SafeEvery == 0;
+    public static bool IsSafeFloor(int floor) => floor > 0 && floor <= LastMineFloor && floor % SafeEvery == 0;
 
     /// <summary>The Terraria creatures, by name, that wander a mine floor of this biome and band. Empty when none belong there.</summary>
     public static string[] SpawnsFor(Biome biome, Band band) => biome switch

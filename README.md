@@ -56,10 +56,17 @@ Decisions that shape play:
   houses and other places without spawns. Creatures you leave behind wait where they were while Terraria runs;
   hostile creatures are not kept when Terraria closes. Creatures find their way around rocks, fences and
   furniture: they route over the same blocked tiles Terraria sees.
+- **Mine floors have Terraria creatures and chests.** Every floor but the entrance and every fifth floor of the mines (the Skull Cavern has none safe) spawns
+  creatures of its biome and depth (bats, slimes and skeletons up top, hornets in the jungle floors, lava slimes and
+  demons in the underworld), up to six at a time. Each new floor may hold one Terraria chest (likelier deeper):
+  wooden, gold, jungle or dungeon by the floor. Right-click it for Terraria loot; tools and bombs don't break it.
+- **Floor no path reaches is wall.** Stardew maps hide floor behind their walls and cliffs; Terradew fills from
+  every way in (warps, doors, where you stand), crossing rocks, trees, furniture and water, and treats what it never
+  reaches as solid. Nothing spawns there, and you cannot fly there.
 - **Mine floors have dart traps.** Up to three per floor (more on deeper floors, none on the entrance or safe floors), each a
   gray plate on an open tile at least eight tiles from you, with a Terraria dart source six tiles away on a straight open line.
   Stepping on a plate fires a poison dart from the source, which re-arms after two seconds.
-- **Stardew rocks drop Terraria ores** as well as their own, by depth: copper and tin up top, iron, silver and the
+- **Stardew rocks drop Terraria ores** instead of their own, by depth: copper and tin up top, iron, silver and the
   evil ore in the cavern floors, gold and mud in the jungle floors, hellstone in the underworld. Hardmode adds its
   ores (and Skull Cavern holds the best of them), Chlorophyte waits for the three mechanical bosses, and the
   Mountain quarry gives meteorite once the evil boss is down. Mystic stones give life crystals. Chopping wood
@@ -152,7 +159,11 @@ Keys can be changed in `Mods/Terradew/config.json`.
   hotbar slot it is in and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station
   with the Stardew pickaxe or axe to take it back. Stardew's own furniture and decoration stay as they are.
-- **Mine barrels and crates are Terraria pots.** They take the look of that floor's biome (hellstone pots in the underworld, dungeon pots in the Skull Cavern) and, as well as Stardew's own loot, spill Terraria pot loot: coins, potions, torches and hearts.
+- **Mine barrels and crates are Terraria pots.** They take the look of that floor's biome (hellstone pots in the underworld, dungeon pots in the Skull Cavern) and, as well as Stardew's own loot, spill Terraria pot loot: coins, potions, torches and hearts. They are drawn one tile wide, as in Terraria.
+- **Gathering gives only Terraria items.** Stone, ores, geodes, gems and wood that Stardew rocks, boulders, stumps,
+  logs and trees would drop are taken off the ground as they fall; Terraria gives its stone, ores and wood instead.
+  Monster drops and other loot are left alone.
+- **Terraria dust is drawn everywhere in the place**, not just around you: torch sparks, mining dust, spell trails.
 - **Terraria townsfolk play the Stardew villagers.** Each Terraria town NPC moves into one villager's home, the morning after its
   Terraria conditions are met (the Guide first, the Merchant once you carry 50 silver, and so on): the Guide in
   the museum, the Merchant at Pierre's, the Nurse at Harvey's clinic, the Arms Dealer at the Adventurer's Guild,

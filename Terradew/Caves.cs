@@ -70,13 +70,13 @@ internal sealed class Caves
         foreach (CaveTrapPlate plate in plates)
         {
             // A plate lies on the floor of its tile, a little below the tile's top, so it draws behind anything standing on it.
-            Vector2 foot = new(plate.X * 64 + 20, plate.Y * 64 + 56);
+            Vector2 foot = new(plate.X * 64 + 12, plate.Y * 64 + 48);
             if (!Utility.isOnScreen(foot, 64))
                 continue;
             Vector2 position = Game1.GlobalToLocal(Game1.viewport, foot);
             float depth = (plate.Y * 64 + 4) / 10000f;
-            b.Draw(Game1.staminaRect, position, null, new Color(70, 70, 78), 0f, Vector2.Zero, new Vector2(24f, 8f), SpriteEffects.None, depth);
-            b.Draw(Game1.staminaRect, position, null, new Color(120, 120, 130), 0f, Vector2.Zero, new Vector2(24f, 2f), SpriteEffects.None, depth);
+            b.Draw(Game1.staminaRect, position, null, new Color(70, 70, 78), 0f, Vector2.Zero, new Vector2(40f, 12f), SpriteEffects.None, depth);
+            b.Draw(Game1.staminaRect, position, null, new Color(120, 120, 130), 0f, Vector2.Zero, new Vector2(40f, 3f), SpriteEffects.None, depth + 0.00001f);
         }
     }
 
