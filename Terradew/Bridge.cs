@@ -9,6 +9,8 @@ internal sealed class Bridge : IDisposable
     private readonly Link link;
     private int seenConnection;
     private long worldAtMs;
+    private WallFight? wall;
+    private long wallAtMs;
 
     public Bridge(int port)
     {
@@ -22,7 +24,7 @@ internal sealed class Bridge : IDisposable
     public Dictionary<int, ShopStock> Shops { get; } = new();
     public Hello? TerrariaHello { get; private set; }
     /// <summary>The Wall of Flesh fight, while it runs. Null when there is none.</summary>
-    public WallFight? Wall { get; private set; }
+    public WallFight? Wall => wall != null && Link.NowMs() - wallAtMs < 2500 ? wall : null;
 
     public event Action? Connected;
     public event Action<NpcChat>? Chat;
@@ -72,7 +74,7 @@ internal sealed class Bridge : IDisposable
             Recipes = null;
             Shops.Clear();
             TerrariaHello = null;
-            Wall = null;
+            wall = null;
             Connected?.Invoke();
         }
     }
@@ -112,8 +114,9 @@ internal sealed class Bridge : IDisposable
                 if (raiseEvents)
                     CoinAck?.Invoke(ack);
                 break;
-            case WallFight wall:
-                Wall = wall.Active ? wall : null;
+            case WallFight fight:
+                wall = fight.Active ? fight : null;
+                wallAtMs = Link.NowMs();
                 break;
             case Core.Protocol.Notice notice:
                 if (raiseEvents)
