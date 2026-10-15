@@ -9,11 +9,23 @@ using Terraria.ID;
 
 namespace TerradewBridge;
 
-/// <summary>Breaking Stardew rocks and gathering Stardew wood also gives Terraria materials (see <see cref="OreTable"/>).</summary>
+/// <summary>
+/// Breaking Stardew rocks and gathering Stardew wood also gives Terraria materials (see <see cref="OreTable"/>).
+/// Breaking Stardew barrels and crates spawns Terraria pots (see <see cref="Pots"/>) and gives their pot loot.
+/// </summary>
 public static class Gathering
 {
+    /// <summary>Most pots spawned from one message, so a big stack of crates cannot flood the world.</summary>
+    private const int MaxPots = 10;
+
     public static void Receive(Player player, Gathered message)
     {
+        if (message.Kind == GatherKind.Pot)
+        {
+            Break(player, Math.Clamp(message.Count, 1, 999));
+            return;
+        }
+
         var drops = new List<Drop>();
         int count = Math.Clamp(message.Count, 1, 999);
         if (message.Kind is GatherKind.Wood or GatherKind.Hardwood)
@@ -63,5 +75,38 @@ public static class Gathering
             return;
         Inventory.ForceResend();
         BridgeSystem.Instance.Notice("+ " + string.Join(", ", given), 200, 255, 200);
+    }
+
+    /// <summary>
+    /// Spawns Terraria pot loot at the farmer's tile, in the style of the place they are in. The loot lies on the
+    /// ground for the farmer to pick up. If the game refuses to spawn it, the farmer gets coins instead.
+    /// </summary>
+    private static void Break(Player player, int count)
+    {
+        Biome biome = PlaceBiome(BridgeSystem.Instance.Stamp.Current);
+        int i = (int)(player.Center.X / 16f);
+        int j = (int)(player.Center.Y / 16f);
+        for (int n = 0; n < Math.Min(count, MaxPots); n++)
+        {
+            int style = Pots.StyleFor(biome, Main.rand.Next());
+            try
+            {
+                WorldGen.SpawnThingsFromPot(i, j, i, j - 1, style);
+            }
+            catch (Exception error)
+            {
+                BridgeSystem.Instance.Mod.Logger.Warn($"Terradew could not spawn pot loot in style {style}: {error.Message}");
+                Inventory.AddCoins(player, Main.rand.Next(20, 80));
+                Inventory.ForceResend();
+            }
+        }
+    }
+
+    /// <summary>The biome a Stardew place plays as, with hardmode's Hallow spread applied. Caves when the place is unknown.</summary>
+    private static Biome PlaceBiome(WorldStamp.PlaceState? place)
+    {
+        if (place?.Layout == null)
+            return Biome.Cave;
+        return Main.hardMode && Places.HallowsInHardmode(place.Key) ? Biome.Hallow : (Biome)place.Layout.Biome;
     }
 }

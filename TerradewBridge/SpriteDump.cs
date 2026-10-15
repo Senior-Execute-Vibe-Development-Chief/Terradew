@@ -6,6 +6,7 @@ using ReLogic.Content;
 using Terradew.Core;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 
 namespace TerradewBridge;
 
@@ -32,6 +33,10 @@ internal static class SpriteDump
     private static readonly HashSet<int> backDone = new();
     private static readonly HashSet<int> frontDone = new();
     private static readonly HashSet<int> shoeDone = new();
+    private static readonly HashSet<int> potDone = new();
+
+    /// <summary>Pot styles run from 0 to this, the last style of the Pots tile sheet.</summary>
+    private const int LastPotStyle = 36;
 
     /// <summary>Ticks to wait before trying a failed sheet again, so assets still loading get time to finish.</summary>
     private const uint RetryDelay = 300;
@@ -138,6 +143,21 @@ internal static class SpriteDump
         ExportShoe(slot);
     }
 
+    /// <summary>Exports one Terraria pot style, a 2 by 2 tile pot from the Pots sheet.</summary>
+    public static void Pot(int style)
+    {
+        if (style < 0 || !potDone.Add(style))
+            return;
+        ExportPot(style);
+    }
+
+    /// <summary>Exports every Terraria pot style, once each. Cheap after the first call.</summary>
+    public static void Pots()
+    {
+        for (int style = 0; style <= LastPotStyle; style++)
+            Pot(style);
+    }
+
     private static void ExportNpc(int type)
     {
         string file = SpriteNames.Npc(type);
@@ -228,6 +248,13 @@ internal static class SpriteDump
         string file = SpriteNames.Accessory("shoe", slot);
         string? error = Frame(file, $"Images/Acc_Shoes_{slot}", () => { Main.instance.LoadAccShoes(slot); return TextureAssets.AccShoes[slot]; });
         Failed(shoeDone, slot, file, error);
+    }
+
+    private static void ExportPot(int style)
+    {
+        string file = SpriteNames.Pot(style);
+        string? error = Frame(file, $"Images/Tiles_{TileID.Pots}", () => { Main.instance.LoadTiles(TileID.Pots); return TextureAssets.Tile[TileID.Pots]; }, _ => new Rectangle(0, style * 36, 34, 34));
+        Failed(potDone, style, file, error);
     }
 
     /// <summary>Lets failed sheets whose wait is over be requested again. Call once per bridge tick.</summary>

@@ -218,6 +218,7 @@ public sealed class BridgeSystem : ModSystem
                 }
                 Inventory.ResumeCoins(hello.CoinSeq);
                 Inventory.ForceResend();
+                SpriteDump.Pots();
                 if (worldFarmId.Length == 0)
                     worldFarmId = hello.FarmId;
                 WrongFarm = worldFarmId != hello.FarmId;
