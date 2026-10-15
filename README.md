@@ -64,6 +64,22 @@ You need Stardew Valley 1.6 with SMAPI 4, and tModLoader.
 3. In tModLoader, enable **only** Terradew Bridge, make a character, and create a **large** world named
    exactly `Stardew Valley`. Terradew clears that world the first time it loads; it never touches any other world.
 
+## Dev launcher (macOS)
+
+`tools/terradew` starts and stops both games through Steam, Terraria first so the bridge is listening:
+
+```sh
+tools/terradew start      # tModLoader, then Stardew
+tools/terradew stop       # close both
+tools/terradew restart    # stop, rebuild the Stardew mod, start again
+tools/terradew status     # what is running, and whether the bridge is connected
+tools/terradew logs       # follow the SMAPI and tModLoader logs
+```
+
+Set `TERRADEW_PLAYER` to your tModLoader character's name to skip the menus and load straight into the world
+`Stardew Valley`, for example `TERRADEW_PLAYER=Farmer tools/terradew start`. Stopping closes the games without
+saving, which is usually what you want while testing.
+
 ## Playing
 
 1. Start tModLoader and enter the world `Stardew Valley`. Leave it running.
