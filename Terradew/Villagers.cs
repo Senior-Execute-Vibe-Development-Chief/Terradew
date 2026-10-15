@@ -4,6 +4,9 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.Shops;
+using StardewValley.Menus;
+using Terradew.Core;
+using Terradew.Core.Protocol;
 using Terradew.Core.Town;
 
 namespace Terradew;
@@ -64,6 +67,83 @@ internal sealed class Villagers
         catch (Exception error)
         {
             monitor.Log($"Terradew could not stop talking to villagers. {error.Message}", LogLevel.Warn);
+        }
+        try
+        {
+            // The help-wanted board picks a villager each day. Terradew has none, so the board stays empty.
+            var refresh = AccessTools.Method(typeof(Game1), "RefreshQuestOfTheDay");
+            if (refresh == null)
+                monitor.Log("Terradew could not find Game1.RefreshQuestOfTheDay; the board may ask for villagers.", LogLevel.Warn);
+            else
+                harmony.Patch(refresh, postfix: new HarmonyMethod(typeof(Villagers), nameof(AfterRefreshQuest)));
+        }
+        catch (Exception error)
+        {
+            monitor.Log($"Terradew could not clear the help-wanted board. {error.Message}", LogLevel.Warn);
+        }
+    }
+
+    /// <summary>Shop ids the villager who runs each one. Used to find the Terraria resident who replaced them.</summary>
+    private static readonly Dictionary<string, string> ShopOwners = new(StringComparer.Ordinal)
+    {
+        ["SeedShop"] = "Pierre",
+        ["Blacksmith"] = "Clint",
+        ["Carpenter"] = "Robin",
+        ["AnimalShop"] = "Marnie",
+        ["FishShop"] = "Willy",
+        ["Saloon"] = "Gus",
+        ["AdventureShop"] = "Marlon",
+        ["Hospital"] = "Harvey",
+        ["Sandy"] = "Sandy",
+        ["ShadowShop"] = "Krobus",
+    };
+
+    /// <summary>Shop menus show the Terraria resident's head in place of the villager's portrait.</summary>
+    public void OnMenuChanged(IClickableMenu? menu, Bridge bridge, SpriteBook sprites)
+    {
+        try
+        {
+            if (menu is not ShopMenu shop || shop.portraitTexture == null)
+                return;
+            string? shopId = shop.ShopId;
+            if (shopId == null || !ShopOwners.TryGetValue(shopId, out string? villager))
+                return;
+            string? npc = TownHomes.NpcOf(villager);
+            if (npc == null)
+                return;
+            // With nobody living there yet, no villager face shows.
+            shop.portraitTexture = HeadOf(npc, bridge, sprites);
+        }
+        catch (Exception error)
+        {
+            monitor?.Log($"Terradew could not show the town resident's portrait. {error.Message}", LogLevel.Warn);
+        }
+    }
+
+    private static Texture2D? HeadOf(string npc, Bridge bridge, SpriteBook sprites)
+    {
+        int? type = TownHomes.TypeOf(npc);
+        WorldFacts? facts = bridge.Facts;
+        if (type == null || facts == null)
+            return null;
+        foreach (TownResident resident in facts.Residents)
+        {
+            if (resident.NpcType != type.Value || string.IsNullOrEmpty(resident.HomePlaceKey) || resident.HeadIndex < 0)
+                continue;
+            return sprites.Load(SpriteNames.NpcHead(resident.HeadIndex));
+        }
+        return null;
+    }
+
+    private static void AfterRefreshQuest()
+    {
+        try
+        {
+            Game1.questOfTheDay = null;
+        }
+        catch (Exception error)
+        {
+            instance?.monitor?.Log($"Terradew could not clear the help-wanted board. {error.Message}", LogLevel.Warn);
         }
     }
 

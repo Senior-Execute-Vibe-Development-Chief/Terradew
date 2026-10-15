@@ -90,6 +90,7 @@ public sealed class ModEntry : Mod
         helper.Events.Display.RenderedHud += (_, e) => hud.Draw(e.SpriteBatch);
         helper.Events.Display.MenuChanged += (_, e) => fishing.OnMenuChanged(e.NewMenu, bridge, maps);
         helper.Events.Display.MenuChanged += (_, e) => wallClimb.OnMenuChanged(e.NewMenu);
+        helper.Events.Display.MenuChanged += (_, e) => villagers.OnMenuChanged(e.NewMenu, bridge, sprites);
         helper.Events.Player.Warped += (_, e) => wallClimb.OnWarped(e);
         helper.Events.Player.Warped += (_, e) => villagers.Refresh(e.NewLocation);
         helper.Events.GameLoop.TimeChanged += (_, _) => villagers.Refresh(Game1.currentLocation);

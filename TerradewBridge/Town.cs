@@ -227,7 +227,10 @@ public sealed class Town
                 continue;
             string name = NPCID.Search.GetName(npc.type);
             residents.TryGetValue(name, out string? home);
-            facts.Residents.Add(new TownResident(npc.type, npc.GivenOrTypeName, home ?? ""));
+            // The portrait must be on disk by the time Stardew opens a shop this resident runs.
+            int head = Terraria.GameContent.TownNPCProfiles.GetHeadIndexSafe(npc);
+            SpriteDump.NpcHead(head);
+            facts.Residents.Add(new TownResident(npc.type, npc.GivenOrTypeName, home ?? "", head));
         }
         link.Send(facts);
     }

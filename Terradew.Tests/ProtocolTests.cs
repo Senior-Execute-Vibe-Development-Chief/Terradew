@@ -69,8 +69,9 @@ internal static class ProtocolTests
             T.Assert(((ShopStock)Roundtrip(shop)).Entries[0].Price == 50, "shop");
 
             var facts = new WorldFacts { DownedEye = true };
-            facts.Residents.Add(new TownResident(22, "Andrew", "TerrariaHouse1"));
+            facts.Residents.Add(new TownResident(22, "Andrew", "TerrariaHouse1", 7));
             T.Assert(((WorldFacts)Roundtrip(facts)).Residents[0].HomePlaceKey == "TerrariaHouse1", "facts");
+            T.Assert(((WorldFacts)Roundtrip(facts)).Residents[0].HeadIndex == 7, "facts head index");
 
             var homes = new Homes();
             homes.Entries.Add(new HomeEntry("Nurse", "Hospital", 3, 4));

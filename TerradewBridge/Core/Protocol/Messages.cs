@@ -97,7 +97,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 6;
+    public const int CurrentProtocol = 7;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -1058,7 +1058,7 @@ public sealed class PlayerDied : Message
     public static PlayerDied ReadFrom(BinaryReader r) => new() { CoinsLost = r.ReadInt64(), Reason = r.ReadString() };
 }
 
-public readonly record struct TownResident(int NpcType, string Name, string HomePlaceKey);
+public readonly record struct TownResident(int NpcType, string Name, string HomePlaceKey, int HeadIndex);
 
 /// <summary>Progress Stardew needs to know about: hardmode, bosses beaten, who lives where.</summary>
 public sealed class WorldFacts : Message
@@ -1081,7 +1081,7 @@ public sealed class WorldFacts : Message
         w.Write(DownedSkeletron);
         w.Write(DownedQueenBee);
         w.Write(DownedWall);
-        w.WriteList(Residents, (x, e) => { x.Write(e.NpcType); x.Write(e.Name); x.Write(e.HomePlaceKey); });
+        w.WriteList(Residents, (x, e) => { x.Write(e.NpcType); x.Write(e.Name); x.Write(e.HomePlaceKey); x.Write(e.HeadIndex); });
     }
 
     public static WorldFacts ReadFrom(BinaryReader r) => new()
@@ -1092,7 +1092,7 @@ public sealed class WorldFacts : Message
         DownedSkeletron = r.ReadBoolean(),
         DownedQueenBee = r.ReadBoolean(),
         DownedWall = r.ReadBoolean(),
-        Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString()), 200),
+        Residents = r.ReadList(x => new TownResident(x.ReadInt32(), x.ReadString(), x.ReadString(), x.ReadInt32()), 200),
     };
 }
 
