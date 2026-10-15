@@ -34,6 +34,7 @@ public enum MsgType : byte
     VillagerSpots = 23,
     GiftItem = 24,
     Friendships = 25,
+    PlaceTorch = 26,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -85,6 +86,7 @@ public abstract class Message
             MsgType.RequestRecipes => RequestRecipes.ReadFrom(r),
             MsgType.Gathered => Gathered.ReadFrom(r),
             MsgType.PlaceStation => PlaceStation.ReadFrom(r),
+            MsgType.PlaceTorch => PlaceTorch.ReadFrom(r),
             MsgType.SlotMask => SlotMask.ReadFrom(r),
             MsgType.StationPlaced => StationPlaced.ReadFrom(r),
             MsgType.WorldState => WorldState.ReadFrom(r),
@@ -117,7 +119,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 17;
+    public const int CurrentProtocol = 18;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -427,6 +429,28 @@ public sealed class PlaceStation : Message
     }
 
     public static PlaceStation ReadFrom(BinaryReader r) => new() { Seq = r.ReadInt32(), Slot = r.ReadInt32(), ItemType = r.ReadInt32() };
+}
+
+/// <summary>
+/// The farmer puts a Terraria torch down on a Stardew tile. Terraria takes one from the inventory slot and answers
+/// with <see cref="StationPlaced"/>, the same as for a station; Stardew then places a Stardew torch on success.
+/// </summary>
+public sealed class PlaceTorch : Message
+{
+    public int Seq;
+    public int Slot;
+    public int ItemType;
+
+    public override MsgType Type => MsgType.PlaceTorch;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(Seq);
+        w.Write(Slot);
+        w.Write(ItemType);
+    }
+
+    public static PlaceTorch ReadFrom(BinaryReader r) => new() { Seq = r.ReadInt32(), Slot = r.ReadInt32(), ItemType = r.ReadInt32() };
 }
 
 public sealed class StationPlaced : Message
@@ -1004,6 +1028,10 @@ public struct ProjectileState
     /// <summary>For an attached shot: its centre minus the owner's feet, in Terraria pixels.</summary>
     public float OffsetX;
     public float OffsetY;
+    /// <summary>How much light the shot gives off: Terraria's projectile light times 170, capped at 255. 0 is none.</summary>
+    public byte Light;
+    /// <summary>Packed colour of that light, as Terraria sees it. 0 when the shot gives no light.</summary>
+    public uint LightColor;
 
     public void Write(BinaryWriter w)
     {
@@ -1022,6 +1050,8 @@ public struct ProjectileState
         w.Write(Attached);
         w.Write(Wire.Finite(OffsetX));
         w.Write(Wire.Finite(OffsetY));
+        w.Write(Light);
+        w.Write(LightColor);
     }
 
     public static ProjectileState ReadFrom(BinaryReader r) => new()
@@ -1041,6 +1071,8 @@ public struct ProjectileState
         Attached = r.ReadBoolean(),
         OffsetX = r.ReadSingle(),
         OffsetY = r.ReadSingle(),
+        Light = r.ReadByte(),
+        LightColor = r.ReadUInt32(),
     };
 }
 
@@ -1169,6 +1201,10 @@ public struct ItemStack
     public bool Usable;
     /// <summary>Terraria's tooltip below the name, one line per line, with chat tags taken out.</summary>
     public string Tooltip;
+    /// <summary>How much light the item gives when held, 0 for none up to 255: torches, glowsticks and flaming items.</summary>
+    public byte Light;
+    /// <summary>A torch: in Stardew it can be put down on a tile as a torch.</summary>
+    public bool Torch;
 
     public bool IsEmpty => ItemType <= 0 || Stack <= 0;
 
@@ -1188,6 +1224,8 @@ public struct ItemStack
         w.Write(Blade);
         w.Write(Usable);
         w.Write(Tooltip ?? "");
+        w.Write(Light);
+        w.Write(Torch);
     }
 
     public static ItemStack ReadFrom(BinaryReader r) => new()
@@ -1206,6 +1244,8 @@ public struct ItemStack
         Blade = r.ReadBoolean(),
         Usable = r.ReadBoolean(),
         Tooltip = r.ReadString(),
+        Light = r.ReadByte(),
+        Torch = r.ReadBoolean(),
     };
 }
 

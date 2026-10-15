@@ -32,6 +32,12 @@ internal sealed class Bridge : IDisposable
     private PlayerLook? look;
     private long lookAtMs;
 
+    private Movement? movement;
+    private long movementAtMs;
+
+    /// <summary>How the Terraria character moves: speed, wings and mount. Null once Terraria stops sending.</summary>
+    public Movement? Movement => movement != null && Link.NowMs() - movementAtMs < 3000 ? movement : null;
+
     /// <summary>The Terraria player as Terraria draws it. Null once Terraria stops sending (it resends at least twice a second).</summary>
     public PlayerLook? Look => look != null && Link.NowMs() - lookAtMs < 1500 ? look : null;
 
@@ -143,6 +149,10 @@ internal sealed class Bridge : IDisposable
             case VillagerMoves moves:
                 this.moves = moves;
                 movesAtMs = Link.NowMs();
+                break;
+            case Movement moving:
+                movement = moving;
+                movementAtMs = Link.NowMs();
                 break;
             case PlayerLook playerLook:
                 look = playerLook;

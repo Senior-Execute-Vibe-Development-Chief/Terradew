@@ -38,6 +38,7 @@ public sealed class ModEntry : Mod
     private Draw draw = null!;
     private Hud hud = null!;
     private TerrariaBody body = null!;
+    private Flight flight = null!;
     private bool helloSent;
     private int tick;
     private const int MaxPendingChats = 8;
@@ -68,7 +69,9 @@ public sealed class ModEntry : Mod
         bundles = new Bundles(Monitor);
         draw = new Draw(bridge, sprites, hand, helper, Monitor);
         hud = new Hud(bridge, sprites, hand, helper, backpack);
+        new Torches(helper, bridge, hand, backpack);
         body = new TerrariaBody(bridge, Monitor);
+        flight = new Flight(bridge);
         var harmony = new Harmony(ModManifest.UniqueID);
         draw.Install(harmony, Monitor);
         mining.Install(harmony, Monitor);
@@ -81,6 +84,7 @@ public sealed class ModEntry : Mod
         new Clock().Install(harmony, Monitor);
         BackpackGuards.Install(harmony, Monitor, backpack, sprites);
         InventoryTab.Install(harmony, Monitor, bridge, backpack, sprites);
+        flight.Install(harmony, Monitor);
         MoneyBox.Install(harmony, Monitor, bridge, sprites);
 
         bridge.Connected += OnConnected;
@@ -159,6 +163,7 @@ public sealed class ModEntry : Mod
         routes.Reset();
         hand.Reset();
         tools.Reset();
+        ShotLights.Reset();
         fishing.Reset();
         wallClimb.Reset();
         pendingChats.Clear();
@@ -215,6 +220,7 @@ public sealed class ModEntry : Mod
             return;
         backpack.Update();
         hand.Update();
+        flight.Update(Helper);
         if (bridge.IsConnected)
             maps.Update(bridge, location, e.Ticks, force: false);
         SendPulse(player, location);
@@ -222,6 +228,7 @@ public sealed class ModEntry : Mod
             money.Update(bridge);
         vitals.Update(bridge, config);
         tools.Update(bridge);
+        ShotLights.Update(bridge);
         body.Update(config);
         routes.Update(bridge, maps, player, Maps.PlaceOf(location).Key);
         if (e.Ticks % 30 == 0)
@@ -247,6 +254,8 @@ public sealed class ModEntry : Mod
             flags |= PulseFlags.Swimming;
         if (Game1.game1.IsActive)
             flags |= PulseFlags.Focused;
+        if (Flight.Airborne)
+            flags |= PulseFlags.Airborne;
         bridge.Send(new FarmerPulse
         {
             Tick = tick,

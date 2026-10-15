@@ -111,6 +111,8 @@ saving, which is usually what you want while testing.
 | Use tool button | Use the selected item: a Stardew tool as usual, or a Terraria item aimed at the cursor |
 | `I` | Backpack, Terraria equipment and crafting |
 | Right-click a Terraria townsperson | Talk, shop, or get healed by the Nurse, in Stardew's dialogue box |
+| Hold the use button | Keep swinging or firing, as in Terraria |
+| `Space` | With wings or rocket boots: take off, then hold to fly and steer with the movement keys. On a mount that jumps: jump |
 
 Keys can be changed in `Mods/Terradew/config.json`.
 
@@ -120,6 +122,18 @@ Keys can be changed in `Mods/Terradew/config.json`.
   The portrait is your Terraria character. Click an item to pick it up and click a slot to put it down;
   right-click to equip, take off or use. Stardew's other menus (chests, shops, the shipping bin) show the first 36
   slots, and Terraria items move only in the inventory tab or the `I` menu.
+- **Terraria's numbers in Stardew's HUD.** Your Terraria life fills Stardew's health bar (which grows with your
+  max life) and mana replaces the energy bar. Your coins show in Stardew's money box, counted in copper: a silver
+  is 100, a gold 10,000, a platinum 1,000,000. Defense shows on the inventory tab. Hovering an item shows its
+  Terraria tooltip, and hurt creatures show a Terraria health bar under them.
+- **The trash slot** in the inventory tab holds the last item thrown away, as in Terraria; click it to take the
+  item back before you trash another.
+- **Accessories and mounts move you.** Hermes Boots, Swiftness and the like raise your walking speed, and a mount
+  carries you faster. With wings or rocket boots, hold `Space` to fly over anything in the way, with Terraria's
+  drift, until the flight time runs out; then you come down on the first open ground south of you, or the nearest
+  open spot. Flying works outdoors and in the mines, not indoors, and you can still take exits while airborne.
+  In the air you are out of reach of walking enemies but not of flyers or shots. A jumping mount hops in a short
+  arc instead.
 - **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, select the
   hotbar slot it is in and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station

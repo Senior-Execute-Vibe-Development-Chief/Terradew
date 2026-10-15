@@ -542,6 +542,9 @@ public sealed class WorldStamp
                     Attached = attached,
                     OffsetX = offset.X,
                     OffsetY = offset.Y,
+                    // Terraria keeps no shot light colour, so every glowing shot gives off the same sensible warm white.
+                    Light = (byte)Math.Clamp(projectile.light * 170f, 0f, 255f),
+                    LightColor = projectile.light > 0f ? new Microsoft.Xna.Framework.Color(255, 230, 180).PackedValue : 0u,
                 });
                 SpriteDump.Projectile(projectile.type);
             }

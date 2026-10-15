@@ -28,7 +28,7 @@ internal sealed class Stations
 
     private readonly SpriteBook sprites;
     private readonly Bridge bridge;
-    private readonly Dictionary<int, (string Place, Vector2 Tile)> pending = new();
+    private readonly Dictionary<int, (string Place, Vector2 Tile, bool Torch)> pending = new();
     private int seq;
 
     public Stations(SpriteBook sprites, Bridge bridge)
@@ -58,24 +58,29 @@ internal sealed class Stations
     }
 
     /// <summary>
-    /// The Terraria hand used a station item. It is placed on the cursor's tile when that tile is free and in reach.
-    /// Always returns true: the use is handled here and is never sent to Terraria as a use.
+    /// The Terraria hand used a station or torch item. It is placed on the cursor's tile when that tile is free and in
+    /// reach: one tile for a station, two for a torch. Always returns true: the use is handled here and is never sent to
+    /// Terraria as a use.
     /// </summary>
     public bool TryPlace(Bridge bridge, int slot, ItemStack held)
     {
         Farmer player = Game1.player;
         GameLocation? location = player.currentLocation;
         Vector2 tile = Game1.currentCursorTile;
+        int reach = held.Torch ? 2 : 1;
         bool ok = location != null
-            && Utility.tileWithinRadiusOfPlayer((int)tile.X, (int)tile.Y, 1, player)
+            && Utility.tileWithinRadiusOfPlayer((int)tile.X, (int)tile.Y, reach, player)
             && location.CanItemBePlacedHere(tile)
             && !location.objects.ContainsKey(tile);
         if (ok && location != null)
         {
             int number = ++seq;
-            if (bridge.Send(new PlaceStation { Seq = number, Slot = slot, ItemType = held.ItemType }))
+            bool sent = held.Torch
+                ? bridge.Send(new PlaceTorch { Seq = number, Slot = slot, ItemType = held.ItemType })
+                : bridge.Send(new PlaceStation { Seq = number, Slot = slot, ItemType = held.ItemType });
+            if (sent)
             {
-                pending[number] = (location.NameOrUniqueName, tile);
+                pending[number] = (location.NameOrUniqueName, tile, held.Torch);
                 return true;
             }
         }
@@ -92,6 +97,11 @@ internal sealed class Stations
         if (location == null || location.objects.ContainsKey(placed.Tile))
         {
             bridge.Send(new GiveItem { ItemType = msg.ItemType, Stack = 1 });
+            return;
+        }
+        if (placed.Torch)
+        {
+            Torches.Place(location, placed.Tile, msg.ItemType);
             return;
         }
         SObject station = ItemRegistry.Create<SObject>("(BC)" + ObjectId);

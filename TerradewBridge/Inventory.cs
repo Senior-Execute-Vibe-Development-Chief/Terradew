@@ -198,7 +198,56 @@ public static class Inventory
             Blade = Melee.UsesArc(item),
             Usable = item.useStyle != ItemUseStyleID.None,
             Tooltip = tooltip ? Tooltip(item) : "",
+            Light = LightOf(item),
+            Torch = ItemID.Sets.Torches[item.type],
         };
+    }
+
+    /// <summary>
+    /// How much light the item gives when held: a torch the most, then a glowstick, then other flaming items. Zero for
+    /// anything else.
+    /// </summary>
+    private static byte LightOf(Item item)
+    {
+        if (ItemID.Sets.Torches[item.type])
+            return 200;
+        if (ItemID.Sets.Glowsticks[item.type])
+            return 120;
+        return item.flame ? (byte)150 : (byte)0;
+    }
+
+    /// <summary>
+    /// Takes one torch out of the inventory for placing it on the map. Uses the slot Stardew named when it still holds a
+    /// torch of that type, otherwise the first torch stack of that type.
+    /// </summary>
+    public static bool TakeTorch(Player player, PlaceTorch place)
+    {
+        if (place.Slot >= 0 && place.Slot < player.inventory.Length)
+        {
+            Item named = player.inventory[place.Slot];
+            if (named.type == place.ItemType && ItemID.Sets.Torches[named.type])
+            {
+                TakeOneTorch(named);
+                return true;
+            }
+        }
+        for (int i = 0; i < player.inventory.Length; i++)
+        {
+            Item item = player.inventory[i];
+            if (item.type == place.ItemType && ItemID.Sets.Torches[item.type])
+            {
+                TakeOneTorch(item);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void TakeOneTorch(Item item)
+    {
+        item.stack--;
+        if (item.stack <= 0)
+            item.TurnToAir();
     }
 
     /// <summary>Tooltips by item and prefix. They hold the player's own numbers, such as damage, so they are redone now and then.</summary>

@@ -274,6 +274,10 @@ public sealed class BridgeSystem : ModSystem
                 link!.Send(new StationPlaced { Seq = place.Seq, ItemType = place.ItemType, Ok = Crafting.Take(player, place) });
                 Inventory.ForceResend();
                 break;
+            case PlaceTorch torch:
+                link!.Send(new StationPlaced { Seq = torch.Seq, ItemType = torch.ItemType, Ok = Inventory.TakeTorch(player, torch) });
+                Inventory.ForceResend();
+                break;
             case NpcInteract interact:
                 Shops.Talk(link!, player, interact.NpcId >= 0 ? interact.NpcId : Followers.FindTownie(interact.NpcType));
                 break;

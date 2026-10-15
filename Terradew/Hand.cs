@@ -81,14 +81,14 @@ internal sealed class Hand
         }
     }
 
-    /// <summary>The hotbar item in the current slot is a crafting station: place it instead of using it.</summary>
+    /// <summary>The hotbar item in the current slot is a crafting station or a torch: place it instead of using it.</summary>
     private bool TryPlaceStation(Bridge bridge)
     {
         InventoryState? inventory = bridge.Inventory;
         if (inventory == null || Slot >= inventory.Items.Count)
             return false;
         ItemStack held = inventory.Items[Slot];
-        return !held.IsEmpty && held.Station && stations.TryPlace(bridge, Slot, held);
+        return !held.IsEmpty && (held.Station || held.Torch) && stations.TryPlace(bridge, Slot, held);
     }
 
     /// <summary>
