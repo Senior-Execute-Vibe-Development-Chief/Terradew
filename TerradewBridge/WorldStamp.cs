@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terradew.Core;
 using Terradew.Core.Protocol;
+using GridTile = Terradew.Core.Routing.Tile;
 using Terradew.Core.World;
 using Terraria;
 using Terraria.ID;
@@ -222,7 +223,7 @@ public sealed class WorldStamp
         {
             NPC npc = Main.npc[i];
             if (npc.active && !npc.boss && !npc.townNPC && Creatures.IsChasing(npc) && left.ContainsWorld(npc.Center)
-                && Vector2.Distance(npc.Bottom, lastFeet) <= FollowTiles * 16f)
+                && Vector2.Distance(npc.Bottom, lastFeet) <= FollowTiles * 16f && !followers.Contains((i, npc.type)))
                 followers.Add((i, npc.type));
         }
     }
@@ -249,7 +250,10 @@ public sealed class WorldStamp
         followers.Clear();
     }
 
-    /// <summary>An open tile between <paramref name="minTiles"/> and <paramref name="maxTiles"/> from a point, nearest first.</summary>
+    /// <summary>
+    /// An open tile between <paramref name="minTiles"/> and <paramref name="maxTiles"/> from a point, nearest first,
+    /// that can be walked to from the point, so nothing lands behind a wall.
+    /// </summary>
     private static bool TryOpenNear(PlaceState place, Vector2 from, int minTiles, int maxTiles, out Vector2 feet)
     {
         feet = default;
@@ -261,13 +265,24 @@ public sealed class WorldStamp
             for (int n = 0; n < 8 * ring; n++)
             {
                 (int dx, int dy) = RingPoint(ring, (start + n) % (8 * ring));
-                if (!place.IsOpen(cx + dx, cy + dy))
+                if (!place.IsOpen(cx + dx, cy + dy) || !Reachable(place, cx, cy, dx, dy, maxTiles))
                     continue;
                 feet = new Vector2((cx + dx) * 16f + 8f, (cy + dy + 1) * 16f - 2f);
                 return true;
             }
         }
         return false;
+    }
+
+    /// <summary>Whether the tile (dx, dy) from (cx, cy) joins it by open tiles inside the square of radius <paramref name="radius"/>.</summary>
+    private static bool Reachable(PlaceState place, int cx, int cy, int dx, int dy, int radius)
+    {
+        int size = radius * 2 + 1;
+        int left = cx - radius;
+        int top = cy - radius;
+        var path = Terradew.Core.Routing.GridPath.Find(size, size, (x, y) => !place.IsOpen(left + x, top + y),
+            new GridTile(radius, radius), new GridTile(radius + dx, radius + dy), maxNodes: size * size, simplify: false);
+        return path != null;
     }
 
     /// <summary>The n-th tile on the square ring at distance r, going around.</summary>
@@ -352,7 +367,7 @@ public sealed class WorldStamp
             place = found;
         if (pulse.PlaceKey != lastPlace)
         {
-            followers.Clear();
+            // Followers still on their way are kept, so a quick second door does not strand them.
             if (places.TryGetValue(lastPlace, out PlaceState? left))
             {
                 left.StampedThisVisit = false;
