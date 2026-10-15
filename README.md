@@ -50,9 +50,11 @@ Decisions that shape play:
   houses and other places without spawns. Creatures you leave behind wait where they were while Terraria runs;
   hostile creatures are not kept when Terraria closes. Creatures find their way around rocks, fences and
   furniture: they route over the same blocked tiles Terraria sees.
-- **Stardew rocks drop Terraria ores** as well as their own: copper and tin up top, iron and lead deeper, then
-  silver, gold and the evil ores once the Eye of Cthulhu and the evil boss are down, and the hardmode ores after
-  the Wall of Flesh. Mystic stones give life crystals. Chopping wood gives Terraria wood for that place.
+- **Stardew rocks drop Terraria ores** as well as their own, by depth: copper and tin up top, iron, silver and the
+  evil ore in the cavern floors, gold and mud in the jungle floors, hellstone in the underworld. Hardmode adds its
+  ores (and Skull Cavern holds the best of them), Chlorophyte waits for the three mechanical bosses, and the
+  Mountain quarry gives meteorite once the evil boss is down. Mystic stones give life crystals. Chopping wood
+  gives Terraria wood for that place.
 - **Invasions happen in one place each** and are announced: the Goblin Army attacks Town, the Frost Legion the
   Mountain, the Pirates the Beach, the Martians the Farm. Invaders come in from that map's edges.
 - **Hardmode turns the Quarry Mine and the Railroad into the Hallow**, with its own creatures and fish.
