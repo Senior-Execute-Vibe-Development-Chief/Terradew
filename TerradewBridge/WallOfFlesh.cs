@@ -73,7 +73,7 @@ public sealed class WallOfFlesh : GlobalNPC
             // Out of the underworld the wall waits where it is and cannot tie the farmer.
             npc.velocity = Vector2.Zero;
             npc.position = npc.oldPosition;
-            player.ClearBuff(BuffID.TheTongued);
+            player.ClearBuff(BuffID.TheTongue);
             player.tongued = false;
             return;
         }
@@ -99,7 +99,7 @@ public sealed class WallOfFlesh : GlobalNPC
         // wall. The band is the whole floor here, and the wall's own pull never applies.
         Main.wofDrawAreaTop = (int)place.ToWorld(0f, 0f).Y;
         Main.wofDrawAreaBottom = (int)place.ToWorld(0f, place.Layout!.Height * 64f).Y;
-        player.ClearBuff(BuffID.TheTongued);
+        player.ClearBuff(BuffID.TheTongue);
         player.tongued = false;
 
         // The place key may have just changed under the eyes, so both kinds use the same wall line.
