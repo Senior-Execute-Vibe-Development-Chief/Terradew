@@ -39,8 +39,9 @@ internal static class WeatherSync
             if (raining)
             {
                 if (!Main.raining)
-                    Main.StartRain(instant: true, strengthOverride: strength);
+                    Main.StartRain();
                 Main.maxRaining = strength;
+                Main.cloudAlpha = strength;
             }
             else if (Main.raining)
             {
@@ -58,17 +59,17 @@ internal static class WeatherSync
     /// <summary>True while the bridge is linked in the Terradew world. Terraria's own rain calls are then dropped.</summary>
     private static bool Holding() => BridgeSystem.Active && BridgeSystem.Instance.Weather != null;
 
-    private static void StartRainHook(On_Main.orig_StartRain orig, bool instant, float? strengthOverride, bool guaranteeCoinRain)
+    private static void StartRainHook(On_Main.orig_StartRain orig)
     {
         if (!applying && Holding())
             return;
-        orig(instant, strengthOverride, guaranteeCoinRain);
+        orig();
     }
 
-    private static void StopRainHook(On_Main.orig_StopRain orig, bool instant)
+    private static void StopRainHook(On_Main.orig_StopRain orig)
     {
         if (!applying && Holding())
             return;
-        orig(instant);
+        orig();
     }
 }
