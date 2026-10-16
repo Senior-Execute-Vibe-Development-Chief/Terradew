@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -264,16 +265,23 @@ internal static class SpriteDump
     /// <summary>
     /// Exports the portrait Terraria's NPCPortraits table draws for a town NPC, cropped to the frame the provider picks.
     /// Returns false when the table has no texture for the NPC (none, or not loaded yet), so the caller can try a file name.
+    /// The table came with Terraria 1.4.5, so it is reached by reflection and tModLoader 1.4.4 simply has none.
     /// </summary>
     private static bool ExportFromPortraitTable(int type, string file)
     {
         try
         {
-            if (!NPCID.Sets.NPCPortraits.TryGetValue(type, out NPCID.Sets.NPCPortraitProvider? provider) || provider == null)
+            if (typeof(NPCID.Sets).GetField("NPCPortraits", BindingFlags.Public | BindingFlags.Static)?.GetValue(null) is not System.Collections.IDictionary table
+                || !table.Contains(type) || table[type] is not object provider)
                 return false;
-            provider.GetDrawData(out Texture2D? texture, out Rectangle frame);
-            if (texture == null || texture.Width <= 1 || texture.Height <= 1)
+            MethodInfo? draw = provider.GetType().GetMethod("GetDrawData");
+            if (draw == null || draw.GetParameters().Length != 2)
                 return false;
+            object?[] data = { null, null };
+            draw.Invoke(provider, data);
+            if (data[0] is not Texture2D texture || texture.Width <= 1 || texture.Height <= 1)
+                return false;
+            Rectangle frame = data[1] is Rectangle given ? given : Rectangle.Empty;
             if (frame.Width <= 0 || frame.Height <= 0 || frame.Right > texture.Width || frame.Bottom > texture.Height)
                 frame = new Rectangle(0, 0, texture.Width, texture.Height);
             string? error = Export(texture, frame, file);

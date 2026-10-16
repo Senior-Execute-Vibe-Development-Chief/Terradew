@@ -454,10 +454,6 @@ public sealed class Creatures : GlobalNPC
         npc.velocity = Vector2.Zero;
     }
 
-    /// <summary>
-    /// A flying boss hovers over the farmer, and its own AI can carry it past the Stardew map's edge. Stardew draws only
-    /// the map, so the boss is held inside the farmer's place over the map, and a push into the edge stops it there.
-    /// </summary>
     /// <summary>Terraria sets a leaving boss's time left to 10 ticks or less (EncourageDespawn).</summary>
     private const int DespawnTicks = 10;
 
@@ -480,6 +476,10 @@ public sealed class Creatures : GlobalNPC
             $"ai {npc.ai[0]:0},{npc.ai[1]:0},{npc.ai[2]:0}, day {Main.dayTime}.");
     }
 
+    /// <summary>
+    /// A flying boss hovers over the farmer, and its own AI can carry it past the Stardew map's edge. Stardew draws only
+    /// the map, so the boss is held inside the farmer's place over the map, and a push into the edge stops it there.
+    /// </summary>
     private static void ContainBoss(NPC npc, WorldStamp.PlaceState place)
     {
         var map = place.Layout!;
