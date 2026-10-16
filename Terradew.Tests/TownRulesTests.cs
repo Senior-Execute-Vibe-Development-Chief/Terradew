@@ -131,6 +131,14 @@ internal static class TownRulesTests
             T.Assert(!TownRules.Eligible("merchant", Fresh() with { Coins = 99999 }), "case sensitive merchant");
         });
 
+        failed += T.Check("a hero or guard keeps an enemy only in engage range, with slack once fighting", () =>
+        {
+            T.Assert(TownCourage.Holds(12f, 12f, false), "at the engage edge");
+            T.Assert(!TownCourage.Holds(12.5f, 12f, false), "just past it does not start a fight");
+            T.Assert(TownCourage.Holds(14f, 12f, true), "a fight keeps its slack");
+            T.Assert(!TownCourage.Holds(16f, 12f, true), "far past the slack ends the fight");
+        });
+
         return failed;
     }
 

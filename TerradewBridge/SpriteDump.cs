@@ -227,6 +227,11 @@ internal static class SpriteDump
         string file = SpriteNames.NpcPortrait(type);
         if (SpriteFiles.Exists(file))
             return;
+        // Terraria's own table says which art each town NPC's chat portrait is, so ask it first. Its file names are
+        // not always the internal name (Portrait_Bunny_Angora), and a NPC like the Tavernkeep or the Zoologist may
+        // not follow the pattern. Shimmer and transformed variants are the table's other entries; the default is shown.
+        if (ExportFromPortraitTable(type, file))
+            return;
         string name = NPCID.Search.GetName(type);
         // Vanilla portraits are named after the NPC's internal name. Modded names hold a slash and have none here.
         if (string.IsNullOrEmpty(name) || name.Contains('/'))
@@ -254,6 +259,34 @@ internal static class SpriteDump
         string? error = Export(texture, new Rectangle(0, 0, texture.Width, texture.Height), file);
         if (error != null)
             BridgeSystem.Instance.Mod.Logger.Warn($"Terradew could not export {file}: {error}");
+    }
+
+    /// <summary>
+    /// Exports the portrait Terraria's NPCPortraits table draws for a town NPC, cropped to the frame the provider picks.
+    /// Returns false when the table has no texture for the NPC (none, or not loaded yet), so the caller can try a file name.
+    /// </summary>
+    private static bool ExportFromPortraitTable(int type, string file)
+    {
+        try
+        {
+            if (!NPCID.Sets.NPCPortraits.TryGetValue(type, out NPCID.Sets.NPCPortraitProvider? provider) || provider == null)
+                return false;
+            provider.GetDrawData(out Texture2D? texture, out Rectangle frame);
+            if (texture == null || texture.Width <= 1 || texture.Height <= 1)
+                return false;
+            if (frame.Width <= 0 || frame.Height <= 0 || frame.Right > texture.Width || frame.Bottom > texture.Height)
+                frame = new Rectangle(0, 0, texture.Width, texture.Height);
+            string? error = Export(texture, frame, file);
+            if (error == null)
+                return true;
+            BridgeSystem.Instance.Mod.Logger.Warn($"Terradew could not export {file} from Terraria's portrait table: {error}");
+            return false;
+        }
+        catch (Exception error)
+        {
+            BridgeSystem.Instance.Mod.Logger.Warn($"Terradew could not read Terraria's portrait table for NPC {type}: {error.Message}");
+            return false;
+        }
     }
 
     private static bool portraitsMissingLogged;

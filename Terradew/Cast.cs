@@ -150,7 +150,14 @@ internal sealed class Cast
                 }
                 Texture2D? sheet = Sheet(resident);
                 if (sheet != null)
+                {
                     e.LoadFrom(() => Portrait(sheet, resident), AssetLoadPriority.High);
+                    return;
+                }
+                // No body sheet yet: the head icon Terraria shows in shops, cut and scaled the same way as a body.
+                Texture2D? head = resident.HeadIndex >= 0 ? sprites.Load(SpriteNames.NpcHead(resident.HeadIndex)) : null;
+                if (head != null)
+                    e.LoadFrom(() => Portrait(head, resident with { FrameCount = 1, ExtraFrames = 0 }), AssetLoadPriority.High);
                 return;
             }
         }

@@ -10,7 +10,7 @@ namespace Terradew;
 /// <summary>
 /// Lights the Stardew map with the glow of Terraria's shots, such as a flare or a magic bolt. Each glowing shot
 /// gets one Stardew light that follows it. Only the <see cref="MaxLights"/> nearest the farmer are lit, and
-/// nothing is lit while the Terraria world is not linked for the place the farmer stands in.
+/// nothing is lit while the Terraria world is not linked for the place the farmer stands in, or where Stardew is not dark.
 /// </summary>
 internal static class ShotLights
 {
@@ -51,7 +51,7 @@ internal static class ShotLights
             return;
 
         WorldState? world = bridge.World;
-        if (world == null || !bridge.WorldIsFor(Maps.PlaceOf(location).Key))
+        if (world == null || !bridge.WorldIsFor(Maps.PlaceOf(location).Key) || !WorldLights.LitHere(location))
         {
             Clear();
             return;

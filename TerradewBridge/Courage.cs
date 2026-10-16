@@ -117,7 +117,8 @@ public sealed class Courage : GlobalNPC
             case Role.Hero:
             {
                 float leash = TownCourage.Leash * 16f;
-                int target = Valid(threat, place) ? threat : cooldown == 0 ? seen : -1;
+                // A fight goes on only while its enemy is still in engage range (plus slack); past that, the routine.
+                int target = Valid(threat, place) && InRange(threat, feet, reach, true) ? threat : cooldown == 0 ? seen : -1;
                 if (target < 0 && Valid(answering, place))
                     target = answering;
                 // A swing in progress is finished, so the leash does not turn the hero around mid-attack.
@@ -140,7 +141,7 @@ public sealed class Courage : GlobalNPC
             case Role.Guard:
             {
                 // A guard keeps its ground while swinging, even if the enemy has just stepped out of reach.
-                int hold = seen >= 0 ? seen : swinging && Valid(threat, place) ? threat : -1;
+                int hold = seen >= 0 ? seen : swinging && Valid(threat, place) && InRange(threat, feet, reach, true) ? threat : -1;
                 threat = hold;
                 mode = hold >= 0 ? VillagerMode.Defending : VillagerMode.Following;
                 return;
@@ -165,6 +166,10 @@ public sealed class Courage : GlobalNPC
                 return;
         }
     }
+
+    /// <summary>True while the enemy is still in a hero's or guard's reach (see <see cref="TownCourage.Holds"/>).</summary>
+    private static bool InRange(int index, Vector2 from, float reach, bool fighting)
+        => TownCourage.Holds(Vector2.Distance(from, Feet(Main.npc[index])) / 16f, reach, fighting);
 
     /// <summary>The nearest hero close enough to reach the enemy comes running.</summary>
     private static void CallForHelp(Vector2 victim, NPC enemy, WorldStamp.PlaceState place)

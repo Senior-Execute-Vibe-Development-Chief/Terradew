@@ -165,7 +165,10 @@ internal sealed class Walker
         var target = new Vector2(next.X * 64f + 32f, next.Y * 64f + 32f) - offset;
         Vector2 delta = target - v.Position;
         float distance = delta.Length();
-        if (distance <= route.Speed)
+        // Blocked tiles under the box now. A walk may leave a block, or stay at the same depth, but never go deeper:
+        // a villager standing on a solid tile (after a warp, or a Stardew tile the map marks solid) is not let through it.
+        int touching = Overlap(v, layout, v.Position);
+        if (distance <= route.Speed && Footing.MayStep(touching, Overlap(v, layout, target)))
         {
             v.Position = target;
             route.Next++;
@@ -173,12 +176,10 @@ internal sealed class Walker
             return route.Next < route.Tiles.Count;
         }
         Vector2 step = delta / distance * route.Speed;
-        // Already standing on a blocked tile (put there by a warp or a cutscene): let them walk out of it.
-        bool trapped = Blocked(v, layout, v.Position);
         bool moved = false;
         foreach (Vector2 part in new[] { step, new Vector2(step.X, 0f), new Vector2(0f, step.Y) })
         {
-            if (part.LengthSquared() < 0.01f || (!trapped && Blocked(v, layout, v.Position + part)))
+            if (part.LengthSquared() < 0.01f || !Footing.MayStep(touching, Overlap(v, layout, v.Position + part)))
                 continue;
             v.Position += part;
             moved = true;
@@ -234,22 +235,14 @@ internal sealed class Walker
 
     private static bool Open(MapLayout layout, Point tile) => !layout.IsBlocked(tile.X, tile.Y);
 
-    /// <summary>True when their feet at that position would touch a blocked tile.</summary>
-    private static bool Blocked(NPC v, MapLayout layout, Vector2 position)
+    /// <summary>How many blocked tiles their box touches when they stand at that position.</summary>
+    private static int Overlap(NPC v, MapLayout layout, Vector2 position)
     {
         Rectangle box = v.GetBoundingBox();
         box.X += (int)MathF.Round(position.X - v.Position.X);
         box.Y += (int)MathF.Round(position.Y - v.Position.Y);
         int left = box.Left / 64, right = (box.Right - 1) / 64, top = box.Top / 64, bottom = (box.Bottom - 1) / 64;
-        for (int y = top; y <= bottom; y++)
-        {
-            for (int x = left; x <= right; x++)
-            {
-                if (layout.IsBlocked(x, y))
-                    return true;
-            }
-        }
-        return false;
+        return Footing.Overlap((x, y) => layout.IsBlocked(x, y), left, top, right, bottom);
     }
 
     /// <summary>From their position to the middle of their feet.</summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terradew.Core;
 using Terradew.Core.Protocol;
@@ -12,8 +13,8 @@ namespace TerradewBridge;
 /// <summary>
 /// Hooks the Terraria lighting so the light in the farmer's place reaches Stardew. Terraria adds nearly every dynamic
 /// light through Lighting.AddLight, so a torch held by a creature, a glowing creature, a dropped torch and a buff on
-/// another entity all light the Stardew map. Only the farmer's own light (added while its player updates) and the
-/// shots' light are left out, since Glow, Torches and ShotLights already send those.
+/// another entity all light the Stardew map. The farmer's own light, and the light around the farmer's shots and
+/// swings, are left out, since Glow, Torches and ShotLights already send those, or it should not be lit at all.
 /// </summary>
 /// <remarks>
 /// The hook is on the tile overload. The Vector2 overloads convert to tiles and call it, so hooking them too would
@@ -31,7 +32,7 @@ public sealed class WorldLightSystem : ModSystem
 /// <summary>The Terraria side of the world lights: collects this tick's lights and sends them to Stardew.</summary>
 internal static class WorldLights
 {
-    /// <summary>A frame goes out every this many ticks while lights are on. Stardew holds the last one between frames.</summary>
+    /// <summary>While the lights hold still, a frame goes out this often as a heartbeat. Stardew holds the last one between frames.</summary>
     private const int SendEvery = 4;
 
     /// <summary>
@@ -41,8 +42,11 @@ internal static class WorldLights
     /// </summary>
     internal static bool OwnUpdate;
 
-    /// <summary>Lights within this many tiles of a glowing shot are left out. ShotLights lights the shot.</summary>
-    private const float ShotSkipTiles = 2f;
+    /// <summary>
+    /// Lights within this many tiles of a glowing shot, or of one of the farmer's own shots and swings, are left out.
+    /// ShotLights lights a glowing shot; a swing's own light is not wanted on the ground.
+    /// </summary>
+    private const float SkipTiles = 3f;
 
     /// <summary>The AI style of the crystal leaf, which is drawn bright and does not light the map (as in WorldStamp).</summary>
     private const int CrystalLeafAiStyle = 42;
@@ -56,14 +60,15 @@ internal static class WorldLights
     /// <summary>The place the collected lights are in. A light from another place is dropped.</summary>
     private static WorldStamp.PlaceState? capturing;
 
-    /// <summary>The glowing shots' centres as of the last tick. Lights near them are left out.</summary>
-    private static readonly List<Vector2> shotCentres = new();
+    /// <summary>The centres of glowing shots and the farmer's own shots as of the last tick. Lights near them are left out.</summary>
+    private static readonly List<Vector2> skipCentres = new();
 
     /// <summary>The light added to each tile since the last tick, summed as the Lighting engine sums it.</summary>
     private static readonly Dictionary<(int X, int Y), (float R, float G, float B)> sums = new();
 
-    /// <summary>Whether the last frame sent had any lights, so an empty frame goes out once when the last ones end.</summary>
-    private static bool sentSome;
+    /// <summary>The place and lights of the last frame sent, so a frame goes out when they change.</summary>
+    private static string sentPlace = "";
+    private static List<WorldLight> sentLights = new();
 
     internal static void Attach(Mod mod)
     {
@@ -77,8 +82,9 @@ internal static class WorldLights
         collecting = false;
         capturing = null;
         sums.Clear();
-        shotCentres.Clear();
-        sentSome = false;
+        skipCentres.Clear();
+        sentPlace = "";
+        sentLights = new List<WorldLight>();
     }
 
     /// <summary>
@@ -97,7 +103,7 @@ internal static class WorldLights
         var frame = new WorldLightFrame { PlaceKey = place?.Key ?? "" };
         if (place != null && same)
         {
-            foreach (LightTile light in WorldLightMerge.Merge(tiles, WorldLightFrame.MaxLights))
+            foreach (LightSpot light in WorldLightMerge.Merge(tiles, WorldLightFrame.MaxLights))
                 frame.Lights.Add(Project(place, light));
         }
 
@@ -105,43 +111,46 @@ internal static class WorldLights
         capturing = place;
         if (collecting)
         {
-            Collect(place!);
+            Collect(place!, player);
         }
         else
         {
-            shotCentres.Clear();
+            skipCentres.Clear();
         }
 
-        if (frame.Lights.Count == 0)
-        {
-            if (!sentSome)
-                return;
-            sentSome = false;
-            link.Send(frame);
+        // A frame goes out as soon as the lights change, so a light that ends vanishes at once. While they hold still,
+        // one goes out every few ticks as a heartbeat. An empty frame is only sent when there was something to clear.
+        bool changed = frame.PlaceKey != sentPlace || !frame.Lights.SequenceEqual(sentLights);
+        if (!changed && (tick % SendEvery != 0 || frame.Lights.Count == 0))
             return;
-        }
-        if (tick % SendEvery != 0)
-            return;
-        sentSome = true;
+        sentPlace = frame.PlaceKey;
+        sentLights = new List<WorldLight>(frame.Lights);
         link.Send(frame);
     }
 
-    /// <summary>Finds the glowing shots in the place, whose light ShotLights already sends.</summary>
-    private static void Collect(WorldStamp.PlaceState place)
+    /// <summary>
+    /// Finds the glowing shots in the place, whose light ShotLights already sends, and the farmer's own shots and
+    /// swings, whose light is left out.
+    /// </summary>
+    private static void Collect(WorldStamp.PlaceState place, Player player)
     {
-        shotCentres.Clear();
+        skipCentres.Clear();
         for (int i = 0; i < Main.maxProjectiles; i++)
         {
             Projectile projectile = Main.projectile[i];
-            if (!projectile.active || projectile.light <= 0f || projectile.aiStyle == CrystalLeafAiStyle)
+            if (!projectile.active)
+                continue;
+            bool own = projectile.owner == player.whoAmI;
+            bool glowing = projectile.light > 0f && projectile.aiStyle != CrystalLeafAiStyle;
+            if (!own && !glowing)
                 continue;
             if (place.ContainsWorld(projectile.Center))
-                shotCentres.Add(projectile.Center);
+                skipCentres.Add(projectile.Center);
         }
     }
 
     /// <summary>The Stardew map tile, at the tile's centre, and the colour channels as bytes.</summary>
-    private static WorldLight Project(WorldStamp.PlaceState place, LightTile light)
+    private static WorldLight Project(WorldStamp.PlaceState place, LightSpot light)
     {
         (float x, float y) = WorldProjection.ToMap(place.OriginX, place.OriginY, light.X * 16f + 8f, light.Y * 16f + 8f);
         return new WorldLight(
@@ -171,10 +180,10 @@ internal static class WorldLights
         if (!collecting || OwnUpdate || capturing == null || r + g + b <= 0f || !capturing.ContainsTile(i, j))
             return;
         Vector2 centre = new(i * 16f + 8f, j * 16f + 8f);
-        float shotLimit = ShotSkipTiles * 16f;
-        foreach (Vector2 shot in shotCentres)
+        float skipLimit = SkipTiles * 16f;
+        foreach (Vector2 skip in skipCentres)
         {
-            if (Vector2.DistanceSquared(centre, shot) < shotLimit * shotLimit)
+            if (Vector2.DistanceSquared(centre, skip) < skipLimit * skipLimit)
                 return;
         }
         (int, int) key = (i, j);

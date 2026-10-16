@@ -386,6 +386,9 @@ internal sealed class Mining
         }
     }
 
+    /// <summary>Notes that a bomb went off in the farmer's place, so the Stardew drops it makes are the farmer's.</summary>
+    public static void NoteBlast() => lastObjectTick = (int)Game1.ticks;
+
     /// <summary>Forgets the last swing and chop, so nothing from the last save counts on this one.</summary>
     public void Reset()
     {

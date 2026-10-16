@@ -39,6 +39,14 @@ internal static class EconomyClockTests
             T.Assert(ClockMap.ToTerraria(2950, 0f).DayTime, "5:50am is day");
         });
 
+        failed += T.Check("clock: noon is day 7.5 hours in, midnight is night 4.5 hours in", () =>
+        {
+            var (noonDay, noon) = ClockMap.ToTerraria(1200, 0f);
+            T.Assert(noonDay && noon == 27000, "noon is day, 27000 ticks in, got " + noon);
+            var (midnightDay, midnight) = ClockMap.ToTerraria(2400, 0f);
+            T.Assert(!midnightDay && midnight == 16200, "midnight is night, 16200 ticks in, got " + midnight);
+        });
+
         failed += T.Check("clock: Stardew ten-minute step rolls the hour", () =>
         {
             T.Assert(ClockMap.StardewNext(2600) == 2610, "2600 to 2610");

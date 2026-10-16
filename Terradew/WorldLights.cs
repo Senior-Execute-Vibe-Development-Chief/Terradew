@@ -3,13 +3,15 @@ using Microsoft.Xna.Framework;
 using StardewValley;
 using Terradew.Core;
 using Terradew.Core.Protocol;
+using Terradew.Core.World;
 
 namespace Terradew;
 
 /// <summary>
 /// Lights the Stardew map with the Terraria light in the farmer's place, so a torch held by a creature, a glowing
-/// creature or a dropped torch lights the ground as it does in Terraria. Each Terraria light tile gets one Stardew
-/// light, which is moved and recoloured as Terraria sends them. Nothing is lit for another place.
+/// creature or a dropped torch lights the ground as it does in Terraria. Terraria's lights arrive as soft blobs, each
+/// one Stardew light that is moved and recoloured as Terraria sends them. Nothing is lit for another place, and nothing
+/// is lit where Stardew is not drawing darkness: outdoors in daylight, a bright room or a house stays as it is.
 /// </summary>
 internal static class WorldLights
 {
@@ -24,6 +26,17 @@ internal static class WorldLights
 
     /// <summary>How much the brightest channel adds to the radius, in Stardew tiles.</summary>
     private const float RadiusPerLevel = 1.2f;
+
+    /// <summary>
+    /// Whether Stardew draws darkness in this location, so a light shows: caves and mines always, outdoors only after
+    /// dark, and never in a bright indoor room. Elsewhere a Stardew light would paint colour over a daylit scene.
+    /// </summary>
+    internal static bool LitHere(GameLocation location)
+    {
+        if (Maps.PlaceOf(location).Band != Band.Surface)
+            return true;
+        return location.IsOutdoors && Game1.isDarkOut();
+    }
 
     /// <summary>How many of this mod's lights are on at the moment, so clearing only touches those.</summary>
     private static int lit;
@@ -43,7 +56,7 @@ internal static class WorldLights
         }
         string here = location.NameOrUniqueName;
         WorldLightFrame? frame = bridge.WorldLights;
-        if (frame == null || frame.PlaceKey != Maps.PlaceOf(location).Key)
+        if (frame == null || frame.PlaceKey != Maps.PlaceOf(location).Key || !LitHere(location))
         {
             Clear();
             return;

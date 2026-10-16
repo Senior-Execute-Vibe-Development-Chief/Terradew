@@ -5,7 +5,7 @@ using Terradew.Core;
 using Terradew.Core.Protocol;
 using Terradew.Core.World;
 
-/// <summary>Checks the merge of Terraria lights into the few Stardew draws, and the world light frame.</summary>
+/// <summary>Checks the merge of Terraria lights into the few soft lights Stardew draws, and the world light frame.</summary>
 internal static class WorldLightTests
 {
     public static int Run()
@@ -13,50 +13,77 @@ internal static class WorldLightTests
         int failed = 0;
         failed += T.Check("lights on one tile add up, capped at the maximum", () =>
         {
-            List<LightTile> merged = WorldLightMerge.Merge(new[]
+            List<LightSpot> merged = WorldLightMerge.Merge(new[]
             {
                 new LightTile(3, 4, 0.5f, 0.2f, 0f),
                 new LightTile(3, 4, 0.5f, 0.2f, 0.1f),
                 new LightTile(3, 4, 0.9f, 0f, 0f),
             }, 64);
             T.Assert(merged.Count == 1, "one tile");
-            LightTile tile = merged[0];
-            T.Assert(tile.X == 3 && tile.Y == 4, "the tile is kept");
-            T.Assert(tile.R == WorldLightMerge.MaxLevel, "red is capped at 1.5");
-            T.Assert(Math.Abs(tile.G - 0.4f) < 0.0001f && Math.Abs(tile.B - 0.1f) < 0.0001f, "green and blue are summed");
+            LightSpot spot = merged[0];
+            T.Assert(spot.X == 3f && spot.Y == 4f, "the tile is kept");
+            T.Assert(Math.Abs(spot.R - WorldLightMerge.MaxLevel) < 0.0001f, "red is capped at the maximum");
+            T.Assert(spot.G > 0f && spot.B > 0f && spot.B < spot.G, "green and blue are summed and kept in order");
         });
 
-        failed += T.Check("dark lights are dropped and a bright tile is not", () =>
+        failed += T.Check("the colour is softened without losing the brightest channel", () =>
         {
-            List<LightTile> merged = WorldLightMerge.Merge(new[]
+            (float r, float g, float b) = WorldLightMerge.Soften(1f, 0.4f, 0.1f);
+            T.Assert(Math.Abs(Math.Max(r, Math.Max(g, b)) - 1f) < 0.0001f, "the peak is kept");
+            T.Assert(r - g < 1f - 0.4f && g - b < 0.4f - 0.1f, "the colours are less saturated");
+            T.Assert(r > g && g > b, "the order of the channels is kept");
+            T.Assert(WorldLightMerge.Soften(0f, 0f, 0f) == (0f, 0f, 0f), "no light stays no light");
+        });
+
+        failed += T.Check("dim tiles are dropped and a bright tile is not", () =>
+        {
+            List<LightSpot> merged = WorldLightMerge.Merge(new[]
             {
                 new LightTile(1, 1, 0f, 0f, 0f),
                 new LightTile(2, 2, -0.5f, 0f, 0f),
-                new LightTile(5, 5, 0.1f, 0f, 0f),
+                new LightTile(5, 5, WorldLightMerge.MinLevel / 2f, 0f, 0f),
+                new LightTile(7, 7, 0.5f, 0f, 0f),
             }, 64);
-            T.Assert(merged.Count == 1 && merged[0].X == 5, "only the lit tile remains");
+            T.Assert(merged.Count == 1 && merged[0].X == 7f, "only the lit tile remains");
         });
 
-        failed += T.Check("the cap keeps the strongest tiles and orders ties by tile", () =>
+        failed += T.Check("tiles close together join into one blob at their centre", () =>
+        {
+            List<LightSpot> merged = WorldLightMerge.Merge(new[]
+            {
+                new LightTile(10, 10, 0.5f, 0f, 0f),
+                new LightTile(11, 10, 0.5f, 0f, 0f),
+                new LightTile(10, 11, 0.5f, 0f, 0f),
+                new LightTile(30, 30, 0.9f, 0f, 0f),
+            }, 64);
+            T.Assert(merged.Count == 2, "the three close tiles are one blob, the far tile is another");
+            LightSpot far = merged[0];
+            T.Assert(far.X == 30f && far.Y == 30f, "the strongest blob comes first");
+            LightSpot blob = merged[1];
+            T.Assert(Math.Abs(blob.X - 10.333f) < 0.01f && Math.Abs(blob.Y - 10.333f) < 0.01f, "the blob sits at the members' centre");
+            T.Assert(Math.Abs(blob.R - 0.5f) < 0.0001f, "the blob keeps its core level, not a sum of its members");
+        });
+
+        failed += T.Check("tiles far apart stay separate lights", () =>
         {
             var lights = new List<LightTile>();
             for (int i = 0; i < 70; i++)
-                lights.Add(new LightTile(i, 0, 0.01f * (i + 1), 0f, 0f));
-            List<LightTile> merged = WorldLightMerge.Merge(lights, WorldLightFrame.MaxLights);
+                lights.Add(new LightTile(i * 4, 0, 0.2f + 0.01f * i, 0f, 0f));
+            List<LightSpot> merged = WorldLightMerge.Merge(lights, WorldLightFrame.MaxLights);
             T.Assert(merged.Count == 64, "64 kept");
-            T.Assert(merged.All(light => light.X >= 6), "the six weakest are gone");
-            T.Assert(merged[0].X == 69, "the strongest comes first");
+            T.Assert(merged.All(light => light.X >= 6 * 4), "the six weakest are gone");
+            T.Assert(merged[0].X == 69 * 4, "the strongest comes first");
 
             var tied = new[] { new LightTile(9, 0, 0.5f, 0f, 0f), new LightTile(2, 0, 0.5f, 0f, 0f) };
-            List<LightTile> order = WorldLightMerge.Merge(tied, 1);
-            T.Assert(order.Count == 1 && order[0].X == 2, "ties go to the lower tile");
+            List<LightSpot> order = WorldLightMerge.Merge(tied, 1);
+            T.Assert(order.Count == 1 && order[0].X == 2f, "ties go to the lower tile");
             T.Assert(WorldLightMerge.Merge(tied, 0).Count == 0, "a cap of zero keeps none");
         });
 
-        failed += T.Check("channels become bytes: 1.5 is 255, 0 is 0", () =>
+        failed += T.Check("channels become bytes: the maximum is 255, 0 is 0", () =>
         {
             T.Assert(WorldLightMerge.ToByte(0f) == 0, "zero");
-            T.Assert(WorldLightMerge.ToByte(1.5f) == 255, "the maximum");
+            T.Assert(WorldLightMerge.ToByte(WorldLightMerge.MaxLevel) == 255, "the maximum");
             T.Assert(WorldLightMerge.ToByte(3f) == 255, "above the maximum is capped");
             T.Assert(WorldLightMerge.ToByte(-1f) == 0, "below zero is zero");
             T.Assert(WorldLightMerge.ToByte(float.NaN) == 0, "not a number is zero");

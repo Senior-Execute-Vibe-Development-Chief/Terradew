@@ -9,8 +9,8 @@ namespace Terradew;
 /// <summary>
 /// Acts out what Terraria says each villager is doing about enemies (see Courage in the Terraria mod). Cowards run
 /// and shout for help, guards stop and fight, heroes are moved by Terraria while they chase, and a beaten villager
-/// goes home hurt. During a boss, an invasion or a bad moon, heroes wait outside their door and everyone else
-/// stays home.
+/// goes home hurt. During a boss, an invasion or a bad moon, cowards stay home; heroes and guards keep their routine
+/// and act only when an enemy is in reach.
 /// </summary>
 internal sealed class Bravery
 {
@@ -20,6 +20,8 @@ internal sealed class Bravery
         public Point Start;
         public int StartFacing = 2;
         public bool Returning;
+        /// <summary>The tick a walk back to the start gives up at, so one that cannot finish does not hold the villager off their schedule.</summary>
+        public uint ReturnUntil;
         public bool Helped;
         public uint NextFlee;
         public uint NextShout;
@@ -36,6 +38,9 @@ internal sealed class Bravery
 
     /// <summary>A hero stops this many tiles from the enemy: every hero fights with a gun, a bow, a throw or a spell.</summary>
     private const int HeroReach = 3;
+
+    /// <summary>Ticks a villager may spend walking back to where trouble started before the schedule takes over.</summary>
+    private const uint ReturnTicks = 1800;
 
     /// <summary>How fast a hero runs at an enemy, in pixels a tick (a villager walks at 2).</summary>
     private const float ChargeSpeed = 4f;
@@ -116,17 +121,19 @@ internal sealed class Bravery
                 var mode = has ? (VillagerMode)move.Mode : VillagerMode.Following;
                 if (mode != state.Mode)
                 {
-                    Leave(v, state, lines);
+                    Leave(v, state, lines, ticks);
                     Enter(v, state, mode, lines);
                     state.Mode = mode;
                 }
                 if (has)
                     During(v, state, move, resident, lines, heroFighting, ticks);
-                if (state.Returning && !walker.Busy(v))
+                if (state.Returning && (!walker.Busy(v) || ticks >= state.ReturnUntil))
                 {
-                    // Back where trouble started: Stardew's schedule picks the day up again (unless danger is still on).
+                    // Back where trouble started: Stardew's schedule picks the day up again. Only cowards stay home
+                    // while danger lasts; a walk that cannot finish gives up, so nobody is kept off their routine.
                     state.Returning = false;
-                    if (danger.Length == 0)
+                    walker.Stop(v);
+                    if (danger.Length == 0 || TownCourage.RoleOf(npc) != Role.Coward)
                     {
                         v.followSchedule = true;
                         v.TryLoadSchedule();
@@ -183,7 +190,7 @@ internal sealed class Bravery
         }
     }
 
-    private void Leave(NPC v, Brave state, NpcContent? lines)
+    private void Leave(NPC v, Brave state, NpcContent? lines, uint ticks)
     {
         switch (state.Mode)
         {
@@ -194,11 +201,11 @@ internal sealed class Bravery
                     v.doEmote(20);
                     v.CurrentDialogue.Push(new Dialogue(v, null, Pick(lines.Courage.Thanks)));
                 }
-                GoBack(v, state);
+                GoBack(v, state, ticks);
                 break;
             case VillagerMode.Defending:
             case VillagerMode.Fighting:
-                GoBack(v, state);
+                GoBack(v, state, ticks);
                 break;
         }
     }
@@ -324,11 +331,12 @@ internal sealed class Bravery
     }
 
     /// <summary>Walks back to where trouble started, then picks the schedule up again.</summary>
-    private void GoBack(NPC v, Brave state)
+    private void GoBack(NPC v, Brave state, uint ticks)
     {
         if (v.TilePoint != state.Start)
             walker.Go(v, state.Start, 0, 2f, state.StartFacing);
         state.Returning = true;
+        state.ReturnUntil = ticks + ReturnTicks;
     }
 
     private static void Shout(NPC v, List<string>? lines)
@@ -340,7 +348,7 @@ internal sealed class Bravery
 
     private static string Pick(List<string> lines) => lines[Game1.random.Next(lines.Count)];
 
-    /// <summary>Danger has begun (or changed): heroes go stand outside their door, everyone else goes home.</summary>
+    /// <summary>Danger has begun (or changed): cowards go home. Heroes and guards keep their routine until an enemy is in reach.</summary>
     private void Shelter(string kind, bool started)
     {
         foreach (string npc in TownHomes.Npcs)
@@ -354,27 +362,24 @@ internal sealed class Bravery
             NpcContent? lines = stories.ContentOf(npc);
             if (lines != null && lines.Courage.Danger.TryGetValue(kind, out string? line) && line.Length > 0)
                 v.CurrentDialogue.Push(new Dialogue(v, null, line));
-            if (!started || (states.TryGetValue(villager, out Brave? state) && state.Mode == VillagerMode.KnockedOut))
+            if (!started || TownCourage.RoleOf(npc) != Role.Coward || (states.TryGetValue(villager, out Brave? state) && state.Mode == VillagerMode.KnockedOut))
                 continue;
             v.followSchedule = false;
             walker.Stop(v);
-            if (TownCourage.RoleOf(npc) == Role.Hero && Door(v) is (string outside, Point door))
-                Send(v, outside, door, 2);
-            else
-                Send(v, v.DefaultMap, new Point((int)(v.DefaultPosition.X / 64f), (int)(v.DefaultPosition.Y / 64f)), 2);
+            Send(v, v.DefaultMap, new Point((int)(v.DefaultPosition.X / 64f), (int)(v.DefaultPosition.Y / 64f)), 2);
         }
     }
 
-    /// <summary>The danger is over: everyone picks up today's schedule again.</summary>
+    /// <summary>The danger is over: the cowards sent home pick up today's schedule again.</summary>
     private void EndShelter()
     {
         foreach (string npc in TownHomes.Npcs)
         {
             string? villager = TownHomes.VillagerOf(npc);
-            if (villager == null || Cast.Playing(villager) == null)
+            if (villager == null || Cast.Playing(villager) == null || TownCourage.RoleOf(npc) != Role.Coward)
                 continue;
             NPC? v = Game1.getCharacterFromName(villager);
-            if (v?.currentLocation == null || (states.TryGetValue(villager, out Brave? state) && state.Mode == VillagerMode.KnockedOut))
+            if (v?.currentLocation == null || (states.TryGetValue(villager, out Brave? state) && state.Mode != VillagerMode.Following))
                 continue;
             walker.Stop(v);
             v.followSchedule = true;
@@ -390,20 +395,5 @@ internal sealed class Bravery
         v.controller = null;
         Game1.warpCharacter(v, location, tile);
         v.faceDirection(facing);
-    }
-
-    /// <summary>The tile just outside a villager's front door: where the way out of their home leads.</summary>
-    private static (string, Point)? Door(NPC v)
-    {
-        GameLocation? home = Game1.getLocationFromName(v.DefaultMap);
-        if (home == null)
-            return null;
-        foreach (Warp warp in home.warps)
-        {
-            GameLocation? outside = Game1.getLocationFromName(warp.TargetName);
-            if (outside != null && outside.IsOutdoors)
-                return (warp.TargetName, new Point(warp.TargetX, warp.TargetY));
-        }
-        return null;
     }
 }

@@ -20,7 +20,10 @@ public sealed class TerradewMod : Mod
     public override void Load()
     {
         Logger.Info($"Terradew bridge listens on 127.0.0.1:{Link.DefaultPort} in the world named \"{BridgeSystem.WorldName}\".");
+        WeatherSync.Load();
     }
+
+    public override void Unload() => WeatherSync.Unload();
 }
 
 /// <summary>
@@ -55,6 +58,8 @@ public sealed class BridgeSystem : ModSystem
     public static bool Active => !Main.gameMenu && Main.netMode == NetmodeID.SinglePlayer && Main.worldName == WorldName;
 
     public FarmerPulse? Pulse { get; private set; }
+    /// <summary>Stardew's weather at the farmer's location, or null when it is not linked.</summary>
+    public WeatherState? Weather { get; private set; }
 
     public long PulseAtMs { get; private set; }
 
@@ -174,6 +179,7 @@ public sealed class BridgeSystem : ModSystem
             seenConnection = link.ConnectionCount;
             helloSent = false;
             Pulse = null;
+            Weather = null;
             Inventory.ForceResend();
         }
         if (link.Connected && !helloSent)
@@ -189,6 +195,7 @@ public sealed class BridgeSystem : ModSystem
             return;
 
         SyncClock(Pulse);
+        WeatherSync.Apply(Weather);
         Player player = Main.LocalPlayer;
         SpriteDump.Tick();
         Stamp.Publish(link, player, Pulse, worldTicks);
@@ -248,6 +255,10 @@ public sealed class BridgeSystem : ModSystem
                     Pulse = pulse;
                     PulseAtMs = Link.NowMs();
                 }
+                break;
+            case WeatherState weather:
+                if (!WrongFarm)
+                    Weather = weather;
                 break;
             case MapLayout layout:
                 if (!WrongFarm)

@@ -37,6 +37,7 @@ public enum MsgType : byte
     PlaceTorch = 26,
     RemoveBuff = 27,
     OpenCaveChest = 60,
+    WeatherState = 65,
 
     // Terraria to Stardew.
     WorldState = 40,
@@ -124,6 +125,7 @@ public abstract class Message
             MsgType.CaveTraps => CaveTraps.ReadFrom(r),
             MsgType.WorldLightFrame => WorldLightFrame.ReadFrom(r),
             MsgType.OpenCaveChest => OpenCaveChest.ReadFrom(r),
+            MsgType.WeatherState => WeatherState.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
         };
     }
@@ -1905,5 +1907,33 @@ public sealed class WallFight : Message
         Speed = r.ReadSingle(),
         Life = r.ReadInt32(),
         LifeMax = r.ReadInt32(),
+    };
+}
+
+/// <summary>What Stardew's weather is at the farmer's location. Terraria's rain and wind follow it.</summary>
+[Flags]
+public enum WeatherFlags : byte
+{
+    None = 0,
+    Rain = 1,
+    /// <summary>Lightning: a storm.</summary>
+    Lightning = 2,
+    Snow = 4,
+    /// <summary>Stardew's windy weather, leaves and twigs blowing about.</summary>
+    Debris = 8,
+}
+
+/// <summary>Sent when Stardew's weather changes, and once a second so a Terraria that reconnects gets it too.</summary>
+public sealed class WeatherState : Message
+{
+    public WeatherFlags Flags;
+
+    public override MsgType Type => MsgType.WeatherState;
+
+    public override void Write(BinaryWriter w) => w.Write((byte)Flags);
+
+    public static WeatherState ReadFrom(BinaryReader r) => new()
+    {
+        Flags = (WeatherFlags)r.ReadByte(),
     };
 }

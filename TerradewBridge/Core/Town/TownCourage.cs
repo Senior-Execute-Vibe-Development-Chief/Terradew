@@ -117,6 +117,16 @@ namespace Terradew.Core.Town
         public static float Engage(Role role, bool danger, float dangerTiles)
             => role == Role.Coward ? Watch(role, danger) : Math.Max(Watch(role, danger), Math.Min(dangerTiles, EngageCap));
 
+        /// <summary>Extra reach, in tiles, a fight keeps once it has started, so a step out of range does not end it.</summary>
+        public const float FightSlackTiles = 3f;
+
+        /// <summary>
+        /// True while an enemy still counts as in range for a hero or guard: inside its engage range, or a little past it
+        /// when the fight is already going. An enemy beyond that is no longer a reason to stay out of the routine.
+        /// </summary>
+        public static bool Holds(float enemyTiles, float engageTiles, bool fighting)
+            => enemyTiles <= engageTiles + (fighting ? FightSlackTiles : 0f);
+
         /// <summary>How far, in tiles, a hero chases from where the fight started before giving up.</summary>
         public const float Leash = 20f;
 

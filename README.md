@@ -157,7 +157,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **Light comes from what you wear.** Light pets, Shine, mining helmets and jellyfish gear light the ground around
   you as in Terraria, and a shot's light stays in the place it was fired in. Fairy Wings and the Chlorophyte
   crystal light nothing, but they are drawn bright, even at night.
-- **Any Terraria light lights Stardew.** A torch held by a creature, a glowing creature or a dropped torch lights the ground around it in the farmer's place.
+- **Any Terraria light lights Stardew.** A torch held by a creature, a glowing creature or a dropped torch lights the ground around it in the farmer's place. The light is soft and joined into fewer blobs, and it shows only where Stardew is dark: outdoors after dark, and in caves and mines. Daylight and bright rooms are left alone.
 - **Crafting stations are placed.** Craft a Work Bench, Furnace, Anvil or any other station, select the
   hotbar slot it is in and use it on a tile next to you to put it down; it is drawn as its Terraria self. The crafting
   menu offers what the stations within four tiles of you allow (and water, if any is that close). Hit a station

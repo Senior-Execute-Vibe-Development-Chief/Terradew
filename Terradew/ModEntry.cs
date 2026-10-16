@@ -30,6 +30,7 @@ public sealed class ModEntry : Mod
     private Fishing fishing = null!;
     private Mining mining = null!;
     private readonly Explosions explosions = new();
+    private readonly WeatherFeed weather = new();
     private WallClimb wallClimb = null!;
     private Bundles bundles = null!;
     private Houses houses = null!;
@@ -234,6 +235,7 @@ public sealed class ModEntry : Mod
         if (bridge.IsConnected)
             maps.Update(bridge, location, e.Ticks, force: false);
         SendPulse(player, location);
+        weather.Update(bridge, location);
         if (config.MirrorMoney)
             money.Update(bridge);
         vitals.Update(bridge, config);
