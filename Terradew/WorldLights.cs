@@ -29,13 +29,13 @@ internal static class WorldLights
 
     /// <summary>
     /// Whether Stardew draws darkness in this location, so a light shows: caves and mines always, outdoors only after
-    /// dark, and never in a bright indoor room. Elsewhere a Stardew light would paint colour over a daylit scene.
+    /// dark, and indoors only where Stardew draws its light map. Elsewhere a Stardew light would paint colour over a daylit scene.
     /// </summary>
     internal static bool LitHere(GameLocation location)
     {
         if (Maps.PlaceOf(location).Band != Band.Surface)
             return true;
-        return location.IsOutdoors && Game1.isDarkOut();
+        return location.IsOutdoors ? Game1.isDarkOut(location) : Game1.drawLighting;
     }
 
     /// <summary>How many of this mod's lights are on at the moment, so clearing only touches those.</summary>

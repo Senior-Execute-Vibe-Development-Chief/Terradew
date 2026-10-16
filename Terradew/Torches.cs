@@ -76,7 +76,7 @@ internal sealed class Torches
         GameLocation? here = player.currentLocation;
         int glowLight = glow?.Light ?? 0;
         int light = Math.Max(held, glowLight);
-        if (light <= 0 || here == null)
+        if (light <= 0 || here == null || !WorldLights.LitHere(here))
         {
             RemoveHeldLight();
             return;
