@@ -223,6 +223,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
   one in each place: Solar on the Farm, Vortex in Town, Nebula on the Beach, Stardust on the Mountain. When all
   four fall, Moon Lord comes to the Farm. The Celestial Sigil works only on the Farm.
 - **No passing out.** If you don't go to bed, the clock keeps running past 2:00 AM to 6:00 AM, so Terraria gets its whole night (dusk 7:30 PM, dawn 4:30 AM). At 6:00 AM the day changes (crops grow, shipping is paid, the save screen shows), and then you carry on from where you were standing. Going to bed early still ends the day as normal.
+- **Time and weather follow Stardew.** Terraria's day and night, rain and wind are set from Stardew's clock and weather while linked.
 - **Community Center bundles** ask for minerals instead of monster drops, since Stardew's monsters are gone.
 - **Saving:** Terraria saves its world and character whenever Stardew saves at the end of the day.
 
