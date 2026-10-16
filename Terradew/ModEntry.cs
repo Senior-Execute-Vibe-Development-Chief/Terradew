@@ -235,6 +235,7 @@ public sealed class ModEntry : Mod
         if (bridge.IsConnected)
             maps.Update(bridge, location, e.Ticks, force: false);
         SendPulse(player, location);
+        ViewReport.Update(bridge, Maps.PlaceOf(location).Key);
         weather.Update(bridge, location);
         if (config.MirrorMoney)
             money.Update(bridge);

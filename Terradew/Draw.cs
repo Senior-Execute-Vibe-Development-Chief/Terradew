@@ -48,6 +48,7 @@ internal sealed class Draw
     private readonly Hand hand;
     private readonly IModHelper helper;
     private readonly IMonitor monitor;
+    private readonly EffectsDraw effectPictures;
     private bool drewSorted;
     private bool loggedDrawError;
     /// <summary>Hop state by entity id. Rebuilt from each new world state, so slimes that left the world drop out.</summary>
@@ -58,6 +59,7 @@ internal sealed class Draw
         this.hand = hand;
         this.helper = helper;
         this.monitor = monitor;
+        effectPictures = new EffectsDraw(monitor);
         instance = this;
     }
 
@@ -116,8 +118,16 @@ internal sealed class Draw
         Farmer player = Game1.player;
         if (player.currentLocation == null)
             return;
+        string key = Maps.PlaceOf(player.currentLocation).Key;
+        // Terraria's effects picture holds the glowing shots already, drawn by Terraria with their light (see World).
+        EffectsFrame? picture = bridge.Effects;
+        if (effectPictures.Adopt(picture, key))
+        {
+            effectPictures.DrawSelf(b, picture!);
+            return;
+        }
         WorldState? world = bridge.World;
-        if (world == null || !bridge.WorldIsFor(Maps.PlaceOf(player.currentLocation).Key))
+        if (world == null || !bridge.WorldIsFor(key))
             return;
         foreach (ProjectileState projectile in world.Projectiles)
         {
@@ -164,10 +174,15 @@ internal sealed class Draw
             if (Utility.isOnScreen(new Vector2(x, y), 64))
                 DrawDrop(b, drop, x, y, sorted);
         }
+        // Terraria's effects picture replaces the projectiles while it is live (see EffectsDraw); the old drawing is the fallback.
+        EffectsFrame? lit = bridge.Effects;
+        bool live = effectPictures.Adopt(lit, key);
+        if (live)
+            effectPictures.DrawLit(b, lit!, sorted ? EffectsDraw.LitDepth : 0f);
         foreach (ProjectileState projectile in world.Projectiles)
         {
             // Glowing shots are drawn over the world instead (see DrawEmissive).
-            if (projectile.Emissive)
+            if (live || projectile.Emissive)
                 continue;
             (float x, float y) = projectile.Attached
                 ? AttachedAt(player, projectile)

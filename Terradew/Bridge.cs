@@ -56,6 +56,15 @@ internal sealed class Bridge : IDisposable
     /// <summary>The Terraria light in the farmer's place. Null once Terraria stops sending.</summary>
     public WorldLightFrame? WorldLights => worldLights != null && Link.NowMs() - worldLightsAtMs < WorldLightsStaleMs ? worldLights : null;
 
+    private EffectsFrame? effects;
+    private long effectsAtMs;
+
+    /// <summary>Terraria sends its effects every second tick while it has something to draw, then one empty frame and nothing more.</summary>
+    private const long EffectsStaleMs = 2000;
+
+    /// <summary>What Terraria drew of its effects in the farmer's view. Null once Terraria stops sending.</summary>
+    public EffectsFrame? Effects => effects != null && Link.NowMs() - effectsAtMs < EffectsStaleMs ? effects : null;
+
     private PlayerGlow? glow;
     private long glowAtMs;
 
@@ -211,6 +220,11 @@ internal sealed class Bridge : IDisposable
                 // An empty frame clears the lights: Terraria sends one when the last light in the place goes.
                 worldLights = lights;
                 worldLightsAtMs = Link.NowMs();
+                break;
+            case EffectsFrame effectsFrame:
+                // A fallback frame says Terraria's effects failed, so the old drawing is used again.
+                effects = effectsFrame;
+                effectsAtMs = Link.NowMs();
                 break;
             case PlayerGlow playerGlow:
                 glow = playerGlow;

@@ -22,6 +22,7 @@ failed += CaveTests.Run();
 failed += WorldLightTests.Run();
 failed += BossBarTests.Run();
 failed += QuarryTests.Run();
+failed += EffectsTests.Run();
 failed += FootingTests.Run();
 Console.WriteLine(failed == 0 ? "all passed" : $"{failed} failed");
 return failed == 0 ? 0 : 1;

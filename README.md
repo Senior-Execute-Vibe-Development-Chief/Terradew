@@ -166,7 +166,7 @@ Keys can be changed in `Mods/Terradew/config.json`.
 - **Gathering gives only Terraria items.** Stone, ores, geodes, gems and wood that Stardew rocks, boulders, stumps,
   logs and trees would drop are taken off the ground as they fall; Terraria gives its stone, ores and wood instead.
   Monster drops and other loot are left alone.
-- **Terraria dust is drawn everywhere in the place**, not just around you: torch sparks, mining dust, spell trails.
+- **Terraria draws its own projectiles, trails, dust, gore and particles**, and Stardew shows that picture over the place.
 - **Terraria townsfolk play the Stardew villagers.** Each Terraria town NPC moves into one villager's home, the morning after its
   Terraria conditions are met (the Guide first, the Merchant once you carry 50 silver, and so on): the Guide in
   the museum, the Merchant at Pierre's, the Nurse at Harvey's clinic, the Arms Dealer at the Adventurer's Guild,

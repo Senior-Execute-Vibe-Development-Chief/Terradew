@@ -177,7 +177,8 @@ internal static class WorldLights
 
     private static void Capture(int i, int j, float r, float g, float b)
     {
-        if (!collecting || OwnUpdate || capturing == null || r + g + b <= 0f || !capturing.ContainsTile(i, j))
+        // Effects.Capturing: the lights Terraria adds while it draws its effects for Stardew are not in the world.
+        if (!collecting || OwnUpdate || Effects.Capturing || capturing == null || r + g + b <= 0f || !capturing.ContainsTile(i, j))
             return;
         Vector2 centre = new(i * 16f + 8f, j * 16f + 8f);
         float skipLimit = SkipTiles * 16f;

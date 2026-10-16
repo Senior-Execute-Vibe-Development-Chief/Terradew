@@ -61,6 +61,10 @@ public enum MsgType : byte
     DustFrame = 58,
     CaveChests = 59,
     CaveTraps = 61,
+    // Stardew to Terraria: the Stardew camera, in Stardew map pixels.
+    ViewRect = 62,
+    // Terraria to Stardew: what Terraria drew of its effects in the view.
+    EffectsFrame = 63,
     WorldLightFrame = 64,
 }
 
@@ -124,6 +128,8 @@ public abstract class Message
             MsgType.CaveChests => CaveChests.ReadFrom(r),
             MsgType.CaveTraps => CaveTraps.ReadFrom(r),
             MsgType.WorldLightFrame => WorldLightFrame.ReadFrom(r),
+            MsgType.ViewRect => ViewRect.ReadFrom(r),
+            MsgType.EffectsFrame => EffectsFrame.ReadFrom(r),
             MsgType.OpenCaveChest => OpenCaveChest.ReadFrom(r),
             MsgType.WeatherState => WeatherState.ReadFrom(r),
             _ => throw new InvalidDataException($"Unknown Terradew message {(int)type}."),
@@ -139,7 +145,7 @@ public enum Side : byte
 
 public sealed class Hello : Message
 {
-    public const int CurrentProtocol = 21;
+    public const int CurrentProtocol = 22;
     public int Protocol = CurrentProtocol;
     public Side From;
     public string FarmId = "";
@@ -823,6 +829,109 @@ public sealed class WorldLightFrame : Message
         PlaceKey = r.ReadString(),
         Lights = r.ReadList(x => new WorldLight(x.ReadSingle(), x.ReadSingle(), x.ReadByte(), x.ReadByte(), x.ReadByte()), MaxLights),
     };
+}
+
+/// <summary>
+/// Stardew's camera in the farmer's place: the viewport in Stardew map pixels (Game1.viewport). Sent when it changes and
+/// when the farmer arrives in a place, so Terraria draws its effects over what Stardew shows.
+/// </summary>
+public sealed class ViewRect : Message
+{
+    public string PlaceKey = "";
+    public int X;
+    public int Y;
+    public int Width;
+    public int Height;
+
+    public override MsgType Type => MsgType.ViewRect;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.Write(X);
+        w.Write(Y);
+        w.Write(Width);
+        w.Write(Height);
+    }
+
+    public static ViewRect ReadFrom(BinaryReader r) => new()
+    {
+        PlaceKey = r.ReadString(),
+        X = r.ReadInt32(),
+        Y = r.ReadInt32(),
+        Width = r.ReadInt32(),
+        Height = r.ReadInt32(),
+    };
+}
+
+/// <summary>
+/// What Terraria drew of its projectiles, trails, dust, gore and particles in the view, as two pictures over one rectangle.
+/// <see cref="Lit"/> is drawn over the world as the shots are; <see cref="Self"/> holds the parts that glow on their own,
+/// drawn over the finished world. Each is coded with <see cref="PictureRle"/>, and an empty one has no bytes. Width and
+/// Height are in Terraria pixels; Stardew draws each at WorldProjection.Scale. <see cref="Fallback"/> means the effects
+/// failed in Terraria, so Stardew draws the projectiles and dust the old way.
+/// </summary>
+public sealed class EffectsFrame : Message
+{
+    /// <summary>The largest picture, in Terraria pixels: the view is capped at this size.</summary>
+    public const int MaxWidth = 960;
+    public const int MaxHeight = 540;
+
+    /// <summary>The Stardew place the picture is in. Stardew shows it only while the farmer is in that place.</summary>
+    public string PlaceKey = "";
+    public bool Fallback;
+    /// <summary>The top-left of the picture, in Stardew map pixels.</summary>
+    public int OriginX;
+    public int OriginY;
+    public int Width;
+    public int Height;
+    public byte[] Lit = Array.Empty<byte>();
+    public byte[] Self = Array.Empty<byte>();
+
+    public override MsgType Type => MsgType.EffectsFrame;
+
+    public override void Write(BinaryWriter w)
+    {
+        w.Write(PlaceKey);
+        w.Write(Fallback);
+        w.Write(OriginX);
+        w.Write(OriginY);
+        w.Write(Width);
+        w.Write(Height);
+        w.Write(Lit.Length);
+        w.Write(Lit);
+        w.Write(Self.Length);
+        w.Write(Self);
+    }
+
+    public static EffectsFrame ReadFrom(BinaryReader r)
+    {
+        var frame = new EffectsFrame
+        {
+            PlaceKey = r.ReadString(),
+            Fallback = r.ReadBoolean(),
+            OriginX = r.ReadInt32(),
+            OriginY = r.ReadInt32(),
+            Width = r.ReadInt32(),
+            Height = r.ReadInt32(),
+        };
+        if (frame.Width < 0 || frame.Width > MaxWidth || frame.Height < 0 || frame.Height > MaxHeight)
+            throw new InvalidDataException("Bad effects picture size.");
+        frame.Lit = ReadPicture(r);
+        frame.Self = ReadPicture(r);
+        return frame;
+    }
+
+    private static byte[] ReadPicture(BinaryReader r)
+    {
+        int length = r.ReadInt32();
+        if (length < 0 || length > Wire.MaxFrameBytes)
+            throw new InvalidDataException("Bad effects picture length.");
+        byte[] coded = r.ReadBytes(length);
+        if (coded.Length != length)
+            throw new InvalidDataException("Effects picture ended early.");
+        return coded;
+    }
 }
 
 /// <summary>

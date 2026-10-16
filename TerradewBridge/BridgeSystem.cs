@@ -213,9 +213,12 @@ public sealed class BridgeSystem : ModSystem
         if (Linked)
         {
             Body.Publish(link, player, worldTicks);
+            Effects.Publish(link, Stamp.Current, worldTicks);
             Motion.Publish(link, player, worldTicks);
             Glow.Publish(link, player, worldTicks);
-            Dusts.Publish(link, Stamp.Current, player);
+            // Dust is part of the effects picture while the effects are live; it is sent only if they are not.
+            if (!Effects.Live)
+                Dusts.Publish(link, Stamp.Current, player);
         }
         WorldLights.Publish(link, Linked ? Stamp.Current : null, player, worldTicks);
         Courage.Publish(link, worldTicks);
@@ -248,6 +251,9 @@ public sealed class BridgeSystem : ModSystem
                     Notice("This Terraria world belongs to a different Stardew farm. Load the matching farm, or make a new world named Stardew Valley.", 255, 80, 80);
                 else if (hello.TotalDays < worldDay)
                     Notice("Stardew went back to an older day than this Terraria world remembers. Terraria keeps its progress.", 255, 200, 80);
+                break;
+            case ViewRect view:
+                Effects.SetView(view);
                 break;
             case FarmerPulse pulse:
                 if (!WrongFarm)
