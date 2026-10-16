@@ -97,14 +97,26 @@ You need Stardew Valley 1.6 with SMAPI 4, and tModLoader.
 
 ## Dev launcher (macOS)
 
-`tools/terradew` starts and stops both games through Steam, Terraria first so the bridge is listening:
+`tools/terradew` starts and stops both games through Steam, Terraria first so the bridge is listening. To take
+changes after a `git pull`, run:
 
 ```sh
-tools/terradew start      # tModLoader, then Stardew
-tools/terradew stop       # close both
-tools/terradew restart    # stop, rebuild the Stardew mod, start again
-tools/terradew status     # what is running, and whether the bridge is connected
-tools/terradew logs       # follow the SMAPI and tModLoader logs
+tools/terradew update     # pull, then rebuild and restart only what changed
+```
+
+- Bridge changes: tModLoader reloads the mod, and Terraria comes back into the world by itself.
+- Stardew changes: Stardew restarts and loads your last save, skipping the title screen. It closes without
+  saving, so save before you run `update`.
+- Changes to the shared protocol restart both.
+
+```sh
+tools/terradew restart-stardew  # rebuild and restart Stardew only; tModLoader stays open
+tools/terradew build-terraria   # build the Bridge from the command line; a running tModLoader reloads it
+tools/terradew start            # tModLoader, then Stardew
+tools/terradew stop             # close both
+tools/terradew restart          # stop, rebuild the Stardew mod, start again into your last save
+tools/terradew status           # what is running, and whether the bridge is connected
+tools/terradew logs             # follow the SMAPI and tModLoader logs
 ```
 
 Set `TERRADEW_PLAYER` to your tModLoader character's name to skip the menus and load straight into the world

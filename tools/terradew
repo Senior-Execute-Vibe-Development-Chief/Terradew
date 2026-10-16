@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 # Dev launcher for Terradew on macOS: starts and stops Stardew Valley (with SMAPI) and tModLoader through Steam.
 #
-#   tools/terradew start      start tModLoader, then Stardew
-#   tools/terradew stop       close both games
-#   tools/terradew restart    stop, rebuild the Stardew mod, start again
-#   tools/terradew status     which games are running, and whether the bridge is connected
-#   tools/terradew logs       follow the SMAPI and tModLoader logs
-#   tools/terradew build      build the Stardew mod (it deploys itself into Mods)
+#   tools/terradew update           git pull, then rebuild and restart only what the change touches
+#   tools/terradew start            start tModLoader, then Stardew
+#   tools/terradew stop             close both games
+#   tools/terradew restart          stop both, rebuild the Stardew mod, start again
+#   tools/terradew restart-stardew  rebuild and restart Stardew only; tModLoader stays open
+#   tools/terradew status           which games are running, and whether the bridge is connected
+#   tools/terradew logs             follow the SMAPI and tModLoader logs
+#   tools/terradew build            build the Stardew mod (it deploys itself into Mods)
+#   tools/terradew build-terraria   build the Terradew Bridge mod from the command line
 #
 # Optional settings (environment variables):
 #   TERRADEW_PLAYER   tModLoader character name. With it set, tModLoader skips the menus and loads
 #                     that character straight into the world "Stardew Valley" (uses -skipselect).
 #   TERRADEW_WORLD    world name for -skipselect (default: Stardew Valley)
 #   TERRADEW_WAIT     seconds to wait for Terraria before starting Stardew (default: 20)
+#   TMOD_PATH         tModLoader install folder for the Bridge build (default: the Steam folder)
 set -euo pipefail
 
 STARDEW_APP=413150
@@ -21,8 +25,13 @@ PORT=47821
 WORLD="${TERRADEW_WORLD:-Stardew Valley}"
 WAIT="${TERRADEW_WAIT:-20}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# The commit both mods were last built from. Git-ignored.
+BUILT_FILE="$ROOT/.terradew-built"
 
-SMAPI_LOG="$HOME/.config/StardewValley/ErrorLogs/SMAPI-latest.txt"
+# SMAPI's data folder on macOS (Constants.DataPath). The autoload marker lives here.
+SMAPI_DATA="$HOME/.config/StardewValley"
+AUTOLOAD_MARKER="$SMAPI_DATA/terradew-autoload"
+SMAPI_LOG="$SMAPI_DATA/ErrorLogs/SMAPI-latest.txt"
 # tModLoader 1.4 writes its logs next to the install, not in the save folder.
 TMOD_LOG="$HOME/Library/Application Support/Steam/steamapps/common/tModLoader/tModLoader-Logs/client.log"
 
@@ -107,10 +116,108 @@ status() {
   fi
 }
 
-build() {
+# DevAutoLoad.cs sees this marker on the title screen, deletes it, and loads the last save.
+arm_autoload() {
+  mkdir -p "$SMAPI_DATA"
+  : > "$AUTOLOAD_MARKER"
+}
+
+build_stardew() {
   say "Building the Stardew mod..."
   dotnet build "$ROOT/Terradew/Terradew.csproj" -c Debug
-  say "Rebuild Terradew Bridge inside tModLoader: Workshop → Develop Mods → Build."
+}
+
+# TMOD_PATH is read from the environment by TerradewBridge.csproj, so it passes through as is.
+build_terraria() {
+  say "Building the Terradew Bridge mod from the command line..."
+  dotnet build "$ROOT/TerradewBridge/TerradewBridge.csproj" -c Release -p:BuildMod=true
+}
+
+build() {
+  build_stardew
+  say "To build the Bridge, run tools/terradew build-terraria, or Workshop → Develop Mods → Build inside tModLoader."
+}
+
+# Stardew only: build, close it, mark the autoload, start it again. tModLoader keeps running.
+restart_stardew() {
+  build_stardew
+  stop_one "Stardew Valley" "$STARDEW_MATCH"
+  arm_autoload
+  start_stardew
+}
+
+record_built() {
+  git -C "$ROOT" rev-parse HEAD > "$BUILT_FILE"
+}
+
+update() {
+  local old new base="" changed="" recorded="" need_terraria=0 need_stardew=0 failed=0
+
+  old=$(git -C "$ROOT" rev-parse HEAD)
+  say "Pulling the latest changes..."
+  git -C "$ROOT" pull --ff-only || { warn "git pull did not fast-forward. Commit or stash local changes, then try again."; exit 1; }
+  new=$(git -C "$ROOT" rev-parse HEAD)
+
+  # Compare against the last build when we know it, so changes pulled earlier but never built are included.
+  # Without a record, compare with what this pull brought in; with neither, rebuild both.
+  if [[ -f "$BUILT_FILE" ]]; then recorded=$(<"$BUILT_FILE"); fi
+  if [[ -n "$recorded" ]] && git -C "$ROOT" merge-base --is-ancestor "$recorded" HEAD 2>/dev/null; then
+    base="$recorded"
+  elif [[ "$old" != "$new" ]]; then
+    base="$old"
+  fi
+
+  if [[ -z "$base" ]]; then
+    say "No record of the last build, so both games are rebuilt."
+    need_terraria=1
+    need_stardew=1
+  else
+    changed=$(git -C "$ROOT" diff --name-only "$base" HEAD)
+    if grep -q '^TerradewBridge/' <<< "$changed"; then need_terraria=1; fi
+    if grep -Eq '^(Terradew/|TerradewBridge/Core/)' <<< "$changed"; then need_stardew=1; fi
+    # A protocol bump changes both sides together.
+    if grep -Eq '^[-+].*CurrentProtocol' <<< "$(git -C "$ROOT" diff "$base" HEAD -- TerradewBridge/Core/Protocol/Messages.cs)"; then
+      need_terraria=1
+      need_stardew=1
+    fi
+  fi
+
+  if ((need_terraria == 0 && need_stardew == 0)); then
+    say "No game code changed since the last build. Nothing to restart."
+    record_built
+    return
+  fi
+
+  # Build first, so a failed build never leaves a game closed.
+  local terraria_ok=0 stardew_ok=0
+  if ((need_terraria)); then
+    if build_terraria; then terraria_ok=1; else warn "The Bridge build failed. Workshop → Develop Mods → Build inside tModLoader still works."; failed=1; fi
+  fi
+  if ((need_stardew)); then
+    if build_stardew; then stardew_ok=1; else warn "The Stardew build failed. Stardew keeps running the old mod."; failed=1; fi
+  fi
+
+  if ((terraria_ok)); then
+    if running "$TMOD_MATCH"; then
+      say "Terraria will reload the mod and come back into the world by itself."
+    else
+      start_tmod
+      wait_for_bridge
+    fi
+  fi
+  if ((stardew_ok)); then
+    say "Restarting Stardew Valley into your last save..."
+    stop_one "Stardew Valley" "$STARDEW_MATCH"
+    arm_autoload
+    start_stardew
+  fi
+
+  if ((failed)); then
+    warn "Not marked as built, so the next update tries again."
+  else
+    record_built
+    say "Up to date."
+  fi
 }
 
 logs() {
@@ -125,6 +232,9 @@ logs() {
 }
 
 case "${1:-}" in
+  update)
+    update
+    ;;
   start)
     start_tmod
     wait_for_bridge
@@ -140,13 +250,17 @@ case "${1:-}" in
     build
     start_tmod
     wait_for_bridge
+    arm_autoload
     start_stardew
     ;;
+  restart-stardew) restart_stardew ;;
+  build-terraria) build_terraria ;;
   status) status ;;
   logs) logs ;;
   build) build ;;
   *)
-    sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+    # The usage is this file's header comment, up to the first line of code.
+    sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'
     exit 1
     ;;
 esac

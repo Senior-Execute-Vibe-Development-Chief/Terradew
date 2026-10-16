@@ -89,8 +89,7 @@ public sealed class BridgeSystem : ModSystem
             Main.autoPause = autoPauseWasOn;
             settingsSaved = false;
         }
-        link?.Dispose();
-        link = null;
+        CloseLink();
         started = false;
         initialized = false;
         worldFarmId = "";
@@ -104,6 +103,16 @@ public sealed class BridgeSystem : ModSystem
         CaveLife.Reset();
         Celestial.Reset();
         WallOfFlesh.Reset();
+    }
+
+    /// <summary>A dev reload unloads the old mod without a world unload, so the port is freed here too.</summary>
+    public override void OnModUnload() => CloseLink();
+
+    /// <summary>Stops listening so the port is free for the next world or the next instance of the mod.</summary>
+    private void CloseLink()
+    {
+        link?.Dispose();
+        link = null;
     }
 
     public override void SaveWorldData(TagCompound tag)

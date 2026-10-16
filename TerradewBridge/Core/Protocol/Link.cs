@@ -144,6 +144,12 @@ public sealed class Link : IDisposable
             created.Start();
             lock (socketGate)
                 listener = created;
+            // Dispose may have run before the listener existed; close it now so the port is not held.
+            if (stopping)
+            {
+                created.Stop();
+                return null;
+            }
         }
         return listener.AcceptTcpClient();
     }

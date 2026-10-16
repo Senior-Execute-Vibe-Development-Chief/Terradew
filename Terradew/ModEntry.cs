@@ -121,6 +121,7 @@ public sealed class ModEntry : Mod
         helper.Events.GameLoop.SaveLoaded += (_, _) => StartFarm();
         helper.Events.GameLoop.ReturnedToTitle += (_, _) => StopFarm();
         helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+        helper.Events.GameLoop.UpdateTicked += new DevAutoLoad(Monitor).OnUpdateTicked;
         helper.Events.GameLoop.Saving += OnSaving;
         helper.Events.GameLoop.DayStarted += (_, _) => OnDayStarted();
         helper.Events.Display.RenderedWorld += (_, e) => draw.OnRenderedWorld(e.SpriteBatch);
